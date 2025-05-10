@@ -94,22 +94,27 @@ JSObject* JsFbTitleFormat::Constructor( JSContext* cx, const qwr::u8string& expr
     return JsFbTitleFormat::CreateJs( cx, expr );
 }
 
-pfc::string8_fast JsFbTitleFormat::Eval( bool force )
+pfc::string8_fast JsFbTitleFormat::Eval(bool force)
 {
-    auto pc = playback_control::get();
-    metadb_handle_ptr handle;
+	pfc::string8 text;
 
-    if ( !pc->is_playing() && force )
-    { // Trying to get handle to any known playable location
-        if ( !metadb::g_get_random_handle( handle ) )
-        { // Fake handle, workaround recommended by foobar2000 devs
-            metadb::get()->handle_create( handle, playable_location_impl{} );
-        }
-    }
+	if (playback_control::get()->playback_format_title(nullptr, text, titleFormatObject_, nullptr, playback_control::display_level_all))
+	{
+		return text;
+	}
+	else if (force)
+	{
+		metadb_handle_ptr handle;
 
-    pfc::string8_fast text;
-    pc->playback_format_title_ex( handle, nullptr, text, titleFormatObject_, nullptr, playback_control::display_level_all );
-    return text;
+		if (!metadb::g_get_random_handle(handle))
+		{
+			metadb::get()->handle_create(handle, playable_location_impl{});
+		}
+
+		 handle->format_title(nullptr, text, titleFormatObject_, nullptr);
+	}
+
+	return text;
 }
 
 pfc::string8_fast JsFbTitleFormat::EvalWithOpt( size_t optArgCount, bool force )
