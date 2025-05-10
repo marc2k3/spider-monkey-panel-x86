@@ -20,7 +20,7 @@ jobs:
         msbuild src\${{ matrix.project }}.sln
 
     - name: Upload
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.project }}-${{ github.ref_name }}
         path: component
