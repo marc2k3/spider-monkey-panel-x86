@@ -1,0 +1,26 @@
+name: build
+on: push
+jobs:
+  build:
+    name: ${{ matrix.project }}
+    runs-on: windows-2019
+
+    strategy:
+      matrix:
+        project: [foo_spider_monkey_panel]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build x64
+      run: |
+        msbuild src\${{ matrix.project }}.sln
+
+    - name: Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.project }}-${{ github.ref_name }}
+        path: component
