@@ -13,9 +13,8 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Set up vcpkg
-      run: |
-        cd C:\vcpkg && git pull && bootstrap-vcpkg
-        vcpkg integrate install
+      working-directory: C:\vcpkg
+      run: git pull && bootstrap-vcpkg && vcpkg integrate install
 
     - name: Build
       run: msbuild src\foo_spider_monkey_panel.sln
