@@ -65,6 +65,7 @@ MJS_DEFINE_JS_FN_FROM_NATIVE(InsertRange, JsFbMetadbHandleList::InsertRange);
 MJS_DEFINE_JS_FN_FROM_NATIVE(MakeDifference, JsFbMetadbHandleList::MakeDifference);
 MJS_DEFINE_JS_FN_FROM_NATIVE(MakeIntersection, JsFbMetadbHandleList::MakeIntersection);
 MJS_DEFINE_JS_FN_FROM_NATIVE(MakeUnion, JsFbMetadbHandleList::MakeUnion);
+MJS_DEFINE_JS_FN_FROM_NATIVE(OptimiseFileLayout, JsFbMetadbHandleList::OptimiseFileLayout);
 MJS_DEFINE_JS_FN_FROM_NATIVE(OrderByFormat, JsFbMetadbHandleList::OrderByFormat);
 MJS_DEFINE_JS_FN_FROM_NATIVE(OrderByPath, JsFbMetadbHandleList::OrderByPath);
 MJS_DEFINE_JS_FN_FROM_NATIVE(OrderByRelativePath, JsFbMetadbHandleList::OrderByRelativePath);
@@ -96,6 +97,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
 		JS_FN("MakeDifference", MakeDifference, 1, kDefaultPropsFlags),
 		JS_FN("MakeIntersection", MakeIntersection, 1, kDefaultPropsFlags),
 		JS_FN("MakeUnion", MakeUnion, 1, kDefaultPropsFlags),
+		JS_FN("OptimiseFileLayout", OptimiseFileLayout, 1, kDefaultPropsFlags),
 		JS_FN("OrderByFormat", OrderByFormat, 2, kDefaultPropsFlags),
 		JS_FN("OrderByPath", OrderByPath, 0, kDefaultPropsFlags),
 		JS_FN("OrderByRelativePath", OrderByRelativePath, 0, kDefaultPropsFlags),
@@ -446,6 +448,36 @@ void JsFbMetadbHandleList::MakeUnion(JsFbMetadbHandleList* handles)
 
 	metadbHandleList_.add_items(handles->GetHandleList());
 	metadbHandleList_.sort_by_pointer_remove_duplicates();
+}
+
+void JsFbMetadbHandleList::OptimiseFileLayout(bool minimise)
+{
+	if (metadbHandleList_.get_count() == 0)
+		return;
+
+	auto func = [handles = metadbHandleList_, minimise](threaded_process_status&, abort_callback& abort)
+		{
+			auto api = file_lock_manager::get();
+			auto paths = file_list_helper::file_list_from_metadb_handle_list(handles);
+
+			for (auto&& path : paths)
+			{
+				try
+				{
+					auto lock = api->acquire_write(path, abort);
+
+					for (auto ptr : file_format_sanitizer::enumerate())
+					{
+						if (ptr->sanitize_file(path, minimise, abort))
+							break;
+					}
+				}
+				catch (...) {}
+			}
+		};
+
+	auto callback = threaded_process_callback_lambda::create(func);
+	threaded_process::get()->run_modeless(callback, threaded_process::flag_silent, core_api::get_main_window(), "Optimising...");
 }
 
 void JsFbMetadbHandleList::OrderByFormat(JsFbTitleFormat* script, int8_t direction)
