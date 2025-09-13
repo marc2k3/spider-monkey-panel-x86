@@ -10,6 +10,14 @@ requires at least `foobar2000` `2.0`.
 
 # Changelog
 
+## 1.6.2.25.09.13
+- Add `FbMetadbHandleList` `OptimiseFileLayout`. It takes a `boolean` `minimise`
+argument. This provides the same functionality as the native context menu items
+under `Utilities` except there are no prompts.
+- Suppress all library callbacks on startup until it is fully initialised. All
+library items will be passed to `on_library_items_added` which existing scripts
+already expect.
+
 ## 1.6.2.25.09.10
 - Fix bug where the `on_key_up` callback was not triggered for certain keys.
 - Fix missing auto-complete entry for `on_download_file_done`.
