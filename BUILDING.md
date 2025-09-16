@@ -1,11 +1,14 @@
 `Visual Studio 2022` is required to build. You must have the desktop C++ workload,
-the `v143` toolset and `ATL` for the `v143` toolset installed.
+the `v143` toolset and `ATL` for the `v143` toolset installed. A recent version
+of the `Windows 11` `SDK` is also required.
 
-3rd party dependencies are installed via [vcpkg](https://github.com/microsoft/vcpkg).
-
-To setup from a `Powershell` prompt:
+First, you'll need to perform a recursive clone of the repository. From a `PowerShell` prompt:
 ```
 git clone --recurse https://github.com/marc2k3/foo_spider_monkey_panel
+```
+
+3rd party dependencies are installed via [vcpkg](https://github.com/microsoft/vcpkg). If you don't already haave it installed:
+```
 git clone https://github.com/microsoft/vcpkg
 cd vcpkg
 ./bootstrap-vcpkg
