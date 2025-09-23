@@ -599,14 +599,16 @@ void JsActiveXObject::GetImpl(int dispId, std::span<_variant_t> args, JS::Mutabl
 	UINT argerr = 0;
 
 	// don't use DispInvoke, because we don't know the TypeInfo
-	HRESULT hresult = pStorage_->pDispatch->Invoke(dispId,
-													IID_NULL,
-													LOCALE_USER_DEFAULT,
-													DISPATCH_PROPERTYGET,
-													&dispparams,
-													&varResult,
-													&exception,
-													&argerr);
+	HRESULT hresult = pStorage_->pDispatch->Invoke(
+		dispId,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		DISPATCH_PROPERTYGET,
+		&dispparams,
+		&varResult,
+		&exception,
+		&argerr
+	);
 
 	if (refreshFn)
 	{
@@ -734,14 +736,16 @@ void JsActiveXObject::Set(const std::wstring& propName, JS::HandleValue v)
 	EXCEPINFO exception{};
 	UINT argerr = 0;
 
-	HRESULT hresult = pStorage_->pDispatch->Invoke(*dispRet,
-													IID_NULL,
-													LOCALE_USER_DEFAULT,
-													flag,
-													&dispparams,
-													nullptr,
-													&exception,
-													&argerr);
+	HRESULT hresult = pStorage_->pDispatch->Invoke(
+		*dispRet,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		flag,
+		&dispparams,
+		nullptr,
+		&exception,
+		&argerr
+	);
 
 	RefreshValue(pJsCtx_, v);
 
@@ -787,14 +791,16 @@ void JsActiveXObject::Set(const JS::CallArgs& callArgs)
 	}
 
 	// don't use DispInvoke, because we don't know the TypeInfo
-	HRESULT hresult = pStorage_->pDispatch->Invoke(*dispRet,
-													IID_NULL,
-													LOCALE_USER_DEFAULT,
-													flag,
-													&dispparams,
-													nullptr,
-													&exception,
-													&argerr);
+	HRESULT hresult = pStorage_->pDispatch->Invoke(
+		*dispRet,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		flag,
+		&dispparams,
+		nullptr,
+		&exception,
+		&argerr
+	);
 
 	for (auto i: ranges::views::indices(callArgs.length() - 1))
 	{
@@ -833,14 +839,16 @@ void JsActiveXObject::Invoke(const std::wstring& funcName, const JS::CallArgs& c
 	UINT argerr = 0;
 
 	// don't use DispInvoke, because we don't know the TypeInfo
-	HRESULT hresult = pStorage_->pDispatch->Invoke(*dispRet,
-													IID_NULL,
-													LOCALE_USER_DEFAULT,
-													DISPATCH_METHOD,
-													&dispparams,
-													&varResult,
-													&exception,
-													&argerr);
+	HRESULT hresult = pStorage_->pDispatch->Invoke(
+		*dispRet,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		DISPATCH_METHOD,
+		&dispparams,
+		&varResult,
+		&exception,
+		&argerr
+	);
 
 	for (auto i: ranges::views::indices(callArgs.length()))
 	{

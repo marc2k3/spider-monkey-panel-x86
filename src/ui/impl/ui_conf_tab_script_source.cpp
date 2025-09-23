@@ -66,17 +66,19 @@ CConfigTabScriptSource::CConfigTabScriptSource(CDialogConf& parent, config::Pars
 	: parent_(parent)
 	, settings_(settings)
 	, ddx_({
-		  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(path_, IDC_TEXTEDIT_SRC_PATH),
-		  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(packageName_, IDC_TEXTEDIT_SRC_PACKAGE),
-		  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_ComboBox>(sampleIdx_, IDC_COMBO_SRC_SAMPLE),
-		  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_RadioRange>(sourceTypeId_,
-														   std::initializer_list<int>{
-															   IDC_RADIO_SRC_SAMPLE,
-															   IDC_RADIO_SRC_MEMORY,
-															   IDC_RADIO_SRC_FILE,
-															   IDC_RADIO_SRC_PACKAGE,
-														   }),
-	  })
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(path_, IDC_TEXTEDIT_SRC_PATH),
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(packageName_, IDC_TEXTEDIT_SRC_PACKAGE),
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_ComboBox>(sampleIdx_, IDC_COMBO_SRC_SAMPLE),
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_RadioRange>(
+			sourceTypeId_,
+			std::initializer_list<int>{
+				IDC_RADIO_SRC_SAMPLE,
+				IDC_RADIO_SRC_MEMORY,
+				IDC_RADIO_SRC_FILE,
+				IDC_RADIO_SRC_PACKAGE,
+			}
+		),
+	})
 {
 	if (sampleData_.empty())
 	{ // can't initialize it during global initialization

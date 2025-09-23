@@ -65,14 +65,15 @@ CConfigTabAppearance::CConfigTabAppearance(CDialogConf& parent, config::ParsedPa
 	, edgeStyle_(settings.edgeStyle)
 	, isPseudoTransparent_(settings.isPseudoTransparent)
 	, ddx_({
-		  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_CheckBox>(isPseudoTransparent_, IDC_CHECK_PSEUDOTRANSPARENT),
-		  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_RadioRange>(edgeStyleId_,
-														   std::initializer_list<int>{
-															   IDC_RADIO_EDGE_NO,
-															   IDC_RADIO_EDGE_SUNKEN,
-															   IDC_RADIO_EDGE_GREY,
-														   }),
-	  })
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_CheckBox>(isPseudoTransparent_, IDC_CHECK_PSEUDOTRANSPARENT),
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_RadioRange>(
+		edgeStyleId_,
+		std::initializer_list<int>{
+			IDC_RADIO_EDGE_NO,
+			IDC_RADIO_EDGE_SUNKEN,
+			IDC_RADIO_EDGE_GREY,
+		}),
+	})
 {
 	InitializeLocalOptions();
 }

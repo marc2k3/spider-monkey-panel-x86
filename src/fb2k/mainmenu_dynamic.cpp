@@ -82,11 +82,12 @@ public:
 namespace
 {
 
-MainMenuNodeCommand_PanelCommand::MainMenuNodeCommand_PanelCommand(HWND panelHwnd,
-																	const std::string& panelName,
-																	uint32_t commandId,
-																	const std::string& commandName,
-																	const std::optional<std::string>& commandDescription)
+MainMenuNodeCommand_PanelCommand::MainMenuNodeCommand_PanelCommand(
+	HWND panelHwnd,
+	const std::string& panelName,
+	uint32_t commandId,
+	const std::string& commandName,
+	const std::optional<std::string>& commandDescription)
 	: panelHwnd_(panelHwnd)
 	, panelName_(panelName)
 	, commandId_(commandId)
@@ -131,9 +132,10 @@ bool MainMenuNodeCommand_PanelCommand::get_description(pfc::string_base& out)
 	return true;
 }
 
-MainMenuNodeGroup_PanelCommands::MainMenuNodeGroup_PanelCommands(HWND panelHwnd,
-																  const std::string& panelName,
-																  const std::unordered_map<uint32_t, DynamicMainMenuManager::CommandData>& idToCommand)
+MainMenuNodeGroup_PanelCommands::MainMenuNodeGroup_PanelCommands(
+	HWND panelHwnd,
+	const std::string& panelName,
+	const std::unordered_map<uint32_t, DynamicMainMenuManager::CommandData>& idToCommand)
 	: panelName_(panelName)
 {
 	// use map to sort commands by their name

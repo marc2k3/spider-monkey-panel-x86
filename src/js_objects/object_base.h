@@ -262,10 +262,11 @@ private:
 		return jsObject;
 	}
 
-	[[nodiscard]] static JSObject* CreateJsObject_Final(JSContext* cx,
-														 [[maybe_unused]] JS::HandleObject jsProto,
-														 JS::HandleObject jsBaseObject,
-														 std::unique_ptr<T> premadeNative)
+	[[nodiscard]] static JSObject* CreateJsObject_Final(
+		JSContext* cx,
+		[[maybe_unused]] JS::HandleObject jsProto,
+		JS::HandleObject jsBaseObject,
+		std::unique_ptr<T> premadeNative)
 	{
 		auto pJsRealm = static_cast<JsRealmInner*>(JS::GetRealmPrivate(js::GetContextRealm(cx)));
 		assert(pJsRealm);

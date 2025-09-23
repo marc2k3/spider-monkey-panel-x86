@@ -130,11 +130,14 @@ public:
 			const std::wstring findText = (lpszFindWhat && wcslen(lpszFindWhat) ? lpszFindWhat : qwr::ToWide(lastState_.findText));
 			const std::wstring replaceText = (lpszReplaceWith && wcslen(lpszReplaceWith) ? lpszReplaceWith : qwr::ToWide(lastState_.replaceText));
 
-			HWND hWndFindReplace = findReplaceDialog->Create(bFindOnly,
-															  findText.c_str(),
-															  (replaceText.empty() ? nullptr : replaceText.c_str()),
-															  lastState_.ToFrFlags(dwFlags),
-															  sciEditor_);
+			HWND hWndFindReplace = findReplaceDialog->Create(
+				bFindOnly,
+				findText.c_str(),
+				(replaceText.empty() ? nullptr : replaceText.c_str()),
+				lastState_.ToFrFlags(dwFlags),
+				sciEditor_
+			);
+
 			if (!hWndFindReplace)
 			{
 				delete findReplaceDialog;

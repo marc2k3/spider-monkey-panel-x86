@@ -76,8 +76,7 @@ config::PanelProperties DeserializePropertiesFromObject(const JSON& jsonMain)
 			throw qwr::QwrException("Corrupted serialized properties: not a JSON object");
 		}
 
-		if (jsonMain.at("version").get<std::string>() != kPropJsonConfigVersion
-			 || jsonMain.at("id").get<std::string>() != kPropJsonConfigId)
+		if (jsonMain.at("version").get<std::string>() != kPropJsonConfigVersion || jsonMain.at("id").get<std::string>() != kPropJsonConfigId)
 		{
 			throw qwr::QwrException("Corrupted serialized properties: version/id mismatch");
 		}
@@ -143,8 +142,7 @@ PanelSettings LoadSettings(stream_reader* reader, abort_callback& abort)
 		PanelSettings panelSettings;
 		const auto jsonMain = JSON::parse(reader->read_string(abort).get_ptr());
 
-		if (jsonMain.at("version").get<std::string>() != kSettingsJsonConfigVersion
-			 || jsonMain.at("id").get<std::string>() != kSettingsJsonConfigId)
+		if (jsonMain.at("version").get<std::string>() != kSettingsJsonConfigVersion || jsonMain.at("id").get<std::string>() != kSettingsJsonConfigId)
 		{
 			throw qwr::QwrException("Corrupted serialized settings: version/id mismatch");
 		}
@@ -203,9 +201,12 @@ PanelSettings LoadSettings(stream_reader* reader, abort_callback& abort)
 		}
 		case ScriptType::Package:
 		{
-			panelSettings.payload = PanelSettings_Package{ jsonPayload.at("id").get<std::string>(),
-														   jsonPayload.at("name").get<std::string>(),
-														   jsonPayload.at("author").get<std::string>() };
+			panelSettings.payload = PanelSettings_Package{
+				jsonPayload.at("id").get<std::string>(),
+				jsonPayload.at("name").get<std::string>(),
+				jsonPayload.at("author").get<std::string>()
+			};
+
 			break;
 		}
 		default:

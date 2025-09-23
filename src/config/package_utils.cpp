@@ -220,8 +220,7 @@ std::vector<std::filesystem::path> GetPackageScriptFiles(const ParsedPanelSettin
 
 		const auto packagePath = GetPackagePath(settings);
 
-		if (const auto scriptsDir = packagePath / "scripts";
-			 fs::exists(scriptsDir))
+		if (const auto scriptsDir = packagePath / "scripts"; fs::exists(scriptsDir))
 		{
 			files = smp::utils::GetFilesRecursive(scriptsDir);
 			ranges::actions::sort(files, [](const auto& a, const auto& b) { return (a < b); });
@@ -248,8 +247,7 @@ std::vector<std::filesystem::path> GetPackageFiles(const ParsedPanelSettings& se
 
 		const auto packagePath = GetPackagePath(settings);
 
-		if (const auto assetsDir = packagePath / "assets";
-			 fs::exists(assetsDir))
+		if (const auto assetsDir = packagePath / "assets"; fs::exists(assetsDir))
 		{
 			auto assetFiles = smp::utils::GetFilesRecursive(assetsDir);
 			ranges::actions::sort(files, [](const auto& a, const auto& b) { return (a < b); });

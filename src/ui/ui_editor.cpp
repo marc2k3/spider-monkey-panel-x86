@@ -89,10 +89,13 @@ LRESULT CEditor::OnCloseCmd(WORD, WORD wID, HWND)
 	{
 		if (sciEditor_.GetModify())
 		{
-			const int ret = popup_message_v3::get()->messageBox(*this,
-														 "Do you want to apply your changes?",
-														 caption_.c_str(),
-														 MB_ICONWARNING | MB_SETFOREGROUND | MB_YESNOCANCEL);
+			const int ret = popup_message_v3::get()->messageBox(
+				*this,
+				"Do you want to apply your changes?",
+				caption_.c_str(),
+				MB_ICONWARNING | MB_SETFOREGROUND | MB_YESNOCANCEL
+			);
+
 			switch (ret)
 			{
 			case IDYES:

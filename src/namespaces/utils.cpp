@@ -205,22 +205,22 @@ bool Utils::CheckFont(const std::wstring& name) const
 	const int count = font_collection.GetFamilyCount();
 	std::vector<Gdiplus::FontFamily> font_families(count);
 
-	int recv;
-	Gdiplus::Status gdiRet = font_collection.GetFamilies(count, font_families.data(), &recv);
-	qwr::error::CheckGdi(gdiRet, "GetFamilies");
+	int recv{};
+	const auto status = font_collection.GetFamilies(count, font_families.data(), &recv);
+	qwr::error::CheckGdi(status, "GetFamilies");
 	qwr::QwrException::ExpectTrue(recv == count, "Internal error: GetFamilies numSought != numFound");
 
 	std::array<wchar_t, LF_FACESIZE> family_name_eng{};
 	std::array<wchar_t, LF_FACESIZE> family_name_loc{};
+
 	const auto it = ranges::find_if(font_families, [&family_name_eng, &family_name_loc, &name](const auto& fontFamily) {
-		Gdiplus::Status gdiRet = fontFamily.GetFamilyName(family_name_eng.data(), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US));
-		qwr::error::CheckGdi(gdiRet, "GetFamilyName");
+		auto status = fontFamily.GetFamilyName(family_name_eng.data(), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US));
+		qwr::error::CheckGdi(status, "GetFamilyName");
 
-		gdiRet = fontFamily.GetFamilyName(family_name_loc.data());
-		qwr::error::CheckGdi(gdiRet, "GetFamilyName");
+		status = fontFamily.GetFamilyName(family_name_loc.data());
+		qwr::error::CheckGdi(status, "GetFamilyName");
 
-		return (!_wcsicmp(name.c_str(), family_name_loc.data())
-				 || !_wcsicmp(name.c_str(), family_name_eng.data()));
+		return (!_wcsicmp(name.c_str(), family_name_loc.data()) || !_wcsicmp(name.c_str(), family_name_eng.data()));
 	});
 
 	return (it != font_families.cend());

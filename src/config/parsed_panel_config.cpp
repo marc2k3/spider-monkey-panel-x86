@@ -49,11 +49,14 @@ void Parse_Package(const config::PanelSettings_Package& settings, config::Parsed
 		const auto valueOrEmpty = [](const std::string& str) -> std::string {
 			return (str.empty() ? "<empty>" : str);
 		};
-		qwr::QwrException::ExpectTrue(packageDirRet.has_value(),
-									   "Can't find the required package: `{} ({} by {})`",
-									   settings.id,
-									   valueOrEmpty(settings.name),
-									   valueOrEmpty(settings.author));
+
+		qwr::QwrException::ExpectTrue(
+			packageDirRet.has_value(),
+			"Can't find the required package: `{} ({} by {})`",
+			settings.id,
+			valueOrEmpty(settings.name),
+			valueOrEmpty(settings.author)
+		);
 
 		config::FillPackageSettingsFromPath(*packageDirRet, parsedSettings);
 		qwr::QwrException::ExpectTrue(settings.id == parsedSettings.packageId, "Corrupted package: `id` is mismatched with parent folder");
@@ -79,11 +82,13 @@ void Reparse_Package(config::ParsedPanelSettings& parsedSettings)
 		const auto valueOrEmpty = [](const std::string& str) -> std::string {
 			return (str.empty() ? "<empty>" : str);
 		};
-		qwr::QwrException::ExpectTrue(packageDirRet.has_value(),
-									   "Can't find the required package: `{} ({} by {})`",
-									   packageId,
-									   valueOrEmpty(parsedSettings.scriptName),
-									   valueOrEmpty(parsedSettings.scriptAuthor));
+		qwr::QwrException::ExpectTrue(
+			packageDirRet.has_value(),
+			"Can't find the required package: `{} ({} by {})`",
+			packageId,
+			valueOrEmpty(parsedSettings.scriptName),
+			valueOrEmpty(parsedSettings.scriptAuthor)
+		);
 
 		config::FillPackageSettingsFromPath(*packageDirRet, parsedSettings);
 		qwr::QwrException::ExpectTrue(packageId == parsedSettings.packageId, "Corrupted package: `id` is mismatched with parent folder");

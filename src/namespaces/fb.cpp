@@ -382,12 +382,15 @@ uint32_t Fb::DoDragDrop(uint32_t, JsFbMetadbHandleList* handles, uint32_t okEffe
 	modal::MessageBlockingScope scope;
 
 	pfc::com_ptr_t<IDataObject> pDO = ole_interaction::get()->create_dataobject(handleList);
-	pfc::com_ptr_t<com::IDropSourceImpl> pIDropSource = new com::IDropSourceImpl(wnd,
-																				  pDO.get_ptr(),
-																				  handleCount,
-																				  parsedOptions.useTheming,
-																				  parsedOptions.showText,
-																				  parsedOptions.pCustomImage);
+
+	pfc::com_ptr_t<com::IDropSourceImpl> pIDropSource = new com::IDropSourceImpl(
+		wnd,
+		pDO.get_ptr(),
+		handleCount,
+		parsedOptions.useTheming,
+		parsedOptions.showText,
+		parsedOptions.pCustomImage
+	);
 
 	SendMessageW(wnd, static_cast<UINT>(smp::InternalSyncMessage::wnd_internal_drag_start), 0, 0);
 
@@ -589,9 +592,11 @@ JSObject* Fb::GetQueryItems(JsFbMetadbHandleList* handles, const std::string& qu
 
 	try
 	{
-		filter = search_filter_manager_v2::get()->create_ex(query.c_str(),
-															 fb2k::service_new<completion_notify_dummy>(),
-															 search_filter_manager_v2::KFlagSuppressNotify);
+		filter = search_filter_manager_v2::get()->create_ex(
+			query.c_str(),
+			fb2k::service_new<completion_notify_dummy>(),
+			search_filter_manager_v2::KFlagSuppressNotify
+		);
 	}
 	catch (const pfc::exception& e)
 	{

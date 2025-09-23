@@ -171,11 +171,11 @@ std::wstring JsGdiFont::get_Name() const
 {
 	Gdiplus::FontFamily fontFamily;
 	std::array<wchar_t, LF_FACESIZE> name{};
-	Gdiplus::Status gdiRet = pGdi_->GetFamily(&fontFamily);
-	qwr::error::CheckGdi(gdiRet, "GetFamily");
+	auto status = pGdi_->GetFamily(&fontFamily);
+	qwr::error::CheckGdi(status, "GetFamily");
 
-	gdiRet = fontFamily.GetFamilyName(name.data(), LANG_NEUTRAL);
-	qwr::error::CheckGdi(gdiRet, "GetFamilyName");
+	status = fontFamily.GetFamilyName(name.data(), LANG_NEUTRAL);
+	qwr::error::CheckGdi(status, "GetFamilyName");
 
 	return std::wstring(name.data());
 }

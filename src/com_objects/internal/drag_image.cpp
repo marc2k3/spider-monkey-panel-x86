@@ -133,18 +133,24 @@ bool draw_drag_custom_image(HDC dc, const RECT& rc, Gdiplus::Bitmap& customImage
 		return smp::image::GetResizedImageSize(std::make_tuple(imgWidth, imgHeight), std::make_tuple(rc.right, rc.bottom));
 	}();
 
-	Gdiplus::Graphics gdiGraphics(dc);
-	Gdiplus::Status gdiRet = gdiGraphics.DrawImage(&customImage,
-													Gdiplus::Rect{ lround(static_cast<float>(rc.right - newWidth) / 2),
-																lround(static_cast<float>(rc.bottom - newHeight) / 2),
-																static_cast<int>(newWidth),
-																static_cast<int>(newHeight) },
-													0,
-													0,
-													imgWidth,
-													imgHeight,
-													Gdiplus::UnitPixel);
-	return (Gdiplus::Status::Ok == gdiRet);
+	auto gdiGraphics = Gdiplus::Graphics(dc);
+
+	const auto status = gdiGraphics.DrawImage(
+		&customImage,
+		Gdiplus::Rect{
+			lround(static_cast<float>(rc.right - newWidth) / 2),
+			lround(static_cast<float>(rc.bottom - newHeight) / 2),
+			static_cast<int>(newWidth),
+			static_cast<int>(newHeight)
+		},
+		0,
+		0,
+		imgWidth,
+		imgHeight,
+		Gdiplus::UnitPixel
+	);
+
+	return (Gdiplus::Ok == status);
 }
 
 void draw_drag_image_icon(HDC dc, const RECT& rc, HICON icon)

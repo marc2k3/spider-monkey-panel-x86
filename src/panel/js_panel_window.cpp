@@ -122,9 +122,14 @@ void js_panel_window::LoadSettings(stream_reader* reader, t_size size, abort_cal
 		}
 		catch (const qwr::QwrException& e)
 		{
-			qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, fmt::format("Can't load panel settings. Your panel will be completely reset!\n"
-																		 "Error: {}",
-																		 e.what()));
+			qwr::ReportErrorWithPopup(
+				SMP_UNDERSCORE_NAME,
+				fmt::format(
+					"Can't load panel settings. Your panel will be completely reset!\nError: {}",
+					e.what()
+				)
+			);
+
 			return config::PanelSettings{};
 		}
 	}();
@@ -386,10 +391,13 @@ void js_panel_window::ExecuteEvent_JsTask(EventId id, Event_JsExecutor& task)
 		if (pJsContainer_)
 		{
 			auto dragParams = pDragEvent->GetDragParams();
-			const auto bRet = pJsContainer_->InvokeOnDragAction("on_drag_enter",
-																 { pDragEvent->GetX(), pDragEvent->GetY() },
-																 pDragEvent->GetMask(),
-																 dragParams);
+			const auto bRet = pJsContainer_->InvokeOnDragAction(
+				"on_drag_enter",
+				{ pDragEvent->GetX(), pDragEvent->GetY() },
+				pDragEvent->GetMask(),
+				dragParams
+			);
+
 			if (bRet)
 			{
 				lastDragParams_ = dragParams;
@@ -423,10 +431,13 @@ void js_panel_window::ExecuteEvent_JsTask(EventId id, Event_JsExecutor& task)
 		if (pJsContainer_)
 		{
 			auto dragParams = pDragEvent->GetDragParams();
-			const auto bRet = pJsContainer_->InvokeOnDragAction("on_drag_over",
-																 { pDragEvent->GetX(), pDragEvent->GetY() },
-																 pDragEvent->GetMask(),
-																 dragParams);
+			const auto bRet = pJsContainer_->InvokeOnDragAction(
+				"on_drag_over",
+				{ pDragEvent->GetX(), pDragEvent->GetY() },
+				pDragEvent->GetMask(),
+				dragParams
+			);
+
 			if (bRet)
 			{
 				lastDragParams_ = dragParams;
@@ -445,10 +456,13 @@ void js_panel_window::ExecuteEvent_JsTask(EventId id, Event_JsExecutor& task)
 		if (pJsContainer_)
 		{
 			auto dragParams = pDragEvent->GetDragParams();
-			const auto bRet = pJsContainer_->InvokeOnDragAction("on_drag_drop",
-																 { pDragEvent->GetX(), pDragEvent->GetY() },
-																 pDragEvent->GetMask(),
-																 dragParams);
+			const auto bRet = pJsContainer_->InvokeOnDragAction(
+				"on_drag_drop",
+				{ pDragEvent->GetX(), pDragEvent->GetY() },
+				pDragEvent->GetMask(),
+				dragParams
+			);
+
 			if (bRet)
 			{
 				smp::com::TrackDropTarget::ProcessDropEvent(pDragEvent->GetStoredData(), dragParams);
