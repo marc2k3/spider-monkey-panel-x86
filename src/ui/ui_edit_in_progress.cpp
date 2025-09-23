@@ -48,8 +48,7 @@ std::wstring GetExternalEditorParams(const std::wstring& editorBinName)
 	{
 		return L"-multiInst -notabbar -nosession -noPlugin";
 	}
-	else if (editorBinName == L"Code.exe"
-			  || editorBinName == L"subl.exe")
+	else if (editorBinName == L"Code.exe" || editorBinName == L"subl.exe")
 	{
 		return L"--new-window --wait";
 	}
@@ -136,10 +135,12 @@ LRESULT CEditInProgress::OnCloseCmd(WORD, WORD wID, HWND)
 		if (wID == IDCANCEL)
 		{
 			const auto errorMsg = (errorMessage_.empty() ? std::string{ "Unknown error caused by editor" } : errorMessage_);
-			popup_message_v3::get()->messageBox(*this,
-										 errorMsg.c_str(),
-										 "Editor error",
-										 MB_ICONWARNING | MB_SETFOREGROUND | MB_OK);
+			popup_message_v3::get()->messageBox(
+				*this,
+				errorMsg.c_str(),
+				"Editor error",
+				MB_ICONWARNING | MB_SETFOREGROUND | MB_OK
+			);
 		}
 
 		if (editorThread_.joinable())

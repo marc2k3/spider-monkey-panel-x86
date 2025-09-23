@@ -56,9 +56,7 @@ public:
 	void OnClose();
 	void OnCloseCmd(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 
-	void __stdcall OnBeforeNavigate2(IDispatch* pDisp, VARIANT* URL, VARIANT* Flags,
-									  VARIANT* TargetFrameName, VARIANT* PostData, VARIANT* Headers,
-									  VARIANT_BOOL* Cancel);
+	void __stdcall OnBeforeNavigate2(IDispatch* pDisp, VARIANT* URL, VARIANT* Flags, VARIANT* TargetFrameName, VARIANT* PostData, VARIANT* Headers, VARIANT_BOOL* Cancel);
 	void __stdcall OnTitleChange(BSTR title);
 	void __stdcall OnWindowClosing(VARIANT_BOOL bIsChildWindow, VARIANT_BOOL* Cancel);
 

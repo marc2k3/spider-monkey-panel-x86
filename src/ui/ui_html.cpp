@@ -170,9 +170,7 @@ void CDialogHtml::OnCloseCmd(WORD, WORD wID, HWND)
 	EndDialog(wID);
 }
 
-void CDialogHtml::OnBeforeNavigate2(IDispatch*, VARIANT* URL, VARIANT*,
-									 VARIANT*, VARIANT*, VARIANT*,
-									 VARIANT_BOOL* Cancel)
+void CDialogHtml::OnBeforeNavigate2(IDispatch*, VARIANT* URL, VARIANT*, VARIANT*, VARIANT*, VARIANT*, VARIANT_BOOL* Cancel)
 {
 	if (!Cancel || !URL)
 	{
@@ -186,8 +184,7 @@ void CDialogHtml::OnBeforeNavigate2(IDispatch*, VARIANT* URL, VARIANT*,
 		_bstr_t url_b(*URL);
 		for (const auto& urlPrefix: std::initializer_list<std::wstring>{ L"http://", L"https://" })
 		{
-			if (url_b.length() > urlPrefix.length()
-				 && !wmemcmp(url_b.GetBSTR(), urlPrefix.c_str(), urlPrefix.length()))
+			if (url_b.length() > urlPrefix.length() && !wmemcmp(url_b.GetBSTR(), urlPrefix.c_str(), urlPrefix.length()))
 			{
 				if (Cancel)
 				{
@@ -380,8 +377,7 @@ STDMETHODIMP CDialogHtml::TranslateAccelerator(LPMSG lpMsg, const GUID* pguidCmd
 	}
 
 	auto isSupportedHotKey = [](UINT wm, UINT vk) -> bool {
-		if (wm != WM_KEYDOWN && wm != WM_KEYUP
-			 && wm != WM_SYSKEYDOWN && wm != WM_SYSKEYUP)
+		if (wm != WM_KEYDOWN && wm != WM_KEYUP && wm != WM_SYSKEYDOWN && wm != WM_SYSKEYUP)
 		{
 			return false;
 		}
@@ -398,8 +394,7 @@ STDMETHODIMP CDialogHtml::TranslateAccelerator(LPMSG lpMsg, const GUID* pguidCmd
 			0x59, // Y
 			0x5A  // Z
 		};
-		return (isCtrlPressed && !isShiftPressed && !isAltPressed
-				 && std::cend(allowedCtrlKeys) != ranges::find(allowedCtrlKeys, vk));
+		return (isCtrlPressed && !isShiftPressed && !isAltPressed && std::cend(allowedCtrlKeys) != ranges::find(allowedCtrlKeys, vk));
 	};
 
 	if (isSupportedHotKey(lpMsg->message, lpMsg->wParam))
@@ -559,12 +554,9 @@ void CDialogHtml::SetOptions()
 
 void CDialogHtml::GetMsgProc(int, WPARAM, LPARAM lParam, HWND hParent, CDialogHtml* pParent)
 {
-	if (auto pMsg = reinterpret_cast<LPMSG>(lParam);
-		 pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
+	if (auto pMsg = reinterpret_cast<LPMSG>(lParam); pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
 	{ // Only react to keypress events
-		for (HWND tmpHwnd = pMsg->hwnd;
-			  tmpHwnd && (::GetWindowLong(tmpHwnd, GWL_STYLE) & WS_CHILD);
-			  tmpHwnd = ::GetParent(tmpHwnd))
+		for (HWND tmpHwnd = pMsg->hwnd; tmpHwnd && (::GetWindowLong(tmpHwnd, GWL_STYLE) & WS_CHILD); tmpHwnd = ::GetParent(tmpHwnd))
 		{
 			if (tmpHwnd == hParent)
 			{

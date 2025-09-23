@@ -107,14 +107,13 @@ public:
 
 	// CEditFindReplaceImplBase
 
-	TFindReplaceDlg* CreateFindReplaceDialog(BOOL bFindOnly,
-											  LPCTSTR lpszFindWhat,
-											  LPCTSTR lpszReplaceWith = nullptr,
-											  DWORD dwFlags = FR_DOWN,
-											  HWND hWndParent = nullptr)
+	TFindReplaceDlg* CreateFindReplaceDialog(
+		BOOL bFindOnly,
+		LPCTSTR lpszFindWhat,
+		LPCTSTR lpszReplaceWith = nullptr,
+		DWORD dwFlags = FR_DOWN,
+		HWND hWndParent = nullptr)
 	{
-		assert(sciEditor_.operator HWND() == hWndParent);
-
 		TFindReplaceDlg* findReplaceDialog = new TFindReplaceDlg(lastState_.useRegExp);
 		if (!findReplaceDialog)
 		{
@@ -352,10 +351,11 @@ private:
 		const int docLength = sciEditor_.GetLength();
 
 		sciEditor_.SetSearchFlags(lastState_.ToScintillaFlags());
-		int pos = FindInRange(direction == FindReplaceState::Direction::down
-								   ? Range{ selectionRange.second, docLength }
-								   : Range{ selectionRange.first, 0 },
-							   true);
+		int pos = FindInRange(
+			direction == FindReplaceState::Direction::down
+				? Range{ selectionRange.second, docLength }
+				: Range{ selectionRange.first, 0 }
+			, true);
 
 		if (lastState_.useWrapAround)
 		{
@@ -366,10 +366,11 @@ private:
 
 			if (pos == -1 && !hasWrappedAround_)
 			{ // start search on the whole document
-				pos = FindInRange(direction == FindReplaceState::Direction::down
-									   ? Range{ 0, docLength }
-									   : Range{ docLength, 0 },
-								   true);
+				pos = FindInRange(
+					direction == FindReplaceState::Direction::down
+						? Range{ 0, docLength }
+						: Range{ docLength, 0 }
+					, true);
 			}
 
 			if (pos == -1)
@@ -381,8 +382,7 @@ private:
 					MessageOnWrapAroundFinish();
 				}
 			}
-			else if (direction == FindReplaceState::Direction::down && pos >= findStartPosition_
-					  || (direction == FindReplaceState::Direction::up) && pos <= findStartPosition_)
+			else if (direction == FindReplaceState::Direction::down && pos >= findStartPosition_ || (direction == FindReplaceState::Direction::up) && pos <= findStartPosition_)
 			{
 				hasWrappedAround_ = false;
 				MessageOnWrapAroundFinish();
@@ -454,22 +454,24 @@ private:
 		lastSearchPosition_ = findStartPosition_;
 	}
 
-	void GenerateMessageBox(LPCTSTR lpszText,
-							 LPCTSTR lpszCaption = _T(""),
-							 UINT nType = MB_OK)
+	void GenerateMessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption = _T(""), UINT nType = MB_OK)
 	{
 		auto pFindReplaceDialog = static_cast<TFindReplaceDlg*>(BaseClass::m_pFindReplaceDialog);
 		if (pFindReplaceDialog)
 		{
-			pFindReplaceDialog->MessageBox(lpszText,
-											lpszCaption,
-											nType);
+			pFindReplaceDialog->MessageBox(
+				lpszText,
+				lpszCaption,
+				nType
+			);
 		}
 		else
 		{
-			static_cast<T*>(this)->MessageBox(lpszText,
-												 lpszCaption,
-												 nType);
+			static_cast<T*>(this)->MessageBox(
+				lpszText,
+				lpszCaption,
+				nType
+			);
 		}
 	}
 

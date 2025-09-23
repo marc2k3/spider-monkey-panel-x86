@@ -59,8 +59,7 @@ private:
 
 	struct KeyWordComparator
 	{
-		bool operator()(const std::string& a,
-						 const std::string& b) const;
+		bool operator()(const std::string& a, const std::string& b) const;
 	};
 
 	struct BracePosition

@@ -237,8 +237,8 @@ void CEditor::UpdateUiElements()
 bool CEditor::ProcessKey(uint32_t vk)
 {
 	const int modifiers = (IsKeyPressed(VK_SHIFT) ? SCMOD_SHIFT : 0)
-						  | (IsKeyPressed(VK_CONTROL) ? SCMOD_CTRL : 0)
-						  | (IsKeyPressed(VK_MENU) ? SCMOD_ALT : 0);
+		| (IsKeyPressed(VK_CONTROL) ? SCMOD_CTRL : 0)
+		| (IsKeyPressed(VK_MENU) ? SCMOD_ALT : 0);
 
 	// Hotkeys
 	if (modifiers == SCMOD_CTRL && vk == 'S')

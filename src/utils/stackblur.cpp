@@ -16,8 +16,6 @@ namespace
 constexpr uint32_t kColourCount = 4; // 0 - r, 1 - g, 2 - b, 3 - a
 using ColourArray = std::array<uint32_t, kColourCount>;
 
-// clang-format off
-// protect array value format style
 constexpr uint16_t stackblur_mul[255] =
 {
 	512,512,456,512,328,456,335,512,405,328,271,456,388,335,292,512,
@@ -57,16 +55,16 @@ constexpr uint8_t stackblur_shr[255] =
 	24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
 	24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24
 };
-// clang-format on
 
-void stackblur_by_segment(uint8_t* src,       ///< input image data
-						   uint32_t w,         ///< image width
-						   uint32_t h,         ///< image height
-						   uint32_t radius,    ///< blur intensity (should be in 2..254 range)
-						   bool isLineSegment, ///< false, means column segment
-						   uint32_t segmentStart,
-						   uint32_t segmentEnd,
-						   uint8_t* stack ///< stack buffer
+void stackblur_by_segment(
+	uint8_t* src,       ///< input image data
+	uint32_t w,         ///< image width
+	uint32_t h,         ///< image height
+	uint32_t radius,    ///< blur intensity (should be in 2..254 range)
+	bool isLineSegment, ///< false, means column segment
+	uint32_t segmentStart,
+	uint32_t segmentEnd,
+	uint8_t* stack ///< stack buffer
 )
 {
 	// if line segment: coord_1 = x; coord_2 = y;

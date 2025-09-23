@@ -52,13 +52,15 @@ CConfigTabPackage::CConfigTabPackage(CDialogConf& parent, config::ParsedPanelSet
 	, scriptDescription_(settings.scriptDescription)
 	, shouldGrabFocus_(settings.shouldGrabFocus)
 	, enableDragDrop_(settings.enableDragDrop)
-	, ddx_({ qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptName_, IDC_EDIT_PACKAGE_NAME),
-			  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptVersion_, IDC_EDIT_PACKAGE_VERSION),
-			  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptAuthor_, IDC_EDIT_PACKAGE_AUTHOR),
-			  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptDescription_, IDC_EDIT_PACKAGE_DESCRIPTION),
-			  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_CheckBox>(shouldGrabFocus_, IDC_CHECK_SHOULD_GRAB_FOCUS),
-			  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_CheckBox>(enableDragDrop_, IDC_CHECK_ENABLE_DRAG_N_DROP),
-			  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_ListBox>(focusedFileIdx_, IDC_LIST_PACKAGE_FILES) })
+	, ddx_({
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptName_, IDC_EDIT_PACKAGE_NAME),
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptVersion_, IDC_EDIT_PACKAGE_VERSION),
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptAuthor_, IDC_EDIT_PACKAGE_AUTHOR),
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptDescription_, IDC_EDIT_PACKAGE_DESCRIPTION),
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_CheckBox>(shouldGrabFocus_, IDC_CHECK_SHOULD_GRAB_FOCUS),
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_CheckBox>(enableDragDrop_, IDC_CHECK_ENABLE_DRAG_N_DROP),
+		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_ListBox>(focusedFileIdx_, IDC_LIST_PACKAGE_FILES)
+	})
 {
 	InitializeLocalData();
 }
@@ -93,8 +95,7 @@ void CConfigTabPackage::Revert()
 
 void CConfigTabPackage::Refresh()
 {
-	if (settings_.GetSourceType() == config::ScriptSourceType::Package
-		 && packagePath_ != config::GetPackagePath(settings_))
+	if (settings_.GetSourceType() == config::ScriptSourceType::Package && packagePath_ != config::GetPackagePath(settings_))
 	{
 		InitializeLocalData();
 	}
@@ -297,12 +298,15 @@ void CConfigTabPackage::OnOpenContainingFolder(UINT uNotifyCode, int nID, CWindo
 
 	try
 	{
-		const auto hInstance = ShellExecute(nullptr,
-											 L"explore",
-											 packagePath_.wstring().c_str(),
-											 (arg.empty() ? nullptr : arg.c_str()),
-											 nullptr,
-											 SW_SHOWNORMAL);
+		const auto hInstance = ShellExecute(
+			nullptr,
+			L"explore",
+			packagePath_.wstring().c_str(),
+			(arg.empty() ? nullptr : arg.c_str()),
+			nullptr,
+			SW_SHOWNORMAL
+		);
+
 		if ((int)hInstance < 32)
 		{ // As per WinAPI
 			qwr::error::CheckWin32((int)hInstance, "ShellExecute");
@@ -486,8 +490,7 @@ void CConfigTabPackage::InitializeFilesListBox()
 		}
 
 		files_ = config::GetPackageFiles(settings_);
-		if (const auto it = ranges::find(files_, focusedFile_);
-			 it == files_.cend())
+		if (const auto it = ranges::find(files_, focusedFile_); it == files_.cend())
 		{ // in case file was deleted
 			focusedFile_ = mainScriptPath_;
 		}
@@ -575,13 +578,13 @@ void CConfigTabPackage::AddFile(const std::filesystem::path& path)
 			{
 				const int iRet = popup_message_v3::get()->messageBox(
 					*this,
-					fmt::format("File already exists:\n"
-								 "{}\n\n"
-								 "Do you want to rewrite it?",
-								 newFile.u8string())
-						.c_str(),
+					fmt::format(
+						"File already exists:\n{}\n\nDo you want to rewrite it?",
+						newFile.u8string()
+					).c_str(),
 					"Adding file",
-					MB_YESNO | MB_ICONWARNING);
+					MB_YESNO | MB_ICONWARNING
+				);
 
 				if (IDYES != iRet)
 				{

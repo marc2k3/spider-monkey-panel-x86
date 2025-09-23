@@ -74,8 +74,7 @@ void CDialogGoto::OnFinalMessage(_In_ HWND /*hWnd*/)
 
 void CDialogGoto::GetMsgProc(int, WPARAM, LPARAM lParam, HWND hParent)
 {
-	if (auto pMsg = reinterpret_cast<LPMSG>(lParam);
-		 pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
+	if (auto pMsg = reinterpret_cast<LPMSG>(lParam); pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
 	{ // Only react to keypress events
 		HWND hWndFocus = ::GetFocus();
 		if (hWndFocus != nullptr && ((hParent == hWndFocus) || ::IsChild(hParent, hWndFocus)))

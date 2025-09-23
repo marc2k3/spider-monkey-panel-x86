@@ -48,34 +48,34 @@ struct StyleToPropname
 	const char* propname;
 };
 
-constexpr std::array<StyleToPropname, 16> js_style_table = {
-	{ // Default
-	  { STYLE_DEFAULT, "style.default" },
-	  // Line number
-	  { STYLE_LINENUMBER, "style.linenumber" },
-	  // Bracelight
-	  { STYLE_BRACELIGHT, "style.bracelight" },
-	  // Bracebad
-	  { STYLE_BRACEBAD, "style.bracebad" },
-	  // Comments
-	  { SCE_C_COMMENT, "style.comment" },
-	  { SCE_C_COMMENTLINE, "style.comment" },
-	  { SCE_C_COMMENTDOC, "style.comment" },
-	  { SCE_C_COMMENTLINEDOC, "style.comment" },
-	  { SCE_C_COMMENTDOCKEYWORD, "style.comment" },
-	  { SCE_C_COMMENTDOCKEYWORDERROR, "style.comment" },
-	  // Keywords
-	  { SCE_C_WORD, "style.keyword" },
-	  // Indentifier
-	  { SCE_C_IDENTIFIER, "style.indentifier" },
-	  // Numbers
-	  { SCE_C_NUMBER, "style.number" },
-	  // String/Chars
-	  { SCE_C_STRING, "style.string" },
-	  { SCE_C_CHARACTER, "style.string" },
-	  // Operators
-	  { SCE_C_OPERATOR, "style.operator" } }
-};
+constexpr std::array<StyleToPropname, 16> js_style_table = {{
+	// Default
+	{ STYLE_DEFAULT, "style.default" },
+	// Line number
+	{ STYLE_LINENUMBER, "style.linenumber" },
+	// Bracelight
+	{ STYLE_BRACELIGHT, "style.bracelight" },
+	// Bracebad
+	{ STYLE_BRACEBAD, "style.bracebad" },
+	// Comments
+	{ SCE_C_COMMENT, "style.comment" },
+	{ SCE_C_COMMENTLINE, "style.comment" },
+	{ SCE_C_COMMENTDOC, "style.comment" },
+	{ SCE_C_COMMENTLINEDOC, "style.comment" },
+	{ SCE_C_COMMENTDOCKEYWORD, "style.comment" },
+	{ SCE_C_COMMENTDOCKEYWORDERROR, "style.comment" },
+	// Keywords
+	{ SCE_C_WORD, "style.keyword" },
+	// Indentifier
+	{ SCE_C_IDENTIFIER, "style.indentifier" },
+	// Numbers
+	{ SCE_C_NUMBER, "style.number" },
+	// String/Chars
+	{ SCE_C_STRING, "style.string" },
+	{ SCE_C_CHARACTER, "style.string" },
+	// Operators
+	{ SCE_C_OPERATOR, "style.operator" }
+}};
 
 bool IsBraceChar(int ch)
 {
@@ -396,9 +396,10 @@ LRESULT CScriptEditorCtrl::OnChange(UINT, int, HWND)
 
 bool CScriptEditorCtrl::ProcessKey(uint32_t vk)
 {
-	const int modifiers = (IsKeyPressed(VK_SHIFT) ? SCMOD_SHIFT : 0)
-						  | (IsKeyPressed(VK_CONTROL) ? SCMOD_CTRL : 0)
-						  | (IsKeyPressed(VK_MENU) ? SCMOD_ALT : 0);
+	const int modifiers =
+		(IsKeyPressed(VK_SHIFT) ? SCMOD_SHIFT : 0)
+		| (IsKeyPressed(VK_CONTROL) ? SCMOD_CTRL : 0)
+		| (IsKeyPressed(VK_MENU) ? SCMOD_ALT : 0);
 
 	// Hotkeys
 	if (modifiers == SCMOD_CTRL)
@@ -521,9 +522,6 @@ void CScriptEditorCtrl::SetContent(const char* text, bool clear_undo_buffer)
 
 void CScriptEditorCtrl::SetJScript()
 {
-	// clang-format off
-	// protect array value format style
-
 	// source: https://www.w3schools.com/js/js_reserved.asp
 	constexpr std::array js_words{
 		"abstract", "arguments", "await", "boolean",
@@ -555,7 +553,6 @@ void CScriptEditorCtrl::SetJScript()
 	constexpr std::array smp_words{
 		"window", "fb", "gdi", "utils", "plman", "console"
 	};
-	// clang-format on
 
 	std::string keywords_str;
 	keywords_str.reserve((js_words.size() + js_builtins.size() + smp_words.size()) * 6);
@@ -685,13 +682,16 @@ CScriptEditorCtrl::IndentationStatus CScriptEditorCtrl::GetIndentState(int line)
 		}
 		else
 		{
-			constexpr const char* keywords[]{ "case",
-											  "default",
-											  "do",
-											  "else",
-											  "for",
-											  "if",
-											  "while" };
+			constexpr const char* keywords[]{
+				"case",
+				"default",
+				"do",
+				"else",
+				"for",
+				"if",
+				"while"
+			};
+
 			if (ranges::find(keywords, part) != ranges::cend(keywords))
 			{
 				return IndentationStatus::isKeyWordStart;

@@ -10,12 +10,12 @@ namespace smp::ui::sci
 bool FindReplaceState::operator!=(const FindReplaceState& other) const
 {
 	return (findText != other.findText
-			 || replaceText != other.replaceText
-			 || findDirection != other.findDirection
-			 || isCaseSensitive != other.isCaseSensitive
-			 || findWholeWord != other.findWholeWord
-			 || useWrapAround != other.useWrapAround
-			 || useRegExp != other.useRegExp);
+			|| replaceText != other.replaceText
+			|| findDirection != other.findDirection
+			|| isCaseSensitive != other.isCaseSensitive
+			|| findWholeWord != other.findWholeWord
+			|| useWrapAround != other.useWrapAround
+			|| useRegExp != other.useRegExp);
 }
 
 bool FindReplaceState::operator==(const FindReplaceState& other) const
@@ -127,8 +127,7 @@ LRESULT CCustomFindReplaceDlg::OnUseRegExpClick(WORD, WORD wID, HWND, BOOL)
 
 void CCustomFindReplaceDlg::GetMsgProc(int, WPARAM, LPARAM lParam, HWND hParent)
 {
-	if (auto pMsg = reinterpret_cast<LPMSG>(lParam);
-		 pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
+	if (auto pMsg = reinterpret_cast<LPMSG>(lParam); pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
 	{ // Only react to keypress events
 		HWND hWndFocus = ::GetFocus();
 		if (hWndFocus != nullptr && ((hParent == hWndFocus) || ::IsChild(hParent, hWndFocus)))

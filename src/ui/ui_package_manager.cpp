@@ -17,9 +17,7 @@ namespace smp::ui
 
 CDialogPackageManager::CDialogPackageManager(const std::string& currentPackageId)
 	: focusedPackageId_(currentPackageId)
-	, ddx_({
-		  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_ListBox>(focusedPackageIdx_, IDC_LIST_PACKAGES),
-	  })
+	, ddx_({ qwr::ui::CreateUiDdx<qwr::ui::UiDdx_ListBox>(focusedPackageIdx_, IDC_LIST_PACKAGES) })
 {
 }
 
@@ -168,11 +166,11 @@ void CDialogPackageManager::OnDeletePackage(UINT /*uNotifyCode*/, int /*nID*/, C
 			{
 				config::MarkPackageAsToBeRemoved(packageId);
 
-				auto it =
-					ranges::find_if(packages_,
-									 [&](const auto& elem) {
-										 return (packageId == elem.id);
-									 });
+				auto it = ranges::find_if(packages_, [&](const auto& elem)
+					{
+						return (packageId == elem.id);
+					});
+
 				if (it != packages_.cend())
 				{
 					focusedPackageId_ = packageId;
@@ -263,12 +261,15 @@ void CDialogPackageManager::OnOpenFolder(UINT /*uNotifyCode*/, int /*nID*/, CWin
 
 	try
 	{
-		const auto hInstance = ShellExecute(nullptr,
-											 L"explore",
-											 config::GetPackagePath(*packages_[focusedPackageIdx_].parsedSettings).c_str(),
-											 nullptr,
-											 nullptr,
-											 SW_SHOWNORMAL);
+		const auto hInstance = ShellExecute(
+			nullptr,
+			L"explore",
+			config::GetPackagePath(*packages_[focusedPackageIdx_].parsedSettings).c_str(),
+			nullptr,
+			nullptr,
+			SW_SHOWNORMAL
+		);
+
 		if ((int)hInstance < 32)
 		{ // As per WinAPI
 			qwr::error::CheckWin32((int)hInstance, "ShellExecute");
@@ -408,10 +409,13 @@ void CDialogPackageManager::LoadPackages()
 			}
 			catch (const qwr::QwrException& e)
 			{
-				PackageData packageData{ qwr::ToWide(fmt::format("{} (ERROR)", packageId)),
-										 packageId,
-										 std::nullopt,
-										 qwr::ToWide(fmt::format("Package parsing failed:\r\n{}", e.what())) };
+				PackageData packageData{
+					qwr::ToWide(fmt::format("{} (ERROR)", packageId)),
+					packageId,
+					std::nullopt,
+					qwr::ToWide(fmt::format("Package parsing failed:\r\n{}", e.what()))
+				};
+
 				parsedPackages.emplace_back(packageData);
 			}
 
@@ -428,10 +432,10 @@ void CDialogPackageManager::LoadPackages()
 
 void CDialogPackageManager::SortPackages()
 {
-	ranges::sort(packages_,
-				  [](const auto& a, const auto& b) {
-					  return (StrCmpLogicalW(a.displayedName.c_str(), b.displayedName.c_str()) < 0);
-				  });
+	ranges::sort(packages_, [](const auto& a, const auto& b)
+		{
+			return (StrCmpLogicalW(a.displayedName.c_str(), b.displayedName.c_str()) < 0);
+		});
 }
 
 void CDialogPackageManager::UpdateListBoxFromData()
@@ -545,26 +549,28 @@ CDialogPackageManager::PackageData CDialogPackageManager::GeneratePackageData(co
 {
 	const auto displayedName = [&parsedSettings] {
 		return (parsedSettings.scriptAuthor.empty()
-					 ? parsedSettings.scriptName
-					 : fmt::format("{} (by {})", parsedSettings.scriptName, parsedSettings.scriptAuthor));
+			? parsedSettings.scriptName
+			: fmt::format("{} (by {})", parsedSettings.scriptName, parsedSettings.scriptAuthor));
 	}();
+
 	const auto valueOrEmpty = [](const std::string& str) -> std::string {
 		return (str.empty() ? "<empty>" : str);
 	};
-	const auto displayedDescription = fmt::format("Name: {}\r\n"
-												   "Version: {}\r\n"
-												   "Author: {}\r\n"
-												   "Description:\r\n{}",
-												   valueOrEmpty(parsedSettings.scriptName),
-												   valueOrEmpty(parsedSettings.scriptVersion),
-												   valueOrEmpty(parsedSettings.scriptAuthor),
-												   valueOrEmpty(parsedSettings.scriptDescription));
 
-	return PackageData{ qwr::ToWide(displayedName),
-						*parsedSettings.packageId,
-						parsedSettings,
-						L"",
-						config::PackageDelayStatus::NotDelayed };
+	const auto displayedDescription = fmt::format("Name: {}\r\nVersion: {}\r\nAuthor: {}\r\nDescription:\r\n{}",
+		valueOrEmpty(parsedSettings.scriptName),
+		valueOrEmpty(parsedSettings.scriptVersion),
+		valueOrEmpty(parsedSettings.scriptAuthor),
+		valueOrEmpty(parsedSettings.scriptDescription)
+	);
+
+	return PackageData{
+		qwr::ToWide(displayedName),
+		*parsedSettings.packageId,
+		parsedSettings,
+		L"",
+		config::PackageDelayStatus::NotDelayed
+	};
 }
 
 bool CDialogPackageManager::ImportPackage(const std::filesystem::path& path)
@@ -591,8 +597,7 @@ bool CDialogPackageManager::ImportPackage(const std::filesystem::path& path)
 		auto newSettings = config::GetPackageSettingsFromPath(tmpPath);
 		const auto& packageId = *newSettings.packageId;
 
-		if (const auto oldPackagePathOpt = config::FindPackage(packageId);
-			 oldPackagePathOpt)
+		if (const auto oldPackagePathOpt = config::FindPackage(packageId); oldPackagePathOpt)
 		{
 			if (!ConfirmPackageOverwrite(*oldPackagePathOpt, newSettings))
 			{
@@ -603,11 +608,11 @@ bool CDialogPackageManager::ImportPackage(const std::filesystem::path& path)
 			{
 				config::MarkPackageAsToBeInstalled(packageId, tmpPath);
 
-				auto it =
-					ranges::find_if(packages_,
-									 [&](const auto& elem) {
-										 return (packageId == elem.id);
-									 });
+				auto it = ranges::find_if(packages_, [&](const auto& elem)
+					{
+						return (packageId == elem.id);
+					});
+
 				if (it != packages_.cend())
 				{
 					focusedPackageId_ = packageId;
@@ -628,11 +633,11 @@ bool CDialogPackageManager::ImportPackage(const std::filesystem::path& path)
 
 		newSettings.scriptPath = newPackagePath / config::GetRelativePathToMainFile();
 
-		auto it =
-			ranges::find_if(packages_,
-							 [&](const auto& elem) {
-								 return (packageId == elem.id);
-							 });
+		auto it = ranges::find_if(packages_, [&](const auto& elem)
+			{
+				return (packageId == elem.id);
+			});
+
 		if (it != packages_.cend())
 		{
 			*it = GeneratePackageData(newSettings);
@@ -641,8 +646,8 @@ bool CDialogPackageManager::ImportPackage(const std::filesystem::path& path)
 		{
 			packages_.emplace_back(GeneratePackageData(newSettings));
 		}
-		focusedPackageId_ = packageId;
 
+		focusedPackageId_ = packageId;
 		UpdateListBoxFromData();
 		DoFullDdxToUi();
 	}
@@ -666,13 +671,14 @@ bool CDialogPackageManager::ConfirmPackageOverwrite(const std::filesystem::path&
 
 		const int iRet = popup_message_v3::get()->messageBox(
 			*this,
-			fmt::format("Another version of this package is present:\n"
-							 "old: '{}' vs new: '{}'\n\n"
-							 "Do you want to update?",
-							 oldSettings.scriptVersion.empty() ? "<none>" : oldSettings.scriptVersion,
-							 newSettings.scriptVersion.empty() ? "<none>" : newSettings.scriptVersion).c_str(),
+			fmt::format("Another version of this package is present:\nold: '{}' vs new: '{}'\n\nDo you want to update?",
+				oldSettings.scriptVersion.empty() ? "<none>" : oldSettings.scriptVersion,
+				newSettings.scriptVersion.empty() ? "<none>" : newSettings.scriptVersion
+			).c_str(),
 			"Importing package",
-			MB_YESNO);
+			MB_YESNO
+		);
+
 		if (iRet != IDYES)
 		{
 			return false;
@@ -682,13 +688,14 @@ bool CDialogPackageManager::ConfirmPackageOverwrite(const std::filesystem::path&
 		{
 			const int iRet = popup_message_v3::get()->messageBox(
 				*this,
-				fmt::format("Currently installed package has a different name from the new one:\n"
-								 "old: '{}' vs new: '{}'\n\n"
-								 "Do you want to continue?",
-								 oldSettings.scriptName.empty() ? "<none>" : oldSettings.scriptName,
-								 newSettings.scriptName.empty() ? "<none>" : newSettings.scriptName).c_str(),
+				fmt::format("Currently installed package has a different name from the new one:\nold: '{}' vs new: '{}'\n\nDo you want to continue?",
+					oldSettings.scriptName.empty() ? "<none>" : oldSettings.scriptName,
+					newSettings.scriptName.empty() ? "<none>" : newSettings.scriptName
+				).c_str(),
 				"Importing package",
-				MB_YESNO | MB_ICONWARNING);
+				MB_YESNO | MB_ICONWARNING
+			);
+
 			if (iRet != IDYES)
 			{
 				return false;
@@ -704,7 +711,9 @@ bool CDialogPackageManager::ConfirmPackageOverwrite(const std::filesystem::path&
 			"Another version of this package is present.\n"
 			"Do you want to update?",
 			"Importing package",
-			MB_YESNO);
+			MB_YESNO
+		);
+
 		if (iRet != IDYES)
 		{
 			return false;

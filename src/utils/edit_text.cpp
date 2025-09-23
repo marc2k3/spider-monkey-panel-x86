@@ -104,10 +104,14 @@ void EditTextExternal(HWND hParent, std::string& text, const std::filesystem::pa
 
 		std::wstring filename;
 		filename.resize(MAX_PATH);
-		UINT uRet = GetTempFileName(tmpFilePath.c_str(),
-									 L"smp",
-									 0,
-									 filename.data()); // buffer for name
+
+		UINT uRet = GetTempFileName(
+			tmpFilePath.c_str(),
+			L"smp",
+			0,
+			filename.data()
+		);
+
 		qwr::error::CheckWinApi(uRet, "GetTempFileName");
 
 		filename.resize(wcslen(filename.c_str()));

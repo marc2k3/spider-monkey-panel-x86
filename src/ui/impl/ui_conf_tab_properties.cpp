@@ -129,8 +129,7 @@ LRESULT CConfigTabProperties::OnPinItemChanged(LPNMHDR pnmh)
 			}
 
 			return (prevArgValue != arg);
-		},
-						   val);
+		}, val);
 	}();
 
 	if (hasChanged)
@@ -160,8 +159,7 @@ LRESULT CConfigTabProperties::OnClearAllBnClicked(WORD, WORD, HWND)
 
 LRESULT CConfigTabProperties::OnDelBnClicked(WORD, WORD, HWND)
 {
-	if (int idx = propertyListCtrl_.GetCurSel();
-		 idx >= 0)
+	if (int idx = propertyListCtrl_.GetCurSel(); idx >= 0)
 	{
 		HPROPERTY hproperty = propertyListCtrl_.GetProperty(idx);
 		std::wstring name = hproperty->GetName();
@@ -260,8 +258,7 @@ void CConfigTabProperties::UpdateUiFromData()
 			{
 				static_assert(qwr::always_false_v<T>, "non-exhaustive visitor!");
 			}
-		},
-									  *pSerializedValue);
+		}, *pSerializedValue);
 
 		propMap.emplace(name, hProp);
 	}

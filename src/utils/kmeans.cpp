@@ -161,16 +161,11 @@ std::vector<ClusterData> run(const std::vector<PointData>& pointsData, uint32_t 
 	}
 
 	return ranges::views::transform(clusters, [](const auto& cluster) {
-			   ClusterData clusterData;
-			   clusterData.central_values =
-				   ranges::views::transform(cluster.central_values, [](const auto& value) { return static_cast<uint8_t>(value); })
-				   | ranges::to_vector;
-			   clusterData.points =
-				   ranges::views::transform(cluster.points, [](const auto& point) { return point->pData; })
-				   | ranges::to_vector;
-			   return clusterData;
-		   })
-		   | ranges::to_vector;
+			ClusterData clusterData;
+			clusterData.central_values = ranges::views::transform(cluster.central_values, [](const auto& value) { return static_cast<uint8_t>(value); }) | ranges::to_vector;
+			clusterData.points = ranges::views::transform(cluster.points, [](const auto& point) { return point->pData; }) | ranges::to_vector;
+			return clusterData;
+		}) | ranges::to_vector;
 }
 
 } // namespace smp::utils::kmeans

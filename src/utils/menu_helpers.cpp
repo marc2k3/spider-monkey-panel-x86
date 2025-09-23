@@ -48,8 +48,7 @@ contextmenu_node* FindContextCommandRecur(const std::string& p_command, std::str
 		{
 			curPath += '/';
 
-			if (auto retVal = FindContextCommandRecur(p_command, curPath, pChild);
-				 retVal)
+			if (auto retVal = FindContextCommandRecur(p_command, curPath, pChild); retVal)
 			{
 				return retVal;
 			}
@@ -96,8 +95,7 @@ bool ExecuteContextCommandByNameUnsafe(const std::string& name, const metadb_han
 	}
 
 	std::string emptyPath;
-	if (auto retVal = FindContextCommandRecur(name, emptyPath, pRoot);
-		 retVal)
+	if (auto retVal = FindContextCommandRecur(name, emptyPath, pRoot); retVal)
 	{
 		retVal->execute();
 		return true;
@@ -127,8 +125,7 @@ std::string GenerateMainmenuCommandPath(const GuidMenuMap& group_guid_map, const
 	{
 		const auto& pGroup = group_guid_map.at(groupGuid);
 
-		if (mainmenu_group_popup::ptr pGroupPopup;
-			 pGroup->service_query_t(pGroupPopup))
+		if (mainmenu_group_popup::ptr pGroupPopup; pGroup->service_query_t(pGroupPopup))
 		{
 			pfc::string8 displayName;
 			pGroupPopup->get_display_string(displayName);
@@ -184,8 +181,7 @@ mainmenu_node::ptr FindMainmenuCommandV2NodeRecur(mainmenu_node::ptr node, const
 		for (auto i: ranges::views::indices(node->get_children_count()))
 		{
 			auto pChild = node->get_child(i);
-			if (auto retVal = FindMainmenuCommandV2NodeRecur(pChild, curPath, name);
-				 retVal.is_valid())
+			if (auto retVal = FindMainmenuCommandV2NodeRecur(pChild, curPath, name); retVal.is_valid())
 			{
 				return retVal;
 			}
@@ -215,13 +211,11 @@ bool ApplyFnOnMainmenuNode(const std::string& name, F_New fnNew, F_Old fnOld)
 		{
 			auto path = GenerateMainmenuCommandPath(group_guid_text_map, mmc);
 
-			if (mainmenu_commands_v2::ptr mmc_v2;
-				 mmc->service_query_t(mmc_v2) && mmc_v2->is_command_dynamic(idx))
+			if (mainmenu_commands_v2::ptr mmc_v2; mmc->service_query_t(mmc_v2) && mmc_v2->is_command_dynamic(idx))
 			{ // new fb2k v1.0 commands
 				auto node = mmc_v2->dynamic_instantiate(idx);
 
-				if (auto retVal = FindMainmenuCommandV2NodeRecur(node, path, name);
-					 retVal.is_valid())
+				if (auto retVal = FindMainmenuCommandV2NodeRecur(node, path, name); retVal.is_valid())
 				{
 					fnNew(retVal);
 					return true;

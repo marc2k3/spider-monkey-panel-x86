@@ -36,8 +36,7 @@ namespace smp::ui
 CDialogConf::CDialogConf(smp::panel::js_panel_window* pParent, Tab tabId)
 	: pParent_(pParent)
 	, isCleanSlate_(::IsCleanSlate(pParent->GetSettings()))
-	, panelNameDdx_(
-		  qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(localSettings_.panelId, IDC_EDIT_PANEL_NAME))
+	, panelNameDdx_(qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(localSettings_.panelId, IDC_EDIT_PANEL_NAME))
 	, startingTabId_(tabId)
 {
 	InitializeLocalData();
@@ -55,9 +54,9 @@ void CDialogConf::OnDataChanged()
 
 void CDialogConf::OnWholeScriptChange()
 {
-	const auto tabLayoutChanged = (oldSettings_.GetSourceType() != localSettings_.GetSourceType()
-									&& (oldSettings_.GetSourceType() == config::ScriptSourceType::Package
-										 || localSettings_.GetSourceType() == config::ScriptSourceType::Package));
+	const auto tabLayoutChanged =
+	(oldSettings_.GetSourceType() != localSettings_.GetSourceType() &&
+	(oldSettings_.GetSourceType() == config::ScriptSourceType::Package || localSettings_.GetSourceType() == config::ScriptSourceType::Package));
 
 	OnDataChangedImpl(true);
 
@@ -76,8 +75,7 @@ void CDialogConf::OnWholeScriptChange()
 
 bool CDialogConf::HasChanged()
 {
-	return (hasChanged_
-			 || ranges::any_of(tabs_, [](const auto& pTab) { return pTab->HasChanged(); }));
+	return (hasChanged_ || ranges::any_of(tabs_, [](const auto& pTab) { return pTab->HasChanged(); }));
 }
 
 void CDialogConf::Apply(bool savePackageData)
@@ -408,8 +406,7 @@ void CDialogConf::ReinitializeTabData()
 {
 	if (localSettings_.GetSourceType() == config::ScriptSourceType::Package)
 	{
-		tabs_.insert(tabs_.cbegin() + GetTabIdx(Tab::package),
-					  std::make_unique<CConfigTabPackage>(*this, localSettings_));
+		tabs_.insert(tabs_.cbegin() + GetTabIdx(Tab::package), std::make_unique<CConfigTabPackage>(*this, localSettings_));
 	}
 	else
 	{

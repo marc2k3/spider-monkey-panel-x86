@@ -168,9 +168,9 @@ void CConfigTabScriptSource::OnScriptSrcChange(UINT /*uNotifyCode*/, int nID, CW
 		{
 		case IDC_RADIO_SRC_SAMPLE:
 		{
-			return (sampleData_.empty()
-						 ? config::PanelSettings_Sample{}
-						 : config::PanelSettings_Sample{ qwr::ToU8(sampleData_[sampleIdx_].displayedName) });
+			return sampleData_.empty()
+				? config::PanelSettings_Sample{}
+				: config::PanelSettings_Sample{ qwr::ToU8(sampleData_[sampleIdx_].displayedName) };
 		}
 		case IDC_RADIO_SRC_MEMORY:
 		{
@@ -305,9 +305,7 @@ void CConfigTabScriptSource::OnOpenPackageManager(UINT /*uNotifyCode*/, int /*nI
 
 	const auto isDifferentPackage = (parsedSettingsOpt->packageId != settings_.packageId);
 
-	if (!parent_.IsCleanSlate()
-		 && isDifferentPackage
-		 && !RequestConfirmationOnPackageChange())
+	if (!parent_.IsCleanSlate() && isDifferentPackage && !RequestConfirmationOnPackageChange())
 	{
 		return;
 	}
@@ -420,13 +418,13 @@ void CConfigTabScriptSource::InitializeLocalOptions()
 {
 	namespace fs = std::filesystem;
 
-	path_ = (settings_.scriptPath && settings_.GetSourceType() == config::ScriptSourceType::File
-				  ? settings_.scriptPath->u8string()
-				  : std::string{});
+	path_ = settings_.scriptPath && settings_.GetSourceType() == config::ScriptSourceType::File
+		? settings_.scriptPath->u8string()
+		: std::string{};
 
-	packageName_ = (settings_.GetSourceType() == config::ScriptSourceType::Package
-						 ? settings_.scriptName
-						 : std::string{});
+	packageName_ = settings_.GetSourceType() == config::ScriptSourceType::Package
+		? settings_.scriptName
+		: std::string{};
 
 	sampleIdx_ = [&] {
 		if (settings_.GetSourceType() != config::ScriptSourceType::Sample)
