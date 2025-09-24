@@ -31,8 +31,7 @@ enum class MiscMessage : UINT
 template <typename T>
 bool IsInEnumRange(UINT value)
 {
-	return (value >= static_cast<UINT>(T::first_message)
-			 && value <= static_cast<UINT>(T::last_message));
+	return (value >= static_cast<UINT>(T::first_message) && value <= static_cast<UINT>(T::last_message));
 }
 
 } // namespace smp

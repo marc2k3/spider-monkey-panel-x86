@@ -36,8 +36,7 @@ public:
 					JS::HandleValue jsPromise);
 	~JsAlbumArtTask() override = default;
 
-	void SetData(std::unique_ptr<Gdiplus::Bitmap> image,
-				  const std::string& path);
+	void SetData(std::unique_ptr<Gdiplus::Bitmap> image, const std::string& path);
 
 private:
 	bool InvokeJsImpl(JSContext* cx, JS::HandleObject jsGlobal, JS::HandleValue jsPromiseValue) override;

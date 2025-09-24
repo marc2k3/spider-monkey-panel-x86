@@ -82,8 +82,7 @@ protected:
 	}
 
 	/// @details Executed on the main thread
-	STDMETHODIMP ExecuteValue(VARIANT arg1, VARIANT arg2, VARIANT arg3, VARIANT arg4, VARIANT arg5, VARIANT arg6, VARIANT arg7,
-							   VARIANT* pResult) override
+	STDMETHODIMP ExecuteValue(VARIANT arg1, VARIANT arg2, VARIANT arg3, VARIANT arg4, VARIANT arg5, VARIANT arg6, VARIANT arg7, VARIANT* pResult) override
 	{
 		if (!pResult)
 		{

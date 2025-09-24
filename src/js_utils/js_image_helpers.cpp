@@ -97,11 +97,7 @@ void ImageFetchTask::operator()()
 	);
 }
 
-JsImageTask::JsImageTask(JSContext* cx,
-						  JS::HandleValue jsPromise)
-	: JsAsyncTaskImpl(cx, jsPromise)
-{
-}
+JsImageTask::JsImageTask(JSContext* cx, JS::HandleValue jsPromise) : JsAsyncTaskImpl(cx, jsPromise) {}
 
 void JsImageTask::SetData(std::unique_ptr<Gdiplus::Bitmap> image)
 {

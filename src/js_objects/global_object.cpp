@@ -108,18 +108,14 @@ auto FindSuitableFileForInclude(const fs::path& path, const std::span<const fs::
 					"`include()` failed:\n"
 					"  file `{}` coud not be found using the following search paths:\n"
 					"    {}\n"),
-					fmt::join(searchPaths | ranges::views::transform([](const auto& path) { return fmt::format("    `{}`", path.u8string()); }),
-							   "\n  ")));
+					fmt::join(searchPaths | ranges::views::transform([](const auto& path) { return fmt::format("    `{}`", path.u8string()); }), "\n  ")));
 			}
 			::ThrowInvalidPathError(path);
 		}
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		throw qwr::QwrException("Failed to open file `{}`:\n"
-								 "  {}",
-								 path.u8string(),
-								 qwr::ToU8_FromAcpToWide(e.what()));
+		throw qwr::QwrException("Failed to open file `{}`:\n  {}", path.u8string(), qwr::ToU8_FromAcpToWide(e.what()));
 	}
 }
 
@@ -317,13 +313,11 @@ void JsGlobalObject::IncludeScript(const std::wstring& path, JS::HandleValue opt
 {
 	const auto allSearchPaths = [&] {
 		std::vector<fs::path> paths;
-		if (const auto currentPathOpt = hack::GetCurrentScriptPath(pJsCtx_);
-			 currentPathOpt)
+		if (const auto currentPathOpt = hack::GetCurrentScriptPath(pJsCtx_); currentPathOpt)
 		{
 			paths.emplace_back(currentPathOpt->parent_path());
 		}
-		if (const auto& setting = parentContainer_.GetParentPanel().GetSettings();
-			 setting.packageId)
+		if (const auto& setting = parentContainer_.GetParentPanel().GetSettings(); setting.packageId)
 		{
 			paths.emplace_back(config::GetPackageScriptsDir(setting));
 		}

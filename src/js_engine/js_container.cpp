@@ -294,11 +294,13 @@ void JsContainer::InvokeOnNotify(const std::wstring& name, JS::HandleValue info)
 							static_cast<JS::HandleValue>(jsValue));
 	if (jsValue.isObject())
 	{ // this will remove all wrappers (e.g. during callback re-entrancy)
-		js::NukeCrossCompartmentWrappers(pJsCtx_,
-										  js::SingleCompartment{ js::GetContextCompartment(pJsCtx_) },
-										  js::GetNonCCWObjectRealm(js::UncheckedUnwrap(&jsValue.toObject())),
-										  js::NukeReferencesToWindow::DontNukeWindowReferences, ///< browser specific flag, irrelevant to us
-										  js::NukeReferencesFromTarget::NukeIncomingReferences);
+		js::NukeCrossCompartmentWrappers(
+			pJsCtx_,
+			js::SingleCompartment{ js::GetContextCompartment(pJsCtx_) },
+			js::GetNonCCWObjectRealm(js::UncheckedUnwrap(&jsValue.toObject())),
+			js::NukeReferencesToWindow::DontNukeWindowReferences, ///< browser specific flag, irrelevant to us
+			js::NukeReferencesFromTarget::NukeIncomingReferences
+		);
 	}
 }
 

@@ -106,8 +106,8 @@ void JsMainMenuManager::Init(const std::string& root_name)
 	const auto preparedRootName = [&root_name]() {
 		// Don't care about UTF8 here: we need exact match
 		return std::string_view{ root_name }
-			   | ranges::views::transform([](auto i) { return static_cast<char>(::tolower(i)); })
-			   | ranges::to<std::string>;
+			| ranges::views::transform([](auto i) { return static_cast<char>(::tolower(i)); })
+			| ranges::to<std::string>;
 	}();
 
 	struct RootElement

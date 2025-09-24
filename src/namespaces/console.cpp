@@ -241,8 +241,8 @@ void DefineConsole(JSContext* cx, JS::HandleObject global)
 {
 	JS::RootedObject consoleObj(cx, JS_NewPlainObject(cx));
 	if (!consoleObj
-		 || !JS_DefineFunctions(cx, consoleObj, console_functions.data())
-		 || !JS_DefineProperty(cx, global, "console", consoleObj, kDefaultPropsFlags))
+		|| !JS_DefineFunctions(cx, consoleObj, console_functions.data())
+		|| !JS_DefineProperty(cx, global, "console", consoleObj, kDefaultPropsFlags))
 	{
 		throw JsException();
 	}

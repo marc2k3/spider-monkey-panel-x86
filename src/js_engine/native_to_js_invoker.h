@@ -9,16 +9,19 @@ namespace mozjs::internal
 {
 
 template <size_t ArgArraySize>
-void NativeToJsArguments([[maybe_unused]] JSContext* cx,
-						  [[maybe_unused]] JS::RootedValueArray<ArgArraySize>& wrappedArgs,
-						  [[maybe_unused]] uint8_t argIndex)
+void NativeToJsArguments(
+	[[maybe_unused]] JSContext* cx,
+	[[maybe_unused]] JS::RootedValueArray<ArgArraySize>& wrappedArgs,
+	[[maybe_unused]] uint8_t argIndex)
 {
 }
 
 template <size_t ArgArraySize, typename ArgType, typename... ArgTypes>
-void NativeToJsArguments(JSContext* cx,
-						  JS::RootedValueArray<ArgArraySize>& wrappedArgs,
-						  uint8_t argIndex, ArgType&& arg, ArgTypes&&... args)
+void NativeToJsArguments(
+	JSContext* cx,
+	JS::RootedValueArray<ArgArraySize>& wrappedArgs,
+	uint8_t argIndex, ArgType&& arg,
+	ArgTypes&&... args)
 {
 	convert::to_js::ToValue(cx, std::forward<ArgType>(arg), wrappedArgs[argIndex]);
 	NativeToJsArguments(cx, wrappedArgs, argIndex + 1, std::forward<ArgTypes>(args)...);

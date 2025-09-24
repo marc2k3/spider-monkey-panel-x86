@@ -85,9 +85,11 @@ void JsGc::Initialize(JSContext* pJsCtx)
 #ifdef DEBUG
 	if (smp_advconf::zeal.GetValue())
 	{
-		JS_SetGCZeal(pJsCtx_,
-					  smp_advconf::zeal_level.GetValue(),
-					  smp_advconf::zeal_freq.GetValue());
+		JS_SetGCZeal(
+			pJsCtx_,
+			smp_advconf::zeal_level.GetValue(),
+			smp_advconf::zeal_freq.GetValue()
+		);
 	}
 #endif
 }
@@ -176,14 +178,11 @@ bool JsGc::IsTimeToGc()
 
 JsGc::GcLevel JsGc::GetRequiredGcLevel()
 {
-	if (GcLevel gcLevel = GetGcLevelFromHeapSize();
-		 gcLevel > GcLevel::None)
+	if (GcLevel gcLevel = GetGcLevelFromHeapSize(); gcLevel > GcLevel::None)
 	{ // heap trigger always has the highest priority
 		return gcLevel;
 	}
-	else if (JS::IsIncrementalGCInProgress(pJsCtx_)
-			  || isManuallyTriggered_
-			  || GetGcLevelFromAllocCount() > GcLevel::None)
+	else if (JS::IsIncrementalGCInProgress(pJsCtx_) || isManuallyTriggered_ || GetGcLevelFromAllocCount() > GcLevel::None)
 	{                                 // currently alloc trigger can be at most `GcLevel::Incremental`
 		isManuallyTriggered_ = false; // reset trigger
 		return GcLevel::Incremental;
@@ -197,8 +196,7 @@ JsGc::GcLevel JsGc::GetRequiredGcLevel()
 JsGc::GcLevel JsGc::GetGcLevelFromHeapSize()
 {
 	uint64_t curTotalHeapSize = GetCurrentTotalHeapSize();
-	if (!lastTotalHeapSize_
-		 || lastTotalHeapSize_ > curTotalHeapSize)
+	if (!lastTotalHeapSize_ || lastTotalHeapSize_ > curTotalHeapSize)
 	{
 		lastTotalHeapSize_ = curTotalHeapSize;
 	}
@@ -225,8 +223,7 @@ JsGc::GcLevel JsGc::GetGcLevelFromHeapSize()
 JsGc::GcLevel JsGc::GetGcLevelFromAllocCount()
 {
 	uint64_t curTotalAllocCount = GetCurrentTotalAllocCount();
-	if (!lastTotalAllocCount_
-		 || lastTotalAllocCount_ > curTotalAllocCount)
+	if (!lastTotalAllocCount_ || lastTotalAllocCount_ > curTotalAllocCount)
 	{
 		lastTotalAllocCount_ = curTotalAllocCount;
 	}
@@ -256,8 +253,10 @@ void JsGc::UpdateGcStats()
 
 	const auto curTime = timeGetTime();
 	isHighFrequency_ = (lastGcTime_
-							 ? curTime < (lastGcTime_ + kHighFreqTimeLimitMs)
-							 : false);
+		? curTime < (lastGcTime_ + kHighFreqTimeLimitMs)
+		: false
+	);
+
 	lastGcTime_ = curTime;
 }
 
@@ -351,8 +350,7 @@ void JsGc::PrepareRealmsForGc(GcLevel gcLevel)
 			allocCountTrigger_ / 2
 		};
 
-		if (uint64_t curGlobalHeapSize = JS_GetGCParameter(pJsCtx_, JSGC_BYTES);
-			 curGlobalHeapSize > (lastGlobalHeapSize_ + triggers.heapGrowthRateTrigger))
+		if (uint64_t curGlobalHeapSize = JS_GetGCParameter(pJsCtx_, JSGC_BYTES); curGlobalHeapSize > (lastGlobalHeapSize_ + triggers.heapGrowthRateTrigger))
 		{ // mark all, since we don't have any per-realm information about allocated native JS objects
 			markAllRealms();
 		}

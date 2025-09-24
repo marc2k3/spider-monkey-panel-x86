@@ -88,8 +88,7 @@ void ThreadPool::ThreadProc() noexcept
 		}
 		catch (const std::exception& e)
 		{
-			FB2K_console_formatter() << "QWR Thread Pool (error):\n"
-									 << e.what();
+			FB2K_console_formatter() << "QWR Thread Pool (error):\n" << e.what();
 		}
 		++idleThreadCount_;
 	}

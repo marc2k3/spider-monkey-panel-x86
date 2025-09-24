@@ -26,8 +26,7 @@ private:
 
 	struct PriorityCompare
 	{
-		bool operator()(const std::shared_ptr<Task>& a,
-						 const std::shared_ptr<Task>& b) const;
+		bool operator()(const std::shared_ptr<Task>& a, const std::shared_ptr<Task>& b) const;
 	};
 	std::set<std::shared_ptr<Task>, Task::PriorityCompare>::iterator taskIterator_;
 	bool isInProgress_ = false;

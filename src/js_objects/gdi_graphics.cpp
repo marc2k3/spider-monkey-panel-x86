@@ -157,8 +157,7 @@ uint32_t JsGdiGraphics::CalcTextWidth(const std::wstring& str, JsGdiFont* font, 
 	return smp::utils::GetTextWidth(hDc, str, use_exact);
 }
 
-uint32_t JsGdiGraphics::CalcTextWidthWithOpt(size_t optArgCount, const std::wstring& str,
-											  JsGdiFont* font, boolean use_exact)
+uint32_t JsGdiGraphics::CalcTextWidthWithOpt(size_t optArgCount, const std::wstring& str, JsGdiFont* font, boolean use_exact)
 {
 	switch (optArgCount)
 	{
@@ -181,9 +180,9 @@ void JsGdiGraphics::DrawEllipse(float x, float y, float w, float h, float line_w
 }
 
 void JsGdiGraphics::DrawImage(JsGdiBitmap* image,
-							   float dstX, float dstY, float dstW, float dstH,
-							   float srcX, float srcY, float srcW, float srcH,
-							   float angle, uint8_t alpha)
+	float dstX, float dstY, float dstW, float dstH,
+	float srcX, float srcY, float srcW, float srcH,
+	float angle, uint8_t alpha)
 {
 	qwr::QwrException::ExpectTrue(pGdi_, "Internal error: Gdiplus::Graphics object is null");
 	qwr::QwrException::ExpectTrue(image, "image argument is null");
@@ -233,9 +232,9 @@ void JsGdiGraphics::DrawImage(JsGdiBitmap* image,
 }
 
 void JsGdiGraphics::DrawImageWithOpt(size_t optArgCount, JsGdiBitmap* image,
-									  float dstX, float dstY, float dstW, float dstH,
-									  float srcX, float srcY, float srcW, float srcH, float angle,
-									  uint8_t alpha)
+	float dstX, float dstY, float dstW, float dstH,
+	float srcX, float srcY, float srcW, float srcH, float angle,
+	uint8_t alpha)
 {
 	switch (optArgCount)
 	{
@@ -331,8 +330,8 @@ void JsGdiGraphics::DrawString(const std::wstring& str, JsGdiFont* font, uint32_
 }
 
 void JsGdiGraphics::DrawStringWithOpt(size_t optArgCount, const std::wstring& str, JsGdiFont* font, uint32_t colour,
-									   float x, float y, float w, float h,
-									   uint32_t flags)
+	float x, float y, float w, float h,
+	uint32_t flags)
 {
 	switch (optArgCount)
 	{
@@ -455,9 +454,9 @@ void JsGdiGraphics::FillSolidRect(float x, float y, float w, float h, uint32_t c
 }
 
 void JsGdiGraphics::GdiAlphaBlend(JsGdiRawBitmap* bitmap,
-								   int32_t dstX, int32_t dstY, uint32_t dstW, uint32_t dstH,
-								   int32_t srcX, int32_t srcY, uint32_t srcW, uint32_t srcH,
-								   uint8_t alpha)
+	int32_t dstX, int32_t dstY, uint32_t dstW, uint32_t dstH,
+	int32_t srcX, int32_t srcY, uint32_t srcW, uint32_t srcH,
+	uint8_t alpha)
 {
 	qwr::QwrException::ExpectTrue(pGdi_, "Internal error: Gdiplus::Graphics object is null");
 	qwr::QwrException::ExpectTrue(bitmap, "bitmap argument is null");
@@ -473,9 +472,9 @@ void JsGdiGraphics::GdiAlphaBlend(JsGdiRawBitmap* bitmap,
 }
 
 void JsGdiGraphics::GdiAlphaBlendWithOpt(size_t optArgCount, JsGdiRawBitmap* bitmap,
-										  int32_t dstX, int32_t dstY, uint32_t dstW, uint32_t dstH,
-										  int32_t srcX, int32_t srcY, uint32_t srcW, uint32_t srcH,
-										  uint8_t alpha)
+	int32_t dstX, int32_t dstY, uint32_t dstW, uint32_t dstH,
+	int32_t srcX, int32_t srcY, uint32_t srcW, uint32_t srcH,
+	uint8_t alpha)
 {
 	switch (optArgCount)
 	{
@@ -489,8 +488,8 @@ void JsGdiGraphics::GdiAlphaBlendWithOpt(size_t optArgCount, JsGdiRawBitmap* bit
 }
 
 void JsGdiGraphics::GdiDrawBitmap(JsGdiRawBitmap* bitmap,
-								   int32_t dstX, int32_t dstY, uint32_t dstW, uint32_t dstH,
-								   int32_t srcX, int32_t srcY, uint32_t srcW, uint32_t srcH)
+	int32_t dstX, int32_t dstY, uint32_t dstW, uint32_t dstH,
+	int32_t srcX, int32_t srcY, uint32_t srcW, uint32_t srcH)
 {
 	qwr::QwrException::ExpectTrue(pGdi_, "Internal error: Gdiplus::Graphics object is null");
 	qwr::QwrException::ExpectTrue(bitmap, "bitmap argument is null");
@@ -573,8 +572,8 @@ void JsGdiGraphics::GdiDrawText(const std::wstring& str, JsGdiFont* font, uint32
 }
 
 void JsGdiGraphics::GdiDrawTextWithOpt(size_t optArgCount, const std::wstring& str, JsGdiFont* font, uint32_t colour,
-										int32_t x, int32_t y, uint32_t w, uint32_t h,
-										uint32_t format)
+	int32_t x, int32_t y, uint32_t w, uint32_t h,
+	uint32_t format)
 {
 	switch (optArgCount)
 	{
@@ -614,8 +613,8 @@ JSObject* JsGdiGraphics::MeasureString(const std::wstring& str, JsGdiFont* font,
 }
 
 JSObject* JsGdiGraphics::MeasureStringWithOpt(size_t optArgCount, const std::wstring& str, JsGdiFont* font,
-											   float x, float y, float w, float h,
-											   uint32_t flags)
+	float x, float y, float w, float h,
+	uint32_t flags)
 {
 	switch (optArgCount)
 	{

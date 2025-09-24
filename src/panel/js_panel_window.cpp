@@ -232,16 +232,14 @@ LRESULT js_panel_window::OnMessage(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	if (EventDispatcher::IsRequestEventMessage(msg))
 	{
 		EventDispatcher::Get().OnRequestEventMessageReceived(wnd_);
-		if (auto retVal = ProcessEvent();
-			 retVal.has_value())
+		if (auto retVal = ProcessEvent(); retVal.has_value())
 		{
 			return *retVal;
 		}
 	}
 	else
 	{
-		if (auto retVal = ProcessSyncMessage(MSG{ hwnd, msg, wp, lp });
-			 retVal.has_value())
+		if (auto retVal = ProcessSyncMessage(MSG{ hwnd, msg, wp, lp }); retVal.has_value())
 		{
 			return *retVal;
 		}
@@ -360,14 +358,17 @@ void js_panel_window::ExecuteEvent_JsTask(EventId id, Event_JsExecutor& task)
 
 		if (useDefaultContextMenu)
 		{
-			EventDispatcher::Get().PutEvent(wnd_,
-											 std::make_unique<Event_Mouse>(
-												 EventId::kMouseContextMenu,
-												 pEvent->GetX(),
-												 pEvent->GetY(),
-												 0,
-												 pEvent->GetModifiers()),
-											 EventPriority::kInput);
+			EventDispatcher::Get().PutEvent(
+				wnd_,
+				std::make_unique<Event_Mouse>(
+					EventId::kMouseContextMenu,
+					pEvent->GetX(),
+					pEvent->GetY(),
+					0,
+					pEvent->GetModifiers()
+				),
+				EventPriority::kInput
+			);
 		}
 
 		break;
@@ -529,8 +530,7 @@ std::optional<LRESULT> js_panel_window::ProcessEvent()
 
 	if (const auto stalledMsgOpt = GetStalledMessage(); stalledMsgOpt)
 	{ // stalled messages always have a higher priority
-		if (auto retVal = ProcessStalledMessage(*stalledMsgOpt);
-			 retVal.has_value())
+		if (auto retVal = ProcessStalledMessage(*stalledMsgOpt); retVal.has_value())
 		{
 			return *retVal;
 		}
@@ -596,22 +596,19 @@ std::optional<LRESULT> js_panel_window::ProcessStalledMessage(const MSG& msg)
 
 std::optional<LRESULT> js_panel_window::ProcessSyncMessage(const MSG& msg)
 {
-	if (auto retVal = ProcessCreationMessage(msg);
-		 retVal.has_value())
+	if (auto retVal = ProcessCreationMessage(msg); retVal.has_value())
 	{
 		return *retVal;
 	}
 
-	if (auto retVal = ProcessWindowMessage(msg);
-		 retVal.has_value())
+	if (auto retVal = ProcessWindowMessage(msg); retVal.has_value())
 	{
 		return *retVal;
 	}
 
 	if (IsInEnumRange<InternalSyncMessage>(msg.message))
 	{
-		if (auto retVal = ProcessInternalSyncMessage(static_cast<InternalSyncMessage>(msg.message), msg.wParam, msg.lParam);
-			 retVal.has_value())
+		if (auto retVal = ProcessInternalSyncMessage(static_cast<InternalSyncMessage>(msg.message), msg.wParam, msg.lParam); retVal.has_value())
 		{
 			return *retVal;
 		}
@@ -721,13 +718,17 @@ std::optional<LRESULT> js_panel_window::ProcessWindowMessage(const MSG& msg)
 
 		SetCaptureMouseState(true);
 
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 kMsgToEventId.at(msg.message),
-											 static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
-											 static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
-											 static_cast<uint32_t>(msg.wParam)),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				kMsgToEventId.at(msg.message),
+				static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
+				static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
+				static_cast<uint32_t>(msg.wParam)
+			),
+			EventPriority::kInput
+		);
+
 		return std::nullopt;
 	}
 	case WM_LBUTTONUP:
@@ -743,13 +744,17 @@ std::optional<LRESULT> js_panel_window::ProcessWindowMessage(const MSG& msg)
 			SetCaptureMouseState(false);
 		}
 
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 kMsgToEventId.at(msg.message),
-											 static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
-											 static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
-											 static_cast<uint32_t>(msg.wParam)),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				kMsgToEventId.at(msg.message),
+				static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
+				static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
+				static_cast<uint32_t>(msg.wParam)
+			),
+			EventPriority::kInput
+		);
+
 		return std::nullopt;
 	}
 	case WM_RBUTTONUP:
@@ -759,48 +764,63 @@ std::optional<LRESULT> js_panel_window::ProcessWindowMessage(const MSG& msg)
 			SetCaptureMouseState(false);
 		}
 
-		EventDispatcher::Get().PutEvent(wnd_,
-										 std::make_unique<Event_Mouse>(
-											 EventId::kMouseRightButtonUp,
-											 static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
-											 static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
-											 static_cast<uint32_t>(msg.wParam),
-											 GetHotkeyModifierFlags()),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			std::make_unique<Event_Mouse>(
+				EventId::kMouseRightButtonUp,
+				static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
+				static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
+				static_cast<uint32_t>(msg.wParam),
+				GetHotkeyModifierFlags()
+			),
+			EventPriority::kInput
+		);
 
 		return 0;
 	}
 	case WM_LBUTTONDBLCLK:
 	{
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 EventId::kMouseLeftButtonDoubleClick,
-											 static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
-											 static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
-											 static_cast<uint32_t>(msg.wParam)),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				EventId::kMouseLeftButtonDoubleClick,
+				static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
+				static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
+				static_cast<uint32_t>(msg.wParam)
+			),
+			EventPriority::kInput
+		);
+
 		return std::nullopt;
 	}
 	case WM_MBUTTONDBLCLK:
 	{
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 EventId::kMouseMiddleButtonDoubleClick,
-											 static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
-											 static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
-											 static_cast<uint32_t>(msg.wParam)),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				EventId::kMouseMiddleButtonDoubleClick,
+				static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
+				static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
+				static_cast<uint32_t>(msg.wParam)
+			),
+			EventPriority::kInput
+		);
+
 		return std::nullopt;
 	}
 	case WM_RBUTTONDBLCLK:
 	{
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 EventId::kMouseRightButtonDoubleClick,
-											 static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
-											 static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
-											 static_cast<uint32_t>(msg.wParam)),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				EventId::kMouseRightButtonDoubleClick,
+				static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
+				static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
+				static_cast<uint32_t>(msg.wParam)
+			),
+			EventPriority::kInput
+		);
+
 		return std::nullopt;
 	}
 	case WM_CONTEXTMENU:
@@ -808,14 +828,17 @@ std::optional<LRESULT> js_panel_window::ProcessWindowMessage(const MSG& msg)
 		// WM_CONTEXTMENU receives screen coordinates
 		POINT p{ GET_X_LPARAM(msg.wParam), GET_Y_LPARAM(msg.lParam) };
 		ScreenToClient(wnd_, &p);
-		EventDispatcher::Get().PutEvent(wnd_,
-										 std::make_unique<Event_Mouse>(
-											 EventId::kMouseContextMenu,
-											 p.x,
-											 p.y,
-											 0,
-											 GetHotkeyModifierFlags()),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			std::make_unique<Event_Mouse>(
+				EventId::kMouseContextMenu,
+				p.x,
+				p.y,
+				0,
+				GetHotkeyModifierFlags()
+			),
+			EventPriority::kInput
+		);
 
 		return 1;
 	}
@@ -832,13 +855,17 @@ std::optional<LRESULT> js_panel_window::ProcessWindowMessage(const MSG& msg)
 			SetCursor(LoadCursor(nullptr, IDC_ARROW));
 		}
 
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 EventId::kMouseMove,
-											 static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
-											 static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
-											 static_cast<uint32_t>(msg.wParam)),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				EventId::kMouseMove,
+				static_cast<int32_t>(GET_X_LPARAM(msg.lParam)),
+				static_cast<int32_t>(GET_Y_LPARAM(msg.lParam)),
+				static_cast<uint32_t>(msg.wParam)
+			),
+			EventPriority::kInput
+		);
+
 		return std::nullopt;
 	}
 	case WM_MOUSELEAVE:
@@ -848,29 +875,35 @@ std::optional<LRESULT> js_panel_window::ProcessWindowMessage(const MSG& msg)
 		// Restore default cursor
 		SetCursor(LoadCursor(nullptr, IDC_ARROW));
 
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(EventId::kMouseLeave),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(wnd_, GenerateEvent_JsCallback(EventId::kMouseLeave), EventPriority::kInput);
 		return std::nullopt;
 	}
 	case WM_MOUSEWHEEL:
 	{
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 EventId::kMouseVerticalWheel,
-											 static_cast<int8_t>(GET_WHEEL_DELTA_WPARAM(msg.wParam) > 0 ? 1 : -1),
-											 static_cast<int32_t>(GET_WHEEL_DELTA_WPARAM(msg.wParam)),
-											 static_cast<int32_t>(WHEEL_DELTA)),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				EventId::kMouseVerticalWheel,
+				static_cast<int8_t>(GET_WHEEL_DELTA_WPARAM(msg.wParam) > 0 ? 1 : -1),
+				static_cast<int32_t>(GET_WHEEL_DELTA_WPARAM(msg.wParam)),
+				static_cast<int32_t>(WHEEL_DELTA)
+			),
+			EventPriority::kInput
+		);
+
 		return std::nullopt;
 	}
 	case WM_MOUSEHWHEEL:
 	{
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 EventId::kMouseHorizontalWheel,
-											 static_cast<int8_t>(GET_WHEEL_DELTA_WPARAM(msg.wParam) > 0 ? 1 : -1)),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				EventId::kMouseHorizontalWheel,
+				static_cast<int8_t>(GET_WHEEL_DELTA_WPARAM(msg.wParam) > 0 ? 1 : -1)
+			),
+			EventPriority::kInput
+		);
+
 		return std::nullopt;
 	}
 	case WM_SETCURSOR:
@@ -880,50 +913,70 @@ std::optional<LRESULT> js_panel_window::ProcessWindowMessage(const MSG& msg)
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 	{
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 EventId::kKeyboardKeyDown,
-											 static_cast<uint32_t>(msg.wParam)),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				EventId::kKeyboardKeyDown,
+				static_cast<uint32_t>(msg.wParam)
+			),
+			EventPriority::kInput
+		);
+
 		return 0;
 	}
 	case WM_SYSKEYUP:
 	case WM_KEYUP:
 	{
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 EventId::kKeyboardKeyUp,
-											 static_cast<uint32_t>(msg.wParam)),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				EventId::kKeyboardKeyUp,
+				static_cast<uint32_t>(msg.wParam)
+			),
+			EventPriority::kInput
+		);
+
 		return 0;
 	}
 	case WM_CHAR:
 	{
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 EventId::kKeyboardChar,
-											 static_cast<uint32_t>(msg.wParam)),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				EventId::kKeyboardChar,
+				static_cast<uint32_t>(msg.wParam)
+			),
+			EventPriority::kInput
+		);
+
 		return 0;
 	}
 	case WM_SETFOCUS:
 	{
 		// Note: selection holder is acquired during event processing
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 EventId::kInputFocus,
-											 true),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				EventId::kInputFocus,
+				true
+			),
+			EventPriority::kInput
+		);
+
 		return std::nullopt;
 	}
 	case WM_KILLFOCUS:
 	{
 		selectionHolder_.release();
-		EventDispatcher::Get().PutEvent(wnd_,
-										 GenerateEvent_JsCallback(
-											 EventId::kInputBlur,
-											 false),
-										 EventPriority::kInput);
+		EventDispatcher::Get().PutEvent(
+			wnd_,
+			GenerateEvent_JsCallback(
+				EventId::kInputBlur,
+				false
+			),
+			EventPriority::kInput
+		);
+
 		return std::nullopt;
 	}
 	default:
@@ -1524,9 +1577,9 @@ void js_panel_window::OnPaint(HDC dc, const CRect& updateRc)
 	gdi::ObjectSelector autoBmp(memDc, bmp_.m_hBitmap);
 
 	if (hasFailed_
-		 || !pJsContainer_
-		 || mozjs::JsContainer::JsStatus::EngineFailed == pJsContainer_->GetStatus()
-		 || mozjs::JsContainer::JsStatus::Failed == pJsContainer_->GetStatus())
+		|| !pJsContainer_
+		|| mozjs::JsContainer::JsStatus::EngineFailed == pJsContainer_->GetStatus()
+		|| mozjs::JsContainer::JsStatus::Failed == pJsContainer_->GetStatus())
 	{
 		OnPaintErrorScreen(memDc);
 	}
@@ -1563,20 +1616,23 @@ void js_panel_window::OnPaintErrorScreen(HDC memdc)
 {
 	CDCHandle cdc{ memdc };
 	CFont font;
-	font.CreateFont(20,
-					 0,
-					 0,
-					 0,
-					 FW_BOLD,
-					 FALSE,
-					 FALSE,
-					 FALSE,
-					 DEFAULT_CHARSET,
-					 OUT_DEFAULT_PRECIS,
-					 CLIP_DEFAULT_PRECIS,
-					 DEFAULT_QUALITY,
-					 DEFAULT_PITCH | FF_DONTCARE,
-					 L"Tahoma");
+	font.CreateFont(
+		20,
+		0,
+		0,
+		0,
+		FW_BOLD,
+		FALSE,
+		FALSE,
+		FALSE,
+		DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		DEFAULT_QUALITY,
+		DEFAULT_PITCH | FF_DONTCARE,
+		L"Tahoma"
+	);
+
 	gdi::ObjectSelector autoFontSelector(cdc, font.m_hFont);
 
 	LOGBRUSH lbBack = { BS_SOLID, RGB(225, 60, 45), 0 };
@@ -1596,10 +1652,7 @@ void js_panel_window::OnPaintJs(HDC memdc, const CRect& updateRc)
 	Gdiplus::Graphics gr(memdc);
 
 	// SetClip() may improve performance slightly
-	gr.SetClip(Gdiplus::Rect{ updateRc.left,
-							   updateRc.top,
-							   updateRc.Width(),
-							   updateRc.Height() });
+	gr.SetClip(Gdiplus::Rect{ updateRc.left, updateRc.top, updateRc.Width(), updateRc.Height() });
 
 	pJsContainer_->InvokeOnPaint(gr);
 }
@@ -1615,9 +1668,7 @@ void js_panel_window::OnSizeDefault(uint32_t w, uint32_t h)
 
 void js_panel_window::OnSizeUser(uint32_t w, uint32_t h)
 {
-	pJsContainer_->InvokeJsCallback("on_size",
-									 static_cast<uint32_t>(w),
-									 static_cast<uint32_t>(h));
+	pJsContainer_->InvokeJsCallback("on_size", static_cast<uint32_t>(w), static_cast<uint32_t>(h));
 
 	Repaint();
 }

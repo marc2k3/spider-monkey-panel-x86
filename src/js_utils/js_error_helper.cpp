@@ -346,17 +346,20 @@ void ExceptionToJsError(JSContext* cx)
 		const auto errorMsg8 = qwr::ToU8(std::wstring_view{ e.ErrorMessage() ? e.ErrorMessage() : L"<none>" });
 		const auto errorSource8 = qwr::ToU8(std::wstring_view{ e.Source().length() ? static_cast<const wchar_t*>(e.Source()) : L"<none>" });
 		const auto errorDesc8 = qwr::ToU8(std::wstring_view{ e.Description().length() ? static_cast<const wchar_t*>(e.Description()) : L"<none>" });
-		JS_ReportErrorUTF8(cx,
-							fmt::format("COM error:\n"
-										 "  hresult: {:#x}\n"
-										 "  message: {}\n"
-										 "  description: {}\n"
-										 "  source: {}",
-										 static_cast<uint32_t>(e.Error()),
-										 errorMsg8,
-										 errorDesc8,
-										 errorSource8)
-								.c_str());
+		JS_ReportErrorUTF8(
+			cx,
+			fmt::format(
+				"COM error:\n"
+				"  hresult: {:#x}\n"
+				"  message: {}\n"
+				"  description: {}\n"
+				"  source: {}",
+				static_cast<uint32_t>(e.Error()),
+				errorMsg8,
+				errorDesc8,
+				errorSource8
+			).c_str()
+		);
 	}
 	catch (const std::bad_alloc&)
 	{

@@ -111,8 +111,7 @@ metadb_handle_ptr& JsFbMetadbHandle::GetHandle()
 
 void JsFbMetadbHandle::ClearStats()
 {
-	if (metadb_index_hash hash;
-		 !stats::HashHandle(metadbHandle_, hash))
+	if (metadb_index_hash hash; !stats::HashHandle(metadbHandle_, hash))
 	{
 		stats::SetStats(hash, {});
 	}
@@ -139,8 +138,7 @@ JSObject* JsFbMetadbHandle::GetFileInfo()
 
 void JsFbMetadbHandle::RefreshStats()
 {
-	if (metadb_index_hash hash;
-		 stats::HashHandle(metadbHandle_, hash))
+	if (metadb_index_hash hash; stats::HashHandle(metadbHandle_, hash))
 	{
 		stats::RefreshStats(hash);
 	}
@@ -148,8 +146,7 @@ void JsFbMetadbHandle::RefreshStats()
 
 void JsFbMetadbHandle::SetFirstPlayed(const std::string& first_played)
 {
-	if (metadb_index_hash hash;
-		 stats::HashHandle(metadbHandle_, hash))
+	if (metadb_index_hash hash; stats::HashHandle(metadbHandle_, hash))
 	{
 		stats::Fields tmp = stats::GetStats(hash);
 		if (tmp.first_played != first_played)
@@ -162,8 +159,7 @@ void JsFbMetadbHandle::SetFirstPlayed(const std::string& first_played)
 
 void JsFbMetadbHandle::SetLastPlayed(const std::string& last_played)
 {
-	if (metadb_index_hash hash;
-		 stats::HashHandle(metadbHandle_, hash))
+	if (metadb_index_hash hash; stats::HashHandle(metadbHandle_, hash))
 	{
 		auto tmp = stats::GetStats(hash);
 		if (tmp.last_played != last_played)
@@ -176,8 +172,7 @@ void JsFbMetadbHandle::SetLastPlayed(const std::string& last_played)
 
 void JsFbMetadbHandle::SetLoved(uint32_t loved)
 {
-	if (metadb_index_hash hash;
-		 stats::HashHandle(metadbHandle_, hash))
+	if (metadb_index_hash hash; stats::HashHandle(metadbHandle_, hash))
 	{
 		auto tmp = stats::GetStats(hash);
 		if (tmp.loved != loved)
@@ -190,8 +185,7 @@ void JsFbMetadbHandle::SetLoved(uint32_t loved)
 
 void JsFbMetadbHandle::SetPlaycount(uint32_t playcount)
 {
-	if (metadb_index_hash hash;
-		 stats::HashHandle(metadbHandle_, hash))
+	if (metadb_index_hash hash; stats::HashHandle(metadbHandle_, hash))
 	{
 		auto tmp = stats::GetStats(hash);
 		if (tmp.playcount != playcount)
@@ -204,8 +198,7 @@ void JsFbMetadbHandle::SetPlaycount(uint32_t playcount)
 
 void JsFbMetadbHandle::SetRating(uint32_t rating)
 {
-	if (metadb_index_hash hash;
-		 stats::HashHandle(metadbHandle_, hash))
+	if (metadb_index_hash hash; stats::HashHandle(metadbHandle_, hash))
 	{
 		auto tmp = stats::GetStats(hash);
 		if (tmp.rating != rating)

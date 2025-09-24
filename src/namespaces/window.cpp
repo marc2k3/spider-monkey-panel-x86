@@ -611,8 +611,7 @@ void Window::NotifyOthers(const std::wstring& name, JS::HandleValue info)
 		return;
 	}
 
-	EventDispatcher::Get().NotifyOthers(parentPanel_.GetHWND(),
-										 std::make_unique<Event_NotifyOthers>(pJsCtx_, name, info));
+	EventDispatcher::Get().NotifyOthers(parentPanel_.GetHWND(), std::make_unique<Event_NotifyOthers>(pJsCtx_, name, info));
 }
 
 void Window::Reload()
@@ -688,9 +687,7 @@ uint32_t Window::SetInterval(JS::HandleValue func, uint32_t delay, JS::HandleVal
 		return 0;
 	}
 
-	qwr::QwrException::ExpectTrue(func.isObject() && JS_ObjectIsFunction(&func.toObject()),
-								   "`func` argument is not a JS function");
-
+	qwr::QwrException::ExpectTrue(func.isObject() && JS_ObjectIsFunction(&func.toObject()), "`func` argument is not a JS function");
 	qwr::QwrException::ExpectTrue(delay > 0, "`delay` must be non-zero");
 
 	JS::RootedFunction jsFunction(pJsCtx_, JS_ValueToFunction(pJsCtx_, func));
@@ -746,8 +743,7 @@ uint32_t Window::SetTimeout(JS::HandleValue func, uint32_t delay, JS::HandleValu
 		return 0;
 	}
 
-	qwr::QwrException::ExpectTrue(func.isObject() && JS_ObjectIsFunction(&func.toObject()),
-								   "func argument is not a JS function");
+	qwr::QwrException::ExpectTrue(func.isObject() && JS_ObjectIsFunction(&func.toObject()), "func argument is not a JS function");
 
 	JS::RootedFunction jsFunction(pJsCtx_, JS_ValueToFunction(pJsCtx_, func));
 	JS::RootedValue jsFuncValue(pJsCtx_, JS::ObjectValue(*JS_GetFunctionObject(jsFunction)));

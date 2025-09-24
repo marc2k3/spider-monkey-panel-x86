@@ -141,16 +141,13 @@ public:
 	{
 	}
 
-	bool get(JSContext* cx, JS::HandleObject proxy, JS::HandleValue receiver,
-			  JS::HandleId id, JS::MutableHandleValue vp) const override;
-	bool set(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, JS::HandleValue v,
-			  JS::HandleValue receiver, JS::ObjectOpResult& result) const override;
+	bool get(JSContext* cx, JS::HandleObject proxy, JS::HandleValue receiver, JS::HandleId id, JS::MutableHandleValue vp) const override;
+	bool set(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, JS::HandleValue v, JS::HandleValue receiver, JS::ObjectOpResult& result) const override;
 };
 
 const FbMetadbHandleListProxyHandler FbMetadbHandleListProxyHandler::singleton;
 
-bool FbMetadbHandleListProxyHandler::get(JSContext* cx, JS::HandleObject proxy, JS::HandleValue receiver,
-										  JS::HandleId id, JS::MutableHandleValue vp) const
+bool FbMetadbHandleListProxyHandler::get(JSContext* cx, JS::HandleObject proxy, JS::HandleValue receiver, JS::HandleId id, JS::MutableHandleValue vp) const
 {
 	if (JSID_IS_INT(id))
 	{
@@ -175,8 +172,7 @@ bool FbMetadbHandleListProxyHandler::get(JSContext* cx, JS::HandleObject proxy, 
 	return js::ForwardingProxyHandler::get(cx, proxy, receiver, id, vp);
 }
 
-bool FbMetadbHandleListProxyHandler::set(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, JS::HandleValue v,
-										  JS::HandleValue receiver, JS::ObjectOpResult& result) const
+bool FbMetadbHandleListProxyHandler::set(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, JS::HandleValue v, JS::HandleValue receiver, JS::ObjectOpResult& result) const
 {
 	if (JSID_IS_INT(id))
 	{
@@ -256,16 +252,14 @@ JSObject* JsFbMetadbHandleList::Constructor(JSContext* cx, JS::HandleValue jsVal
 		return JsFbMetadbHandleList::CreateJs(cx, metadb_handle_list());
 	}
 
-	if (auto pNativeHandle = GetInnerInstancePrivate<JsFbMetadbHandle>(cx, jsValue);
-		 pNativeHandle)
+	if (auto pNativeHandle = GetInnerInstancePrivate<JsFbMetadbHandle>(cx, jsValue); pNativeHandle)
 	{
 		metadb_handle_list handleList;
 		handleList.add_item(pNativeHandle->GetHandle());
 		return JsFbMetadbHandleList::CreateJs(cx, handleList);
 	}
 
-	if (auto pNativeHandleList = GetInnerInstancePrivate<JsFbMetadbHandleList>(cx, jsValue);
-		 pNativeHandleList)
+	if (auto pNativeHandleList = GetInnerInstancePrivate<JsFbMetadbHandleList>(cx, jsValue); pNativeHandleList)
 	{
 		return JsFbMetadbHandleList::CreateJs(cx, pNativeHandleList->GetHandleList());
 	}

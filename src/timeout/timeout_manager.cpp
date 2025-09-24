@@ -59,8 +59,7 @@ void TimeoutManager::SetLoadingStatus(bool isLoading)
 		}
 		delayedTimeouts_.clear();
 
-		if (const auto timeoutIt = timeoutStorage_.GetFirst();
-			 !timeoutStorage_.IsEnd(timeoutIt))
+		if (const auto timeoutIt = timeoutStorage_.GetFirst(); !timeoutStorage_.IsEnd(timeoutIt))
 		{
 			MaybeSchedule((*timeoutIt)->When());
 		}
@@ -87,8 +86,7 @@ void TimeoutManager::ClearTimeout(uint32_t timerId)
 
 	bool deferredDeletion = false;
 	const auto isFirstTimeout = (timeoutIt == timeoutStorage_.GetFirst());
-	if (auto& pTimeout = *timeoutIt;
-		 pTimeout->IsRunning())
+	if (auto& pTimeout = *timeoutIt; pTimeout->IsRunning())
 	{
 		/*
 			We're running from inside the timeout. Mark this
@@ -117,8 +115,7 @@ void TimeoutManager::ClearTimeout(uint32_t timerId)
 
 	// Stop the executor and restart it at the next soonest deadline.
 	pExecutor_->Cancel(false);
-	if (auto nextTimeoutIt = timeoutStorage_.GetFirst();
-		 !timeoutStorage_.IsEnd(nextTimeoutIt))
+	if (auto nextTimeoutIt = timeoutStorage_.GetFirst(); !timeoutStorage_.IsEnd(nextTimeoutIt))
 	{
 		auto& pNextTimeout = *nextTimeoutIt;
 		MaybeSchedule(pNextTimeout->When());
@@ -475,8 +472,8 @@ void TimeoutManager::TimeoutStorage::Insert(std::shared_ptr<Timeout> pTimeout)
 
 	auto reverseIt = ranges::find_if_not(schedule_ | ranges::views::reverse, [&](const auto& pLocalTimeout) {
 		return (pLocalTimeout->When() > pTimeout->When()
-				 // Check the firing ID last since it will be invalid in the vast majority of cases.
-				 && !pParent_.IsValidFiringId(pLocalTimeout->GetFiringId()));
+			// Check the firing ID last since it will be invalid in the vast majority of cases.
+			&& !pParent_.IsValidFiringId(pLocalTimeout->GetFiringId()));
 	});
 
 	pTimeout->SetFiringId(kInvalidFiringId);

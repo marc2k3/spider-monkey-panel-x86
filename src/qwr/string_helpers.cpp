@@ -9,8 +9,7 @@ std::vector<std::string_view> SplitByLines(std::string_view str)
 	std::vector<std::string_view> lines;
 	for (std::string_view curScope = str; !curScope.empty();)
 	{
-		if (size_t pos = curScope.find_first_of("\r\n");
-			 std::string::npos != pos)
+		if (size_t pos = curScope.find_first_of("\r\n"); std::string::npos != pos)
 		{
 			if (pos)
 			{

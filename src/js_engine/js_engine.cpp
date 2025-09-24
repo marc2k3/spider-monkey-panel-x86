@@ -101,8 +101,7 @@ bool JsEngine::RegisterContainer(JsContainer& jsContainer) noexcept
 
 void JsEngine::UnregisterContainer(JsContainer& jsContainer) noexcept
 {
-	if (auto it = registeredContainers_.find(&jsContainer);
-		 it != registeredContainers_.end())
+	if (auto it = registeredContainers_.find(&jsContainer); it != registeredContainers_.end())
 	{
 		jsMonitor_.RemoveContainer(jsContainer);
 

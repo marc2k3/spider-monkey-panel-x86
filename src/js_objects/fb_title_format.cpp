@@ -111,7 +111,7 @@ pfc::string8 JsFbTitleFormat::Eval(bool force)
 			metadb::get()->handle_create(handle, make_playable_location("file://C:\\________.ogg", 0));
 		}
 
-		 handle->format_title(nullptr, text, titleFormatObject_, nullptr);
+		handle->format_title(nullptr, text, titleFormatObject_, nullptr);
 	}
 
 	return text;

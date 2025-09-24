@@ -35,16 +35,13 @@ public:
 	void StopAllTimeouts();
 
 	// Should be called only by TimeoutExecutor
-	void RunTimeout(const TimeStamp& now,
-					 const TimeStamp& targetDeadline);
+	void RunTimeout(const TimeStamp& now, const TimeStamp& targetDeadline);
 
 private:
 	[[nodiscard]] uint32_t CreateTimeout(uint32_t interval, bool isRepeated, std::unique_ptr<mozjs::JsAsyncTask> pJsTask);
 
 	void MaybeSchedule(const TimeStamp& whenToTrigger);
-	bool RescheduleTimeout(Timeout& timeout,
-							const TimeStamp& lastCallbackTime,
-							const TimeStamp& currentNow);
+	bool RescheduleTimeout(Timeout& timeout, const TimeStamp& lastCallbackTime, const TimeStamp& currentNow);
 
 	[[nodiscard]] uint32_t CreateFiringId();
 	void DestroyFiringId(uint32_t id);

@@ -22,7 +22,7 @@ namespace mozjs
 
 /*
 	Every object must define the following traits:
-	 
+
 	// Indicates that object is created from JS prototype.
 	// If true, object must also define `HasGlobalProto` and `PrototypeId`.
 	static constexpr bool HasProto; 
@@ -114,15 +114,14 @@ public:
 public:
 	[[nodiscard]] static JSObject* CreateProto(JSContext* cx)
 	{
-		JS::RootedObject jsObject(cx,
-								   JS_NewPlainObject(cx));
+		JS::RootedObject jsObject(cx, JS_NewPlainObject(cx));
+
 		if (!jsObject)
 		{
 			throw smp::JsException();
 		}
 
-		if (!JS_DefineFunctions(cx, jsObject, T::JsFunctions)
-			 || !JS_DefineProperties(cx, jsObject, T::JsProperties))
+		if (!JS_DefineFunctions(cx, jsObject, T::JsFunctions) || !JS_DefineProperties(cx, jsObject, T::JsProperties))
 		{
 			throw smp::JsException();
 		}
@@ -143,16 +142,19 @@ public:
 			}
 		}();
 
-		auto pJsProto = JS_InitClass(cx,
-									  parentObject,
-									  nullptr,
-									  &T::JsClass,
-									  T::JsConstructor,
-									  0,
-									  T::JsProperties,
-									  T::JsFunctions,
-									  nullptr,
-									  staticFns);
+		auto pJsProto = JS_InitClass(
+			cx,
+			parentObject,
+			nullptr,
+			&T::JsClass,
+			T::JsConstructor,
+			0,
+			T::JsProperties,
+			T::JsFunctions,
+			nullptr,
+			staticFns
+		);
+
 		if (!pJsProto)
 		{
 			throw smp::JsException();
@@ -252,8 +254,7 @@ private:
 				throw smp::JsException();
 			}
 
-			if (!JS_DefineFunctions(cx, jsObject, T::JsFunctions)
-				 || !JS_DefineProperties(cx, jsObject, T::JsProperties))
+			if (!JS_DefineFunctions(cx, jsObject, T::JsFunctions) || !JS_DefineProperties(cx, jsObject, T::JsProperties))
 			{
 				throw smp::JsException();
 			}

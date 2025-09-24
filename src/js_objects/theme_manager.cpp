@@ -104,8 +104,8 @@ size_t JsThemeManager::GetInternalSize(HWND /* hwnd */, const std::wstring& /* c
 }
 
 void JsThemeManager::DrawThemeBackground(JsGdiGraphics* gr,
-										  int32_t x, int32_t y, uint32_t w, uint32_t h,
-										  int32_t clip_x, int32_t clip_y, uint32_t clip_w, uint32_t clip_h)
+	int32_t x, int32_t y, uint32_t w, uint32_t h,
+	int32_t clip_x, int32_t clip_y, uint32_t clip_w, uint32_t clip_h)
 {
 	qwr::QwrException::ExpectTrue(gr, "gr argument is null");
 
@@ -124,8 +124,8 @@ void JsThemeManager::DrawThemeBackground(JsGdiGraphics* gr,
 }
 
 void JsThemeManager::DrawThemeBackgroundWithOpt(size_t optArgCount, JsGdiGraphics* gr,
-												 int32_t x, int32_t y, uint32_t w, uint32_t h,
-												 int32_t clip_x, int32_t clip_y, uint32_t clip_w, uint32_t clip_h)
+	int32_t x, int32_t y, uint32_t w, uint32_t h,
+	int32_t clip_x, int32_t clip_y, uint32_t clip_w, uint32_t clip_h)
 {
 	switch (optArgCount)
 	{

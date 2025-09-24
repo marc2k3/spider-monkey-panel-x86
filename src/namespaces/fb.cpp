@@ -494,8 +494,10 @@ std::string Fb::GetDSPPresets()
 	{
 		api->get_preset_name(i, name);
 
-		j.push_back({ { "active", selectedPreset == i },
-					   { "name", name.get_ptr() } });
+		j.push_back({
+			{ "active", selectedPreset == i },
+			{ "name", name.get_ptr() }
+		});
 	}
 
 	return j.dump(2);
@@ -572,11 +574,12 @@ std::string Fb::GetOutputDevices()
 		const std::string output_string = fmt::format("{{{}}}", pfc::print_guid(output_id).get_ptr());
 		const std::string device_string = fmt::format("{{{}}}", pfc::print_guid(device_id).get_ptr());
 
-		j.push_back(
-			{ { "name", name },
-			  { "output_id", output_string },
-			  { "device_id", device_string },
-			  { "active", config.m_output == output_id && config.m_device == device_id } });
+		j.push_back({
+			{ "name", name },
+			{ "output_id", output_string },
+			{ "device_id", device_string },
+			{ "active", config.m_output == output_id && config.m_device == device_id }
+		});
 	});
 
 	return j.dump(2);
@@ -661,8 +664,7 @@ bool Fb::IsLibraryEnabled()
 bool Fb::IsMainMenuCommandChecked(const std::string& command)
 {
 	const auto status = utils::GetMainmenuCommandStatusByName(command);
-	return (mainmenu_commands::flag_checked & status
-			 || mainmenu_commands::flag_radiochecked & status);
+	return (mainmenu_commands::flag_checked & status || mainmenu_commands::flag_radiochecked & status);
 }
 
 bool Fb::IsMetadbInMediaLibrary(JsFbMetadbHandle* handle)
@@ -836,8 +838,7 @@ void Fb::SetOutputDevice(const std::wstring& output, const std::wstring& device)
 {
 	GUID output_id;
 	GUID device_id;
-	if (CLSIDFromString(output.c_str(), &output_id) == NOERROR
-		 && CLSIDFromString(device.c_str(), &device_id) == NOERROR)
+	if (CLSIDFromString(output.c_str(), &output_id) == NOERROR && CLSIDFromString(device.c_str(), &device_id) == NOERROR)
 	{
 		output_manager_v2::get()->setCoreConfigDevice(output_id, device_id);
 	}

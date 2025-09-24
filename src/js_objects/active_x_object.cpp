@@ -61,10 +61,8 @@ public:
 	}
 
 	// bool has(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, bool* bp) const override;
-	bool get(JSContext* cx, JS::HandleObject proxy, JS::HandleValue receiver,
-			  JS::HandleId id, JS::MutableHandleValue vp) const override;
-	bool set(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, JS::HandleValue v,
-			  JS::HandleValue receiver, JS::ObjectOpResult& result) const override;
+	bool get(JSContext* cx, JS::HandleObject proxy, JS::HandleValue receiver, JS::HandleId id, JS::MutableHandleValue vp) const override;
+	bool set(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, JS::HandleValue v, JS::HandleValue receiver, JS::ObjectOpResult& result) const override;
 };
 
 const ActiveXObjectProxyHandler ActiveXObjectProxyHandler::singleton;
@@ -100,8 +98,7 @@ ActiveXObjectProxyHandler::has(JSContext* cx, JS::HandleObject proxy, JS::Handle
 }
 */
 
-bool ActiveXObjectProxyHandler::get(JSContext* cx, JS::HandleObject proxy, JS::HandleValue receiver,
-									 JS::HandleId id, JS::MutableHandleValue vp) const
+bool ActiveXObjectProxyHandler::get(JSContext* cx, JS::HandleObject proxy, JS::HandleValue receiver, JS::HandleId id, JS::MutableHandleValue vp) const
 {
 	try
 	{
@@ -173,8 +170,7 @@ bool ActiveXObjectProxyHandler::get(JSContext* cx, JS::HandleObject proxy, JS::H
 	return js::ForwardingProxyHandler::get(cx, proxy, receiver, id, vp);
 }
 
-bool ActiveXObjectProxyHandler::set(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, JS::HandleValue v,
-									 JS::HandleValue receiver, JS::ObjectOpResult& result) const
+bool ActiveXObjectProxyHandler::set(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, JS::HandleValue v, JS::HandleValue receiver, JS::ObjectOpResult& result) const
 {
 	try
 	{
@@ -450,8 +446,9 @@ std::unique_ptr<JsActiveXObject> JsActiveXObject::CreateNative(JSContext* cx, co
 {
 	CLSID clsid;
 	HRESULT hresult = (name[0] == L'{')
-						  ? CLSIDFromString(name.c_str(), &clsid)
-						  : CLSIDFromProgID(name.c_str(), &clsid);
+		? CLSIDFromString(name.c_str(), &clsid)
+		: CLSIDFromProgID(name.c_str(), &clsid);
+
 	qwr::QwrException::ExpectTrue(SUCCEEDED(hresult), L"Invalid CLSID: {}", name);
 
 	std::unique_ptr<JsActiveXObject> nativeObject;
@@ -727,8 +724,7 @@ void JsActiveXObject::Set(const std::wstring& propName, JS::HandleValue v)
 	DISPPARAMS dispparams = { &arg, &dispput, 1, 1 };
 
 	WORD flag = DISPATCH_PROPERTYPUT;
-	if ((arg.vt == VT_DISPATCH || arg.vt == VT_UNKNOWN)
-		 && members_.contains(propName) && members_[propName]->isPutRef)
+	if ((arg.vt == VT_DISPATCH || arg.vt == VT_UNKNOWN) && members_.contains(propName) && members_[propName]->isPutRef)
 	{ //must be passed by name
 		flag = DISPATCH_PROPERTYPUTREF;
 	}
@@ -784,8 +780,7 @@ void JsActiveXObject::Set(const JS::CallArgs& callArgs)
 	UINT argerr = 0;
 
 	WORD flag = DISPATCH_PROPERTYPUT;
-	if ((args[argc - 1].vt == VT_DISPATCH || args[argc - 1].vt == VT_UNKNOWN)
-		 && members_.contains(propName) && members_[propName]->isPutRef)
+	if ((args[argc - 1].vt == VT_DISPATCH || args[argc - 1].vt == VT_UNKNOWN) && members_.contains(propName) && members_[propName]->isPutRef)
 	{ //must be passed by name
 		flag = DISPATCH_PROPERTYPUTREF;
 	}
@@ -911,9 +906,7 @@ void JsActiveXObject::ParseTypeInfoRecursive(JSContext* cx, ITypeInfo* pTypeInfo
 		pTypeInfo->ReleaseTypeAttr(pAttr);
 	});
 
-	if (!(pAttr->wTypeFlags & TYPEFLAG_FRESTRICTED)
-		 && (TKIND_DISPATCH == pAttr->typekind || TKIND_INTERFACE == pAttr->typekind)
-		 && pAttr->cImplTypes)
+	if (!(pAttr->wTypeFlags & TYPEFLAG_FRESTRICTED) && (TKIND_DISPATCH == pAttr->typekind || TKIND_INTERFACE == pAttr->typekind) && pAttr->cImplTypes)
 	{
 		for (auto i: ranges::views::indices(pAttr->cImplTypes))
 		{
@@ -952,8 +945,7 @@ void JsActiveXObject::ParseTypeInfo(ITypeInfo* pTypeInfo, MemberMap& members)
 		//_bstr_t desc;
 		if (pTypeInfo->GetDocumentation(vardesc->memid, name.GetAddress(), nullptr /*&desc*/, nullptr, nullptr) == S_OK)
 		{
-			if (!(vardesc->wVarFlags & VARFLAG_FRESTRICTED)
-				 && !(vardesc->wVarFlags & VARFLAG_FHIDDEN))
+			if (!(vardesc->wVarFlags & VARFLAG_FRESTRICTED) && !(vardesc->wVarFlags & VARFLAG_FHIDDEN))
 			{
 				auto [it, bRet] = members.try_emplace(name.GetBSTR(), std::make_unique<MemberInfo>());
 				auto pProp = it->second.get();
@@ -971,8 +963,7 @@ void JsActiveXObject::ParseTypeInfo(ITypeInfo* pTypeInfo, MemberMap& members)
 		//_bstr_t desc;
 		if (pTypeInfo->GetDocumentation(funcdesc->memid, name.GetAddress(), nullptr /*&desc*/, nullptr, nullptr) == S_OK)
 		{
-			if (!(funcdesc->wFuncFlags & FUNCFLAG_FRESTRICTED)
-				 && !(funcdesc->wFuncFlags & FUNCFLAG_FHIDDEN))
+			if (!(funcdesc->wFuncFlags & FUNCFLAG_FRESTRICTED) && !(funcdesc->wFuncFlags & FUNCFLAG_FHIDDEN))
 			{
 				auto [it, bRet] = members.try_emplace(name.GetBSTR(), std::make_unique<MemberInfo>());
 				auto pProp = it->second.get();

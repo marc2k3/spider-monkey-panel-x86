@@ -302,19 +302,22 @@ JS::Value JsGdiBitmap::GetColourScheme(uint32_t count)
 		g = (g > 0xef) ? 0xff : (g + 0x10) & 0xe0;
 		b = (b > 0xef) ? 0xff : (b + 0x10) & 0xe0;
 
-		++color_counters[Gdiplus::Color::MakeARGB(0xff,
-												   static_cast<BYTE>(r),
-												   static_cast<BYTE>(g),
-												   static_cast<BYTE>(b))];
+		++color_counters[Gdiplus::Color::MakeARGB(
+			0xff,
+			static_cast<BYTE>(r),
+			static_cast<BYTE>(g),
+			static_cast<BYTE>(b)
+		)];
 	}
 
 	pBitmap->UnlockBits(&bmpdata);
 
 	std::vector<std::pair<uint32_t, uint32_t>> sort_vec(color_counters.cbegin(), color_counters.cend());
-	ranges::sort(sort_vec,
-				  [](const auto& a, const auto& b) {
-					  return a.second > b.second;
-				  });
+	ranges::sort(sort_vec, [](const auto& a, const auto& b)
+		{
+			return a.second > b.second;
+		});
+
 	sort_vec.resize(std::min(count, color_counters.size()));
 
 	JS::RootedValue jsValue(pJsCtx_);
@@ -406,9 +409,10 @@ std::string JsGdiBitmap::GetColourSchemeJSON(uint32_t count)
 								| static_cast<uint32_t>(centralValues[2]);
 		const double frequency = static_cast<double>(getTotalPixelCount(cluster)) / colourRange.size();
 
-		j.push_back(
-			{ { "col", colour },
-			  { "freq", frequency } });
+		j.push_back({
+			{ "col", colour },
+			{ "freq", frequency }
+		});
 	}
 
 	return j.dump(2);

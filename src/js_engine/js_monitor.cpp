@@ -93,8 +93,7 @@ void JsMonitor::OnJsActionEnd(JsContainer& jsContainer)
 
 	{
 		std::unique_lock<std::mutex> ul(watcherDataMutex_);
-		if (const auto itActive = activeContainers_.find(&jsContainer);
-			 itActive != activeContainers_.cend())
+		if (const auto itActive = activeContainers_.find(&jsContainer); itActive != activeContainers_.cend())
 		{
 			// container might or might not be in `activeContainers_` depending on if and when it's `ignoreSlowScriptCheck` was set
 			activeContainers_.erase(itActive);
@@ -104,8 +103,7 @@ void JsMonitor::OnJsActionEnd(JsContainer& jsContainer)
 
 bool JsMonitor::OnInterrupt()
 {
-	if (!pJsCtx_ ///< might be invoked before monitor was started
-		 || slowScriptLimit_ == std::chrono::seconds::zero())
+	if (!pJsCtx_ || slowScriptLimit_ == std::chrono::seconds::zero())
 	{
 		return true;
 	}
@@ -169,8 +167,7 @@ bool JsMonitor::OnInterrupt()
 	{
 		auto& containerData = *pContainerData;
 
-		if (containerData.ignoreSlowScriptCheck
-			 || (curTime - containerData.slowScriptCheckpoint) < slowScriptLimit_ / 2.0)
+		if (containerData.ignoreSlowScriptCheck || (curTime - containerData.slowScriptCheckpoint) < slowScriptLimit_ / 2.0)
 		{
 			continue;
 		}
@@ -185,8 +182,7 @@ bool JsMonitor::OnInterrupt()
 			continue;
 		}
 
-		if (JsContainer::JsStatus::EngineFailed == pContainer->GetStatus()
-			 || JsContainer::JsStatus::Failed == pContainer->GetStatus())
+		if (JsContainer::JsStatus::EngineFailed == pContainer->GetStatus() || JsContainer::JsStatus::Failed == pContainer->GetStatus())
 		{ // possible if the interrupt was requested again after the script was aborted,
 			// but before the container was removed from active
 			continue;

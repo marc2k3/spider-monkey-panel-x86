@@ -553,17 +553,6 @@ CDialogPackageManager::PackageData CDialogPackageManager::GeneratePackageData(co
 			: fmt::format("{} (by {})", parsedSettings.scriptName, parsedSettings.scriptAuthor));
 	}();
 
-	const auto valueOrEmpty = [](const std::string& str) -> std::string {
-		return (str.empty() ? "<empty>" : str);
-	};
-
-	const auto displayedDescription = fmt::format("Name: {}\r\nVersion: {}\r\nAuthor: {}\r\nDescription:\r\n{}",
-		valueOrEmpty(parsedSettings.scriptName),
-		valueOrEmpty(parsedSettings.scriptVersion),
-		valueOrEmpty(parsedSettings.scriptAuthor),
-		valueOrEmpty(parsedSettings.scriptDescription)
-	);
-
 	return PackageData{
 		qwr::ToWide(displayedName),
 		*parsedSettings.packageId,
