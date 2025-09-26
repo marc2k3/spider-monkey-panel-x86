@@ -336,8 +336,8 @@ void SetStats(metadb_index_hash hash, const Fields& f)
 	stream_writer_formatter_simple<false> writer;
 	writer << f.playcount;
 	writer << f.loved;
-	writer << f.first_played.c_str();
-	writer << f.last_played.c_str();
+	writer.write_string(f.first_played.c_str());
+	writer.write_string(f.last_played.c_str());
 	writer << f.rating;
 	GetIndexManagerInstance()->set_user_data(smp::guid::metadb_index, hash, writer.m_buffer.get_ptr(), writer.m_buffer.get_size());
 }
