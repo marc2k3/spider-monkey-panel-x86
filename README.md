@@ -10,6 +10,10 @@ requires at least `foobar2000` `2.0`.
 
 # Changelog
 
+## 1.6.2.25.09.26
+- Fix bug when using `FbMetadbHandle` methods to write component playback
+statistics values.
+
 ## 1.6.2.25.09.13
 - Add `FbMetadbHandleList` `OptimiseFileLayout`. It takes a `boolean` `minimise`
 argument. This provides the same functionality as the native context menu items
