@@ -109,6 +109,8 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClCompile Include="config\panel_config_binary.cpp" />
     <ClCompile Include="config\panel_config_json.cpp" />
     <ClCompile Include="config\parsed_panel_config.cpp" />
+    <ClCompile Include="fb2k\metadb_display_field_provider_impl.cpp" />
+    <ClCompile Include="fb2k\track_property_provider_impl.cpp" />
     <ClCompile Include="initquit.cpp" />
     <ClCompile Include="com_objects\com_tools.cpp" />
     <ClCompile Include="com_objects\drop_source_impl.cpp" />

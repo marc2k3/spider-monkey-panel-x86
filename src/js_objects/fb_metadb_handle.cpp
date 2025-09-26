@@ -111,7 +111,7 @@ metadb_handle_ptr& JsFbMetadbHandle::GetHandle()
 
 void JsFbMetadbHandle::ClearStats()
 {
-	if (metadb_index_hash hash; !stats::HashHandle(metadbHandle_, hash))
+	if (metadb_index_hash hash; stats::HashHandle(metadbHandle_, hash))
 	{
 		stats::SetStats(hash, {});
 	}
@@ -144,7 +144,7 @@ void JsFbMetadbHandle::RefreshStats()
 	}
 }
 
-void JsFbMetadbHandle::SetFirstPlayed(const std::string& first_played)
+void JsFbMetadbHandle::SetFirstPlayed(const pfc::string8& first_played)
 {
 	if (metadb_index_hash hash; stats::HashHandle(metadbHandle_, hash))
 	{
@@ -157,7 +157,7 @@ void JsFbMetadbHandle::SetFirstPlayed(const std::string& first_played)
 	}
 }
 
-void JsFbMetadbHandle::SetLastPlayed(const std::string& last_played)
+void JsFbMetadbHandle::SetLastPlayed(const pfc::string8& last_played)
 {
 	if (metadb_index_hash hash; stats::HashHandle(metadbHandle_, hash))
 	{

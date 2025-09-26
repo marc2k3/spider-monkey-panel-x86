@@ -466,6 +466,12 @@
     <ClCompile Include="2K3\HTTPRequestAsync.cpp">
       <Filter>2K3</Filter>
     </ClCompile>
+    <ClCompile Include="fb2k\track_property_provider_impl.cpp">
+      <Filter>fb2k</Filter>
+    </ClCompile>
+    <ClCompile Include="fb2k\metadb_display_field_provider_impl.cpp">
+      <Filter>fb2k</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="js_engine\js_engine.h">

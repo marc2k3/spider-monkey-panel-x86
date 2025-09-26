@@ -2,20 +2,18 @@
 
 namespace smp::stats
 {
+	struct Fields
+	{
+		uint32_t playcount{};
+		uint32_t loved{};
+		pfc::string8 first_played;
+		pfc::string8 last_played;
+		uint32_t rating{};
+	};
 
-struct Fields
-{
-	uint32_t playcount = 0;
-	uint32_t loved = 0;
-	std::string first_played;
-	std::string last_played;
-	uint32_t rating = 0;
-};
-
-[[nodiscard]] bool HashHandle(metadb_handle_ptr const& pMetadb, metadb_index_hash& hash);
-[[nodiscard]] Fields GetStats(metadb_index_hash hash);
-void SetStats(metadb_index_hash hash, const Fields& f);
-void RefreshStats(const pfc::list_base_const_t<metadb_index_hash>& hashes);
-void RefreshStats(const metadb_index_hash& hash);
-
-} // namespace smp::stats
+	[[nodiscard]] Fields GetStats(metadb_index_hash hash);
+	[[nodiscard]] bool HashHandle(metadb_handle_ptr const& pMetadb, metadb_index_hash& hash);
+	void RefreshStats(const metadb_index_hash& hash);
+	void RefreshStats(const pfc::list_base_const_t<metadb_index_hash>& hashes);
+	void SetStats(metadb_index_hash hash, const Fields& f);
+}
