@@ -50,11 +50,6 @@ function _vu_meter(x, y, w, h) {
 	}
 
 	this.update_graph = function () {
-		var cur_time = fb.PlaybackTime;
-
-		if (cur_time < this.rms_window)
-			return;
-
 		var chunk = fb.GetAudioChunk(this.rms_window);
 
 		if (!chunk)
