@@ -1617,7 +1617,7 @@ void js_panel_window::OnPaintErrorScreen(HDC memdc)
 	CDCHandle cdc{ memdc };
 	CFont font;
 	font.CreateFont(
-		20,
+		24,
 		0,
 		0,
 		0,
@@ -1644,7 +1644,7 @@ void js_panel_window::OnPaintErrorScreen(HDC memdc)
 	cdc.SetBkMode(TRANSPARENT);
 
 	cdc.SetTextColor(RGB(255, 255, 255));
-	cdc.DrawText(L"Aw, crashed :(", -1, &rc, DT_CENTER | DT_VCENTER | DT_NOPREFIX | DT_SINGLELINE);
+	cdc.DrawTextW(L"Spider Monkey Panel JavaScript error", -1, &rc, DT_CENTER | DT_VCENTER | DT_NOPREFIX | DT_SINGLELINE);
 }
 
 void js_panel_window::OnPaintJs(HDC memdc, const CRect& updateRc)
