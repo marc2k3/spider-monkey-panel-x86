@@ -10,6 +10,11 @@ requires at least `foobar2000` `2.0`.
 
 # Changelog
 
+## 1.6.2.25.10.16
+- Update panel error text replacing `Aw, crashed :(` with `Spider Monkey panel JavaScript Error`.
+- Add `fb.RequestBacklog(time)` for `AudioChunk` users. See this thread:
+https://hydrogenaudio.org/index.php/topic,125037.0.html
+
 ## 1.6.2.25.09.26
 - Fix bug when using `FbMetadbHandle` methods to write component playback
 statistics values.
