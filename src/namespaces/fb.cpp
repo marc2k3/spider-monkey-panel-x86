@@ -92,6 +92,7 @@ MJS_DEFINE_JS_FN_FROM_NATIVE(PlayOrPause, Fb::PlayOrPause)
 MJS_DEFINE_JS_FN_FROM_NATIVE(Prev, Fb::Prev)
 MJS_DEFINE_JS_FN_FROM_NATIVE(Random, Fb::Random)
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RegisterMainMenuCommand, Fb::RegisterMainMenuCommand, Fb::RegisterMainMenuCommandWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(RequestBacklog, Fb::RequestBacklog)
 MJS_DEFINE_JS_FN_FROM_NATIVE(Restart, Fb::Restart)
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RunContextCommand, Fb::RunContextCommand, Fb::RunContextCommandWithOpt, 1)
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RunContextCommandWithMetadb, Fb::RunContextCommandWithMetadb, Fb::RunContextCommandWithMetadbWithOpt, 1)
@@ -149,6 +150,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
 		JS_FN("Prev", Prev, 0, kDefaultPropsFlags),
 		JS_FN("Random", Random, 0, kDefaultPropsFlags),
 		JS_FN("RegisterMainMenuCommand", RegisterMainMenuCommand, 2, kDefaultPropsFlags),
+		JS_FN("RequestBacklog", RequestBacklog, 1, kDefaultPropsFlags),
 		JS_FN("Restart", Restart, 0, kDefaultPropsFlags),
 		JS_FN("RunContextCommand", RunContextCommand, 1, kDefaultPropsFlags),
 		JS_FN("RunContextCommandWithMetadb", RunContextCommandWithMetadb, 2, kDefaultPropsFlags),
@@ -728,6 +730,11 @@ void Fb::RegisterMainMenuCommandWithOpt(size_t optArgCount, uint32_t id, const s
 	default:
 		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
+}
+
+void Fb::RequestBacklog(double time)
+{
+	vis_->request_backlog(time);
 }
 
 void Fb::Restart()

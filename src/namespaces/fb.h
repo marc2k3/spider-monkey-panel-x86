@@ -75,6 +75,7 @@ public:
 	void Random();
 	void RegisterMainMenuCommand(uint32_t id, const std::string& name, const std::optional<std::string>& description = std::nullopt);
 	void RegisterMainMenuCommandWithOpt(size_t optArgCount, uint32_t id, const std::string& name, const std::optional<std::string>& description);
+	void RequestBacklog(double time);
 	void Restart();
 	bool RunContextCommand(const std::string& command, uint32_t flags = 0);
 	bool RunContextCommandWithOpt(size_t optArgCount, const std::string& command, uint32_t flags);
@@ -135,7 +136,7 @@ private:
 
 private:
 	JSContext* pJsCtx_ = nullptr;
-	visualisation_stream::ptr vis_;
+	visualisation_stream_v2::ptr vis_;
 };
 
 } // namespace mozjs
