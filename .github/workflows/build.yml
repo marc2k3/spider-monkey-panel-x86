@@ -20,7 +20,7 @@ jobs:
       run: msbuild src\foo_spider_monkey_panel.sln
 
     - name: Upload
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: foo_spider_monkey_panel-${{ github.ref_name }}
         path: component
