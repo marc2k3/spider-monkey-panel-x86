@@ -17,7 +17,7 @@ jobs:
       run: git pull && bootstrap-vcpkg && vcpkg integrate install
 
     - name: Build
-      run: msbuild src\foo_spider_monkey_panel.sln
+      run: msbuild src\foo_spider_monkey_panel.sln /p:PlatformToolset=v143
 
     - name: Upload
       uses: actions/upload-artifact@v5
