@@ -33,18 +33,12 @@ namespace smp::panel
 
 		LRESULT on_message(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) final
 		{
-			switch (msg)
-			{
-			case WM_SYSKEYDOWN:
-			case WM_KEYDOWN:
-				if (uie::window::g_process_keydown_keyboard_shortcuts(wp))
-					return 0;
-				break;
-			default:
-				break;
-			}
+			const auto global_key = (msg == WM_SYSKEYDOWN || msg == WM_KEYDOWN) && uie::window::g_process_keydown_keyboard_shortcuts(wp);
 
-			return OnMessage(hwnd, msg, wp, lp);
+			if (global_key)
+				return 0;
+			else
+				return OnMessage(hwnd, msg, wp, lp);
 		}
 
 		bool have_config_popup() const final
