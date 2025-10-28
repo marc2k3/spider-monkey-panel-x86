@@ -3,7 +3,7 @@
 #include "plman.h"
 
 #include <2K3/CustomSort.hpp>
-#include <fb2k/playlist_lock.h>
+#include <2K3/PlaylistLock.hpp>
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/fb_metadb_handle.h>
 #include <js_objects/fb_metadb_handle_list.h>
@@ -713,51 +713,46 @@ void Plman::SetPlaylistFocusItemByHandle(uint32_t playlistIndex, JsFbMetadbHandl
 
 void Plman::SetPlaylistLockedActions(uint32_t playlistIndex, JS::HandleValue lockedActions)
 {
+	static const std::unordered_map<std::string, int> actionToMask = {
+		{ "AddItems", playlist_lock::filter_add },
+		{ "RemoveItems", playlist_lock::filter_remove },
+		{ "ReorderItems", playlist_lock::filter_reorder },
+		{ "ReplaceItems", playlist_lock::filter_replace },
+		{ "RenamePlaylist", playlist_lock::filter_rename },
+		{ "RemovePlaylist", playlist_lock::filter_remove_playlist },
+		{ "ExecuteDefaultAction", playlist_lock::filter_default_action }
+	};
+
 	const auto api = playlist_manager::get();
+	const auto is_my_lock = PlaylistLock::is_my_lock(playlistIndex);
+	const auto other_lock = api->playlist_lock_is_present(playlistIndex) && !is_my_lock;
 
 	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
 	qwr::QwrException::ExpectTrue(lockedActions.isObjectOrNull(), "`lockedActions` argument is not an object nor null");
+	qwr::QwrException::ExpectTrue(!other_lock, "This lock is owned by a different component");
 
-	auto& playlistLockManager = PlaylistLockManager::Get();
+	uint32_t newLockMask{};
 
-	qwr::QwrException::ExpectTrue(!api->playlist_lock_is_present(playlistIndex) || playlistLockManager.HasLock(playlistIndex), "This lock is owned by a different component");
-
-	uint32_t newLockMask = 0;
 	if (lockedActions.isObject())
 	{
-		static std::unordered_map<std::string, int> actionToMask = {
-			{ "AddItems", playlist_lock::filter_add },
-			{ "RemoveItems", playlist_lock::filter_remove },
-			{ "ReorderItems", playlist_lock::filter_reorder },
-			{ "ReplaceItems", playlist_lock::filter_replace },
-			{ "RenamePlaylist", playlist_lock::filter_rename },
-			{ "RemovePlaylist", playlist_lock::filter_remove_playlist },
-			{ "ExecuteDefaultAction", playlist_lock::filter_default_action }
-		};
-
 		const auto lockedActionsVec = convert::to_native::ToValue<Strings>(pJsCtx_, lockedActions);
+
 		for (const auto& action: lockedActionsVec)
 		{
-			qwr::QwrException::ExpectTrue(actionToMask.count(action), "Unknown action name: {}", action);
-			newLockMask |= actionToMask.at(action);
+			const auto it = actionToMask.find(action);
+			qwr::QwrException::ExpectTrue(it != actionToMask.end(), "Unknown action name: {}", action);
+			newLockMask |= it->second;
 		}
 	}
 
-	const auto currentLockMask = api->playlist_lock_get_filter_mask(playlistIndex);
-	if (newLockMask == currentLockMask)
-	{
+	if (newLockMask == api->playlist_lock_get_filter_mask(playlistIndex))
 		return;
-	}
 
-	if (playlistLockManager.HasLock(playlistIndex))
-	{
-		playlistLockManager.RemoveLock(playlistIndex);
-	}
+	if (is_my_lock)
+		PlaylistLock::remove(playlistIndex);
 
-	if (newLockMask)
-	{
-		playlistLockManager.InstallLock(playlistIndex, newLockMask);
-	}
+	if (newLockMask > 0u)
+		PlaylistLock::add(playlistIndex, newLockMask);
 }
 
 void Plman::SetPlaylistLockedActionsWithOpt(size_t optArgCount, uint32_t playlistIndex, JS::HandleValue lockedActions)

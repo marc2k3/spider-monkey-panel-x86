@@ -87,6 +87,7 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClCompile Include="2K3\DownloadFileAsync.cpp" />
     <ClCompile Include="2K3\FileHelper.cpp" />
     <ClCompile Include="2K3\HTTPRequestAsync.cpp" />
+    <ClCompile Include="2K3\PlaylistLock.cpp" />
     <ClCompile Include="2K3\TagWriter.cpp" />
     <ClCompile Include="2K3\TextFile.cpp" />
     <ClCompile Include="callbacks\ConfigObjectNotify.cpp" />
@@ -136,7 +137,6 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClCompile Include="fb2k\advanced_config.cpp" />
     <ClCompile Include="fb2k\mainmenu.cpp" />
     <ClCompile Include="fb2k\mainmenu_dynamic.cpp" />
-    <ClCompile Include="fb2k\playlist_lock.cpp" />
     <ClCompile Include="fb2k\selection_holder_helper.cpp" />
     <ClCompile Include="fb2k\stats.cpp" />
     <ClCompile Include="js_engine\heartbeat_window.cpp" />
@@ -258,6 +258,7 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClInclude Include="2K3\GetAlbumArtAsync.hpp" />
     <ClInclude Include="2K3\HTTPRequestAsync.hpp" />
     <ClInclude Include="2K3\LoadImageAsync.hpp" />
+    <ClInclude Include="2K3\PlaylistLock.hpp" />
     <ClInclude Include="2K3\String.hpp" />
     <ClInclude Include="2K3\TagWriter.hpp" />
     <ClInclude Include="2K3\TextFile.hpp" />
@@ -299,7 +300,6 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClInclude Include="events\task_controller.h" />
     <ClInclude Include="fb2k\advanced_config.h" />
     <ClInclude Include="fb2k\mainmenu_dynamic.h" />
-    <ClInclude Include="fb2k\playlist_lock.h" />
     <ClInclude Include="fb2k\selection_holder_helper.h" />
     <ClInclude Include="fb2k\stats.h" />
     <ClInclude Include="js_engine\heartbeat_window.h" />

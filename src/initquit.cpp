@@ -1,9 +1,10 @@
 #include <stdafx.h>
 
 #include <libPPUI/gdiplus_helpers.h>
+
+#include <2K3/PlaylistLock.hpp>
 #include <config/delayed_package_utils.h>
 #include <events/event_dispatcher.h>
-#include <fb2k/playlist_lock.h>
 #include <js_engine/js_engine.h>
 
 #include <utils/thread_pool_instance.h>
@@ -42,14 +43,7 @@ namespace
 			}
 			else if (stage == init_stages::before_ui_init)
 			{
-				try
-				{
-					smp::PlaylistLockManager::Get().InitializeLocks();
-				}
-				catch (const qwr::QwrException& e)
-				{
-					qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, fmt::format("Failed to initialize playlist locks: {}", e.what()));
-				}
+				PlaylistLock::before_ui_init();
 
 				const auto ins = core_api::get_my_instance();
 

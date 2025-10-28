@@ -307,9 +307,6 @@
     <ClCompile Include="js_utils\cached_utf8_paths_hack.cpp">
       <Filter>js_utils</Filter>
     </ClCompile>
-    <ClCompile Include="fb2k\playlist_lock.cpp">
-      <Filter>fb2k</Filter>
-    </ClCompile>
     <ClCompile Include="fb2k\mainmenu_dynamic.cpp">
       <Filter>fb2k</Filter>
     </ClCompile>
@@ -471,6 +468,9 @@
     </ClCompile>
     <ClCompile Include="fb2k\metadb_display_field_provider_impl.cpp">
       <Filter>fb2k</Filter>
+    </ClCompile>
+    <ClCompile Include="2K3\PlaylistLock.cpp">
+      <Filter>2K3</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -826,9 +826,6 @@
     <ClInclude Include="js_utils\cached_utf8_paths_hack.h">
       <Filter>js_utils</Filter>
     </ClInclude>
-    <ClInclude Include="fb2k\playlist_lock.h">
-      <Filter>fb2k</Filter>
-    </ClInclude>
     <ClInclude Include="fb2k\mainmenu_dynamic.h">
       <Filter>fb2k</Filter>
     </ClInclude>
@@ -998,6 +995,9 @@
       <Filter>2K3</Filter>
     </ClInclude>
     <ClInclude Include="2K3\HTTPRequestAsync.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\PlaylistLock.hpp">
       <Filter>2K3</Filter>
     </ClInclude>
   </ItemGroup>
