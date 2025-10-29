@@ -114,6 +114,16 @@ private:
 	Plman(JSContext* cx);
 
 private:
+	static inline const std::unordered_map<std::string, uint32_t> s_actionToMask = {
+		{ "AddItems", playlist_lock::filter_add },
+		{ "RemoveItems", playlist_lock::filter_remove },
+		{ "ReorderItems", playlist_lock::filter_reorder },
+		{ "ReplaceItems", playlist_lock::filter_replace },
+		{ "RenamePlaylist", playlist_lock::filter_rename },
+		{ "RemovePlaylist", playlist_lock::filter_remove_playlist },
+		{ "ExecuteDefaultAction", playlist_lock::filter_default_action }
+	};
+
 	JSContext* pJsCtx_ = nullptr;
 	JS::PersistentRootedObject jsPlaylistRecycler_;
 };

@@ -477,45 +477,31 @@ JSObject* Plman::GetPlaylistItems(uint32_t playlistIndex)
 std::optional<pfc::string8> Plman::GetPlaylistLockName(uint32_t playlistIndex)
 {
 	const auto api = playlist_manager::get();
-
 	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
 
-	if (!api->playlist_lock_is_present(playlistIndex))
-	{
-		return std::nullopt;
-	}
-
 	pfc::string8 lockName;
-	if (!api->playlist_lock_query_name(playlistIndex, lockName))
-	{ // should not happen
-		throw qwr::QwrException("Internal error: `playlist_lock_query_name` failed");
-	}
+	if (api->playlist_lock_query_name(playlistIndex, lockName))
+		return lockName;
 
-	return lockName;
+	return std::nullopt;
 }
 
 JS::Value Plman::GetPlaylistLockedActions(uint32_t playlistIndex)
 {
 	const auto api = playlist_manager::get();
-
 	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
 
-	static std::unordered_map<int, std::string> maskToAction = {
-		{ playlist_lock::filter_add, "AddItems" },
-		{ playlist_lock::filter_remove, "RemoveItems" },
-		{ playlist_lock::filter_reorder, "ReorderItems" },
-		{ playlist_lock::filter_replace, "ReplaceItems" },
-		{ playlist_lock::filter_rename, "RenamePlaylist" },
-		{ playlist_lock::filter_remove_playlist, "RemovePlaylist" },
-		{ playlist_lock::filter_default_action, "ExecuteDefaultAction" }
-	};
-
+	Strings actions;
 	const auto lockMask = api->playlist_lock_get_filter_mask(playlistIndex);
-	const auto actions =
-		maskToAction
-		| ranges::views::filter([&](const auto& elem) { return !!(lockMask & elem.first); })
-		| ranges::views::transform([&](const auto& elem) { return elem.second; })
-		| ranges::to_vector;
+
+	if (lockMask > 0u)
+	{
+		for (auto&& [action, mask] : s_actionToMask)
+		{
+			if (WI_IsAnyFlagSet(lockMask, mask))
+				actions.emplace_back(action);
+		}
+	}
 
 	JS::RootedValue jsValue(pJsCtx_);
 	convert::to_js::ToArrayValue(pJsCtx_, actions, &jsValue);
@@ -713,16 +699,6 @@ void Plman::SetPlaylistFocusItemByHandle(uint32_t playlistIndex, JsFbMetadbHandl
 
 void Plman::SetPlaylistLockedActions(uint32_t playlistIndex, JS::HandleValue lockedActions)
 {
-	static const std::unordered_map<std::string, int> actionToMask = {
-		{ "AddItems", playlist_lock::filter_add },
-		{ "RemoveItems", playlist_lock::filter_remove },
-		{ "ReorderItems", playlist_lock::filter_reorder },
-		{ "ReplaceItems", playlist_lock::filter_replace },
-		{ "RenamePlaylist", playlist_lock::filter_rename },
-		{ "RemovePlaylist", playlist_lock::filter_remove_playlist },
-		{ "ExecuteDefaultAction", playlist_lock::filter_default_action }
-	};
-
 	const auto api = playlist_manager::get();
 	const auto is_my_lock = PlaylistLock::is_my_lock(playlistIndex);
 	const auto other_lock = api->playlist_lock_is_present(playlistIndex) && !is_my_lock;
@@ -739,8 +715,8 @@ void Plman::SetPlaylistLockedActions(uint32_t playlistIndex, JS::HandleValue loc
 
 		for (const auto& action: lockedActionsVec)
 		{
-			const auto it = actionToMask.find(action);
-			qwr::QwrException::ExpectTrue(it != actionToMask.end(), "Unknown action name: {}", action);
+			const auto it = s_actionToMask.find(action);
+			qwr::QwrException::ExpectTrue(it != s_actionToMask.end(), "Unknown action name: {}", action);
 			newLockMask |= it->second;
 		}
 	}

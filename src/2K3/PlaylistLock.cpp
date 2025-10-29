@@ -8,14 +8,8 @@ PlaylistLock::PlaylistLock(uint32_t mask) : m_mask(mask) {}
 bool PlaylistLock::add(size_t playlistIndex, uint32_t mask) noexcept
 {
 	auto api = playlist_manager_v5::get();
-
-	if (mask == 0u)
-		return false;
-
-	if (api->playlist_lock_is_present(playlistIndex))
-		return false;
-
 	auto lock = fb2k::service_new<PlaylistLock>(mask);
+
 	if (!api->playlist_lock_install(playlistIndex, lock))
 		return false;
 
