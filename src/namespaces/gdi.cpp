@@ -73,15 +73,11 @@ const JSClass Gdi::JsClass = jsClass;
 const JSFunctionSpec* Gdi::JsFunctions = jsFunctions.data();
 const JSPropertySpec* Gdi::JsProperties = jsProperties.data();
 
-Gdi::Gdi(JSContext* cx)
-	: pJsCtx_(cx)
-{
-}
+Gdi::Gdi(JSContext* ctx) : m_ctx(ctx) {}
 
-std::unique_ptr<Gdi>
-Gdi::CreateNative(JSContext* cx)
+std::unique_ptr<Gdi> Gdi::CreateNative(JSContext* ctx)
 {
-	return std::unique_ptr<Gdi>(new Gdi(cx));
+	return std::unique_ptr<Gdi>(new Gdi(ctx));
 }
 
 size_t Gdi::GetInternalSize()
@@ -94,12 +90,12 @@ JSObject* Gdi::CreateImage(uint32_t w, uint32_t h)
 	std::unique_ptr<Gdiplus::Bitmap> img(new Gdiplus::Bitmap(w, h, PixelFormat32bppPARGB));
 	qwr::error::CheckGdiPlusObject(img);
 
-	return JsGdiBitmap::CreateJs(pJsCtx_, std::move(img));
+	return JsGdiBitmap::CreateJs(m_ctx, std::move(img));
 }
 
 JSObject* Gdi::Font(const std::wstring& fontName, uint32_t pxSize, uint32_t style)
 {
-	return JsGdiFont::Constructor(pJsCtx_, fontName, pxSize, style);
+	return JsGdiFont::Constructor(m_ctx, fontName, pxSize, style);
 }
 
 JSObject* Gdi::FontWithOpt(size_t optArgCount, const std::wstring& fontName, uint32_t pxSize, uint32_t style)
@@ -121,12 +117,12 @@ JSObject* Gdi::Image(const std::wstring& path)
 	if (!bitmap)
 		return nullptr;
 
-	return JsGdiBitmap::CreateJs(pJsCtx_, std::move(bitmap));
+	return JsGdiBitmap::CreateJs(m_ctx, std::move(bitmap));
 }
 
 std::uint32_t Gdi::LoadImageAsync(uint32_t /*window_id*/, const std::wstring& path)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	static uint32_t s_task_id{};
@@ -138,10 +134,10 @@ std::uint32_t Gdi::LoadImageAsync(uint32_t /*window_id*/, const std::wstring& pa
 
 JSObject* Gdi::LoadImageAsyncV2(uint32_t /*window_id*/, const std::wstring& path)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
-	return mozjs::image::GetImagePromise(pJsCtx_, wnd, path);
+	return mozjs::image::GetImagePromise(m_ctx, wnd, path);
 }
 
 } // namespace mozjs

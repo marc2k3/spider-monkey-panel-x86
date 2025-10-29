@@ -146,15 +146,11 @@ const JSClass Utils::JsClass = jsClass;
 const JSFunctionSpec* Utils::JsFunctions = jsFunctions.data();
 const JSPropertySpec* Utils::JsProperties = jsProperties.data();
 
-Utils::Utils(JSContext* cx)
-	: pJsCtx_(cx)
-{
-}
+Utils::Utils(JSContext* ctx) : m_ctx(ctx) {}
 
-std::unique_ptr<Utils>
-Utils::CreateNative(JSContext* cx)
+std::unique_ptr<Utils> Utils::CreateNative(JSContext* ctx)
 {
-	return std::unique_ptr<Utils>(new Utils(cx));
+	return std::unique_ptr<Utils>(new Utils(ctx));
 }
 
 size_t Utils::GetInternalSize()
@@ -229,7 +225,7 @@ bool Utils::CheckFont(const std::wstring& name) const
 uint32_t Utils::ColourPicker(uint32_t, uint32_t default_colour)
 {
 	static std::array<COLORREF, 16> colours{};
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	auto colour = smp::colour::ArgbToColorref(default_colour);
@@ -244,7 +240,7 @@ uint32_t Utils::DetectCharset(const std::wstring& path) const
 
 void Utils::DownloadFileAsync(const std::string& url, const std::wstring& path)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	auto task = fb2k::service_new<::DownloadFileAsync>(wnd, url, path);
@@ -253,7 +249,7 @@ void Utils::DownloadFileAsync(const std::string& url, const std::wstring& path)
 
 void Utils::EditTextFile(const std::wstring& path)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	if (!modal_dialog_scope::can_create())
@@ -276,20 +272,20 @@ JS::Value Utils::FileTest(const std::wstring& path, const std::wstring& mode)
 {
 	if (L"e" == mode) // exists
 	{
-		JS::RootedValue jsValue(pJsCtx_);
-		convert::to_js::ToValue(pJsCtx_, FileExists(path), &jsValue);
+		JS::RootedValue jsValue(m_ctx);
+		convert::to_js::ToValue(m_ctx, FileExists(path), &jsValue);
 		return jsValue;
 	}
 	else if (L"s" == mode)
 	{
-		JS::RootedValue jsValue(pJsCtx_);
-		convert::to_js::ToValue(pJsCtx_, GetFileSize(path), &jsValue);
+		JS::RootedValue jsValue(m_ctx);
+		convert::to_js::ToValue(m_ctx, GetFileSize(path), &jsValue);
 		return jsValue;
 	}
 	else if (L"d" == mode)
 	{
-		JS::RootedValue jsValue(pJsCtx_);
-		convert::to_js::ToValue(pJsCtx_, IsDirectory(path), &jsValue);
+		JS::RootedValue jsValue(m_ctx);
+		convert::to_js::ToValue(m_ctx, IsDirectory(path), &jsValue);
 		return jsValue;
 	}
 	else if (L"split" == mode)
@@ -298,8 +294,8 @@ JS::Value Utils::FileTest(const std::wstring& path, const std::wstring& mode)
 	}
 	else if (L"chardet" == mode)
 	{
-		JS::RootedValue jsValue(pJsCtx_);
-		convert::to_js::ToValue(pJsCtx_, DetectCharset(path), &jsValue);
+		JS::RootedValue jsValue(m_ctx);
+		convert::to_js::ToValue(m_ctx, DetectCharset(path), &jsValue);
 		return jsValue;
 	}
 	else
@@ -320,7 +316,7 @@ std::string Utils::FormatFileSize(uint64_t p) const
 
 void Utils::GetAlbumArtAsync(uint32_t, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
 	qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
@@ -350,12 +346,12 @@ void Utils::GetAlbumArtAsyncWithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetad
 
 JSObject* Utils::GetAlbumArtAsyncV2(uint32_t /*window_id*/, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
 	qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
 
-	return mozjs::art::GetAlbumArtPromise(pJsCtx_, wnd, handle->GetHandle(), art_id, need_stub, only_embed);
+	return mozjs::art::GetAlbumArtPromise(m_ctx, wnd, handle->GetHandle(), art_id, need_stub, only_embed);
 }
 
 JSObject* Utils::GetAlbumArtAsyncV2WithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
@@ -386,7 +382,7 @@ JSObject* Utils::GetAlbumArtEmbedded(const std::string& rawpath, uint32_t art_id
 	if (!bitmap)
 		return nullptr;
 
-	return JsGdiBitmap::CreateJs(pJsCtx_, std::move(bitmap));
+	return JsGdiBitmap::CreateJs(m_ctx, std::move(bitmap));
 }
 
 JSObject* Utils::GetAlbumArtEmbeddedWithOpt(size_t optArgCount, const std::string& rawpath, uint32_t art_id)
@@ -413,7 +409,7 @@ JSObject* Utils::GetAlbumArtV2(JsFbMetadbHandle* handle, uint32_t art_id, bool n
 	if (!bitmap)
 		return nullptr;
 
-	return JsGdiBitmap::CreateJs(pJsCtx_, std::move(bitmap));
+	return JsGdiBitmap::CreateJs(m_ctx, std::move(bitmap));
 }
 
 JSObject* Utils::GetAlbumArtV2WithOpt(size_t optArgCount, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub)
@@ -453,15 +449,15 @@ JSObject* Utils::GetPackageInfo(const std::string& packageId) const
 
 	const auto settings = config::GetPackageSettingsFromPath(*packagePathOpt);
 
-	JS::RootedObject jsDirs(pJsCtx_, JS_NewPlainObject(pJsCtx_));
-	AddProperty(pJsCtx_, jsDirs, "Root", config::GetPackagePath(settings).wstring());
-	AddProperty(pJsCtx_, jsDirs, "Assets", config::GetPackageAssetsDir(settings).wstring());
-	AddProperty(pJsCtx_, jsDirs, "Scripts", config::GetPackageScriptsDir(settings).wstring());
-	AddProperty(pJsCtx_, jsDirs, "Storage", config::GetPackageStorageDir(settings).wstring());
+	JS::RootedObject jsDirs(m_ctx, JS_NewPlainObject(m_ctx));
+	AddProperty(m_ctx, jsDirs, "Root", config::GetPackagePath(settings).wstring());
+	AddProperty(m_ctx, jsDirs, "Assets", config::GetPackageAssetsDir(settings).wstring());
+	AddProperty(m_ctx, jsDirs, "Scripts", config::GetPackageScriptsDir(settings).wstring());
+	AddProperty(m_ctx, jsDirs, "Storage", config::GetPackageStorageDir(settings).wstring());
 
-	JS::RootedObject jsObject(pJsCtx_, JS_NewPlainObject(pJsCtx_));
-	AddProperty(pJsCtx_, jsObject, "Directories", static_cast<JS::HandleObject>(jsDirs));
-	AddProperty(pJsCtx_, jsObject, "Version", settings.scriptVersion);
+	JS::RootedObject jsObject(m_ctx, JS_NewPlainObject(m_ctx));
+	AddProperty(m_ctx, jsObject, "Directories", static_cast<JS::HandleObject>(jsDirs));
+	AddProperty(m_ctx, jsObject, "Version", settings.scriptVersion);
 
 	return jsObject;
 }
@@ -513,8 +509,8 @@ JS::Value Utils::Glob(const std::wstring& pattern, uint32_t exc_mask, uint32_t i
 
 	ranges::sort(files, CmpW());
 
-	JS::RootedValue jsValue(pJsCtx_);
-	convert::to_js::ToArrayValue(pJsCtx_, files, &jsValue);
+	JS::RootedValue jsValue(m_ctx);
+	convert::to_js::ToArrayValue(m_ctx, files, &jsValue);
 	return jsValue;
 }
 
@@ -537,7 +533,7 @@ uint32_t Utils::HTTPRequestAsync(uint32_t type, const std::string& url, const st
 {
 	static uint32_t task_id{};
 
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 	qwr::QwrException::ExpectTrue(type <= 1, "Invalid type argument");
 
@@ -565,7 +561,7 @@ uint32_t Utils::HTTPRequestAsyncWithOpt(size_t optArgCount, uint32_t type, const
 
 std::string Utils::InputBox(uint32_t, const std::string& prompt, const std::string& caption, const std::string& def, bool error_on_cancel)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	if (modal_dialog_scope::can_create())
@@ -722,18 +718,18 @@ void Utils::SetClipboardText(const std::string& text)
 
 JS::Value Utils::ShowHtmlDialog(uint32_t, const std::wstring& htmlCode, JS::HandleValue options)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	if (modal_dialog_scope::can_create())
 	{
 		modal_dialog_scope scope(wnd);
 
-		smp::ui::CDialogHtml dlg(pJsCtx_, htmlCode, options);
+		smp::ui::CDialogHtml dlg(m_ctx, htmlCode, options);
 		int iRet = dlg.DoModal(wnd);
 		if (-1 == iRet || IDABORT == iRet)
 		{
-			if (JS_IsExceptionPending(pJsCtx_))
+			if (JS_IsExceptionPending(m_ctx))
 			{
 				throw JsException();
 			}
@@ -777,8 +773,8 @@ JS::Value Utils::SplitFilePath(const std::wstring& path)
 		out[0] = cleanedPath / "";
 	}
 
-	JS::RootedValue jsValue(pJsCtx_);
-	convert::to_js::ToArrayValue(pJsCtx_, out, &jsValue);
+	JS::RootedValue jsValue(m_ctx);
+	convert::to_js::ToArrayValue(m_ctx, out, &jsValue);
 
 	return jsValue;
 }

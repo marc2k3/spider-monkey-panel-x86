@@ -186,20 +186,16 @@ const JSClass Plman::JsClass = jsClass;
 const JSFunctionSpec* Plman::JsFunctions = jsFunctions.data();
 const JSPropertySpec* Plman::JsProperties = jsProperties.data();
 
-Plman::Plman(JSContext* cx)
-	: pJsCtx_(cx)
-{
-}
+Plman::Plman(JSContext* ctx) : m_ctx(ctx), m_api(playlist_manager_v5::get()) {}
 
 Plman::~Plman()
 {
 	PrepareForGc();
 }
 
-std::unique_ptr<Plman>
-Plman::CreateNative(JSContext* cx)
+std::unique_ptr<Plman> Plman::CreateNative(JSContext* ctx)
 {
-	return std::unique_ptr<Plman>(new Plman(cx));
+	return std::unique_ptr<Plman>(new Plman(ctx));
 }
 
 size_t Plman::GetInternalSize()
@@ -209,36 +205,35 @@ size_t Plman::GetInternalSize()
 
 void Plman::PrepareForGc()
 {
-	jsPlaylistRecycler_.reset();
+	m_recycler.reset();
 }
 
 void Plman::AddItemToPlaybackQueue(JsFbMetadbHandle* handle)
 {
 	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
 
-	playlist_manager::get()->queue_add_item(handle->GetHandle());
+	m_api->queue_add_item(handle->GetHandle());
 }
 
 void Plman::AddLocations(uint32_t playlistIndex, JS::HandleValue locations, bool select)
 {
-	auto api = playlist_manager_v5::get();
-	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "playlistIndex is invalid");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "playlistIndex is invalid");
 	qwr::QwrException::ExpectTrue(
-		!WI_IsFlagSet(api->playlist_lock_get_filter_mask(playlistIndex), playlist_lock::filter_add),
+		!WI_IsFlagSet(m_api->playlist_lock_get_filter_mask(playlistIndex), playlist_lock::filter_add),
 		"a playlist lock prevents adding new items to the specified playlistIndex"
 	);
 
 	pfc::string_list_impl location_list;
 	convert::to_native::ProcessArray<std::string>(
-		pJsCtx_,
+		m_ctx,
 		locations,
 		[&location_list](const auto& location) { location_list.add_item(location.c_str()); });
 
 	if (location_list.get_count() == 0)
 		return; // no error
 
-	const auto base = api->playlist_get_item_count(playlistIndex);
-	const auto g = api->playlist_get_guid(playlistIndex);
+	const auto base = m_api->playlist_get_item_count(playlistIndex);
+	const auto g = m_api->playlist_get_guid(playlistIndex);
 
 	playlist_incoming_item_filter_v2::get()->process_locations_async(
 		location_list,
@@ -264,23 +259,22 @@ void Plman::AddLocationsWithOpt(size_t optArgCount, uint32_t playlistIndex, JS::
 
 void Plman::AddPlaylistItemToPlaybackQueue(uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
-	playlist_manager::get()->queue_add_item_playlist(playlistIndex, playlistItemIndex);
+	m_api->queue_add_item_playlist(playlistIndex, playlistItemIndex);
 }
 
 void Plman::ClearPlaylist(uint32_t playlistIndex)
 {
-	playlist_manager::get()->playlist_clear(playlistIndex);
+	m_api->playlist_clear(playlistIndex);
 }
 
 void Plman::ClearPlaylistSelection(uint32_t playlistIndex)
 {
-	playlist_manager::get()->playlist_clear_selection(playlistIndex);
+	m_api->playlist_clear_selection(playlistIndex);
 }
 
 uint32_t Plman::CreateAutoPlaylist(uint32_t playlistIndex, const std::string& name, const std::string& query, const std::string& sort, uint32_t flags)
 {
-	const uint32_t upos = CreatePlaylist(playlistIndex, name);
-	assert(pfc_infinite != upos);
+	const auto upos = CreatePlaylist(playlistIndex, name);
 
 	try
 	{
@@ -288,8 +282,8 @@ uint32_t Plman::CreateAutoPlaylist(uint32_t playlistIndex, const std::string& na
 		return upos;
 	}
 	catch (const pfc::exception& e)
-	{ // Bad query expression
-		playlist_manager::get()->remove_playlist(upos);
+	{
+		m_api->remove_playlist(upos);
 		throw qwr::QwrException(e.what());
 	}
 }
@@ -311,38 +305,32 @@ uint32_t Plman::CreateAutoPlaylistWithOpt(size_t optArgCount, uint32_t playlistI
 
 uint32_t Plman::CreatePlaylist(uint32_t playlistIndex, const std::string& name)
 {
-	auto api = playlist_manager::get();
-
-	uint32_t upos;
 	if (name.empty())
 	{
-		upos = api->create_playlist_autoname(playlistIndex);
+		return m_api->create_playlist_autoname(playlistIndex);
 	}
 	else
 	{
-		upos = api->create_playlist(name.c_str(), name.length(), playlistIndex);
+		return m_api->create_playlist(name.c_str(), name.length(), playlistIndex);
 	}
-	assert(pfc_infinite != upos);
-	return upos;
 }
 
 uint32_t Plman::DuplicatePlaylist(uint32_t from, const std::string& name)
 {
-	auto api = playlist_manager::get();
-	qwr::QwrException::ExpectTrue(from < api->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(from < m_api->get_playlist_count(), "Index is out of bounds");
 
 	pfc::string8 new_name(name.c_str());
 
 	if (new_name.is_empty())
 	{
-		api->playlist_get_name(from, new_name);
+		m_api->playlist_get_name(from, new_name);
 	}
 
 	metadb_handle_list items;
-	api->playlist_get_all_items(from, items);
+	m_api->playlist_get_all_items(from, items);
 
-	const auto pos = api->create_playlist(new_name, new_name.get_length(), ++from);
-	api->playlist_insert_items(pos, size_t{}, items, pfc::bit_array_false());
+	const auto pos = m_api->create_playlist(new_name, new_name.get_length(), ++from);
+	m_api->playlist_insert_items(pos, size_t{}, items, pfc::bit_array_false());
 	return pos;
 }
 
@@ -361,12 +349,12 @@ uint32_t Plman::DuplicatePlaylistWithOpt(size_t optArgCount, uint32_t from, cons
 
 void Plman::EnsurePlaylistItemVisible(uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
-	playlist_manager::get()->playlist_ensure_visible(playlistIndex, playlistItemIndex);
+	m_api->playlist_ensure_visible(playlistIndex, playlistItemIndex);
 }
 
 bool Plman::ExecutePlaylistDefaultAction(uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
-	return playlist_manager::get()->playlist_execute_default_action(playlistIndex, playlistItemIndex);
+	return m_api->playlist_execute_default_action(playlistIndex, playlistItemIndex);
 }
 
 int32_t Plman::FindByGUID(const std::string& str)
@@ -377,20 +365,14 @@ int32_t Plman::FindByGUID(const std::string& str)
 
 uint32_t Plman::FindOrCreatePlaylist(const std::string& name, bool unlocked)
 {
-	auto api = playlist_manager::get();
-
-	uint32_t upos;
 	if (unlocked)
 	{
-		upos = api->find_or_create_playlist_unlocked(name.c_str(), name.length());
+		return m_api->find_or_create_playlist_unlocked(name.c_str(), name.length());
 	}
 	else
 	{
-		upos = api->find_or_create_playlist(name.c_str(), name.length());
+		return m_api->find_or_create_playlist(name.c_str(), name.length());
 	}
-
-	assert(pfc_infinite != upos);
-	return upos;
 }
 
 int32_t Plman::FindPlaybackQueueItemIndex(JsFbMetadbHandle* handle, uint32_t playlistIndex, uint32_t playlistItemIndex)
@@ -402,19 +384,19 @@ int32_t Plman::FindPlaybackQueueItemIndex(JsFbMetadbHandle* handle, uint32_t pla
 	item.m_playlist = playlistIndex;
 	item.m_item = playlistItemIndex;
 
-	const uint32_t upos = playlist_manager::get()->queue_find_index(item);
-	return (pfc_infinite == upos ? -1 : static_cast<int32_t>(upos));
+	const auto upos = m_api->queue_find_index(item);
+	return static_cast<int32_t>(upos);
 }
 
 int32_t Plman::FindPlaylist(const std::string& name)
 {
-	const uint32_t upos = playlist_manager::get()->find_playlist(name.c_str(), name.length());
-	return (pfc_infinite == upos ? -1 : static_cast<int32_t>(upos));
+	const auto upos = m_api->find_playlist(name.c_str(), name.length());
+	return static_cast<int32_t>(upos);
 }
 
 void Plman::FlushPlaybackQueue()
 {
-	playlist_manager::get()->queue_flush();
+	m_api->queue_flush();
 }
 
 std::string Plman::GetGUID(uint32_t playlistIndex)
@@ -430,17 +412,17 @@ std::string Plman::GetGUID(uint32_t playlistIndex)
 JS::Value Plman::GetPlaybackQueueContents()
 {
 	pfc::list_t<t_playback_queue_item> contents;
-	playlist_manager::get()->queue_get_contents(contents);
+	m_api->queue_get_contents(contents);
 
-	JS::RootedValue jsValue(pJsCtx_);
-	convert::to_js::ToArrayValue(pJsCtx_, contents, &jsValue);
+	JS::RootedValue jsValue(m_ctx);
+	convert::to_js::ToArrayValue(m_ctx, contents, &jsValue);
 	return jsValue;
 }
 
 JSObject* Plman::GetPlaybackQueueHandles()
 {
 	pfc::list_t<t_playback_queue_item> contents;
-	playlist_manager::get()->queue_get_contents(contents);
+	m_api->queue_get_contents(contents);
 
 	metadb_handle_list items;
 	for (t_size i = 0, count = contents.get_count(); i < count; ++i)
@@ -448,39 +430,38 @@ JSObject* Plman::GetPlaybackQueueHandles()
 		items.add_item(contents[i].m_handle);
 	}
 
-	return JsFbMetadbHandleList::CreateJs(pJsCtx_, items);
+	return JsFbMetadbHandleList::CreateJs(m_ctx, items);
 }
 
 JSObject* Plman::GetPlayingItemLocation()
 {
 	auto playlistIndex = t_size(pfc_infinite);
 	auto playlistItemIndex = t_size(pfc_infinite);
-	bool isValid = playlist_manager::get()->get_playing_item_location(&playlistIndex, &playlistItemIndex);
+	bool isValid = m_api->get_playing_item_location(&playlistIndex, &playlistItemIndex);
 
-	return JsFbPlayingItemLocation::CreateJs(pJsCtx_, isValid, playlistIndex, playlistItemIndex);
+	return JsFbPlayingItemLocation::CreateJs(m_ctx, isValid, playlistIndex, playlistItemIndex);
 }
 
 int32_t Plman::GetPlaylistFocusItemIndex(uint32_t playlistIndex)
 {
-	const uint32_t upos = playlist_manager::get()->playlist_get_focus_item(playlistIndex);
-	return (pfc_infinite == upos ? -1 : static_cast<int32_t>(upos));
+	const auto upos = m_api->playlist_get_focus_item(playlistIndex);
+	return static_cast<int32_t>(upos);
 }
 
 JSObject* Plman::GetPlaylistItems(uint32_t playlistIndex)
 {
 	metadb_handle_list items;
-	playlist_manager::get()->playlist_get_all_items(playlistIndex, items);
+	m_api->playlist_get_all_items(playlistIndex, items);
 
-	return JsFbMetadbHandleList::CreateJs(pJsCtx_, items);
+	return JsFbMetadbHandleList::CreateJs(m_ctx, items);
 }
 
 std::optional<pfc::string8> Plman::GetPlaylistLockName(uint32_t playlistIndex)
 {
-	const auto api = playlist_manager::get();
-	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	pfc::string8 lockName;
-	if (api->playlist_lock_query_name(playlistIndex, lockName))
+	if (m_api->playlist_lock_query_name(playlistIndex, lockName))
 		return lockName;
 
 	return std::nullopt;
@@ -488,11 +469,10 @@ std::optional<pfc::string8> Plman::GetPlaylistLockName(uint32_t playlistIndex)
 
 JS::Value Plman::GetPlaylistLockedActions(uint32_t playlistIndex)
 {
-	const auto api = playlist_manager::get();
-	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	Strings actions;
-	const auto lockMask = api->playlist_lock_get_filter_mask(playlistIndex);
+	const auto lockMask = m_api->playlist_lock_get_filter_mask(playlistIndex);
 
 	if (lockMask > 0u)
 	{
@@ -503,24 +483,24 @@ JS::Value Plman::GetPlaylistLockedActions(uint32_t playlistIndex)
 		}
 	}
 
-	JS::RootedValue jsValue(pJsCtx_);
-	convert::to_js::ToArrayValue(pJsCtx_, actions, &jsValue);
+	JS::RootedValue jsValue(m_ctx);
+	convert::to_js::ToArrayValue(m_ctx, actions, &jsValue);
 	return jsValue;
 }
 
 pfc::string8 Plman::GetPlaylistName(uint32_t playlistIndex)
 {
 	pfc::string8 name;
-	playlist_manager::get()->playlist_get_name(playlistIndex, name);
+	m_api->playlist_get_name(playlistIndex, name);
 	return name;
 }
 
 JSObject* Plman::GetPlaylistSelectedItems(uint32_t playlistIndex)
 {
 	metadb_handle_list items;
-	playlist_manager::get()->playlist_get_selected_items(playlistIndex, items);
+	m_api->playlist_get_selected_items(playlistIndex, items);
 
-	return JsFbMetadbHandleList::CreateJs(pJsCtx_, items);
+	return JsFbMetadbHandleList::CreateJs(m_ctx, items);
 }
 
 void Plman::InsertPlaylistItems(uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
@@ -528,7 +508,7 @@ void Plman::InsertPlaylistItems(uint32_t playlistIndex, uint32_t base, JsFbMetad
 	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
 	pfc::bit_array_val selection(select);
-	playlist_manager::get()->playlist_insert_items(playlistIndex, base, handles->GetHandleList(), selection);
+	m_api->playlist_insert_items(playlistIndex, base, handles->GetHandleList(), selection);
 }
 
 void Plman::InsertPlaylistItemsWithOpt(size_t optArgCount, uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
@@ -548,7 +528,7 @@ void Plman::InsertPlaylistItemsFilter(uint32_t playlistIndex, uint32_t base, JsF
 {
 	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
-	playlist_manager::get()->playlist_insert_items_filter(playlistIndex, base, handles->GetHandleList(), select);
+	m_api->playlist_insert_items_filter(playlistIndex, base, handles->GetHandleList(), select);
 }
 
 void Plman::InsertPlaylistItemsFilterWithOpt(size_t optArgCount, uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
@@ -566,50 +546,46 @@ void Plman::InsertPlaylistItemsFilterWithOpt(size_t optArgCount, uint32_t playli
 
 bool Plman::IsAutoPlaylist(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < playlist_manager::get()->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	return autoplaylist_manager::get()->is_client_present(playlistIndex);
 }
 
 bool Plman::IsPlaylistItemSelected(uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
-	return playlist_manager::get()->playlist_is_item_selected(playlistIndex, playlistItemIndex);
+	return m_api->playlist_is_item_selected(playlistIndex, playlistItemIndex);
 }
 
 bool Plman::IsPlaylistLocked(uint32_t playlistIndex)
 {
-	auto api = playlist_manager::get();
-	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
-	return api->playlist_lock_is_present(playlistIndex);
+	return m_api->playlist_lock_is_present(playlistIndex);
 }
 
 bool Plman::IsRedoAvailable(uint32_t playlistIndex)
 {
-	auto api = playlist_manager::get();
-	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
-	return api->playlist_is_redo_available(playlistIndex);
+	return m_api->playlist_is_redo_available(playlistIndex);
 }
 
 bool Plman::IsUndoAvailable(uint32_t playlistIndex)
 {
-	auto api = playlist_manager::get();
-	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
-	return api->playlist_is_undo_available(playlistIndex);
+	return m_api->playlist_is_undo_available(playlistIndex);
 }
 
 bool Plman::MovePlaylist(uint32_t from, uint32_t to)
 {
-	auto api = playlist_manager::get();
-	const auto count = api->get_playlist_count();
+	const auto count = m_api->get_playlist_count();
 
 	if (from < count && to < count && from != to)
 	{
 		auto sort_order = CustomSort::order(count);
 		pfc::create_move_items_permutation(sort_order.get_ptr(), count, pfc::bit_array_one(from), static_cast<int>(to - from));
-		return api->reorder(sort_order.get_ptr(), count);
+		return m_api->reorder(sort_order.get_ptr(), count);
 	}
 	
 	return false;
@@ -617,44 +593,41 @@ bool Plman::MovePlaylist(uint32_t from, uint32_t to)
 
 bool Plman::MovePlaylistSelection(uint32_t playlistIndex, int32_t delta)
 {
-	return playlist_manager::get()->playlist_move_selection(playlistIndex, delta);
+	return m_api->playlist_move_selection(playlistIndex, delta);
 }
 
 uint32_t Plman::PlaylistItemCount(uint32_t playlistIndex)
 {
-	return playlist_manager::get()->playlist_get_item_count(playlistIndex);
+	return m_api->playlist_get_item_count(playlistIndex);
 }
 
 void Plman::Redo(uint32_t playlistIndex)
 {
 	qwr::QwrException::ExpectTrue(IsRedoAvailable(playlistIndex), "Redo is not available");
 
-	(void)playlist_manager::get()->playlist_redo_restore(playlistIndex);
+	m_api->playlist_redo_restore(playlistIndex);
 }
 
 void Plman::RemoveItemFromPlaybackQueue(uint32_t index)
 {
-	playlist_manager::get()->queue_remove_mask(pfc::bit_array_one(index));
+	m_api->queue_remove_mask(pfc::bit_array_one(index));
 }
 
 void Plman::RemoveItemsFromPlaybackQueue(JS::HandleValue affectedItems)
 {
-	auto api = playlist_manager::get();
-	pfc::bit_array_bittable affected(api->queue_get_count());
-
-	convert::to_native::ProcessArray<uint32_t>(pJsCtx_, affectedItems, [&affected](uint32_t index) { affected.set(index, true); });
-
-	api->queue_remove_mask(affected);
+	pfc::bit_array_bittable affected(m_api->queue_get_count());
+	convert::to_native::ProcessArray<uint32_t>(m_ctx, affectedItems, [&affected](uint32_t index) { affected.set(index, true); });
+	m_api->queue_remove_mask(affected);
 }
 
 bool Plman::RemovePlaylist(uint32_t playlistIndex)
 {
-	return playlist_manager::get()->remove_playlist(playlistIndex);
+	return m_api->remove_playlist(playlistIndex);
 }
 
 void Plman::RemovePlaylistSelection(uint32_t playlistIndex, bool crop)
 {
-	playlist_manager::get()->playlist_remove_selection(playlistIndex, crop);
+	m_api->playlist_remove_selection(playlistIndex, crop);
 }
 
 void Plman::RemovePlaylistSelectionWithOpt(size_t optArgCount, uint32_t playlistIndex, bool crop)
@@ -672,12 +645,12 @@ void Plman::RemovePlaylistSelectionWithOpt(size_t optArgCount, uint32_t playlist
 
 bool Plman::RemovePlaylistSwitch(uint32_t playlistIndex)
 {
-	return playlist_manager::get()->remove_playlist_switch(playlistIndex);
+	return m_api->remove_playlist_switch(playlistIndex);
 }
 
 bool Plman::RenamePlaylist(uint32_t playlistIndex, const std::string& name)
 {
-	return playlist_manager::get()->playlist_rename(playlistIndex, name.c_str(), name.length());
+	return m_api->playlist_rename(playlistIndex, name.c_str(), name.length());
 }
 
 void Plman::SetActivePlaylistContext()
@@ -687,31 +660,30 @@ void Plman::SetActivePlaylistContext()
 
 void Plman::SetPlaylistFocusItem(uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
-	playlist_manager::get()->playlist_set_focus_item(playlistIndex, playlistItemIndex);
+	m_api->playlist_set_focus_item(playlistIndex, playlistItemIndex);
 }
 
 void Plman::SetPlaylistFocusItemByHandle(uint32_t playlistIndex, JsFbMetadbHandle* handle)
 {
 	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
 
-	playlist_manager::get()->playlist_set_focus_by_handle(playlistIndex, handle->GetHandle());
+	m_api->playlist_set_focus_by_handle(playlistIndex, handle->GetHandle());
 }
 
 void Plman::SetPlaylistLockedActions(uint32_t playlistIndex, JS::HandleValue lockedActions)
 {
-	const auto api = playlist_manager::get();
-	const auto is_my_lock = PlaylistLock::is_my_lock(playlistIndex);
-	const auto other_lock = api->playlist_lock_is_present(playlistIndex) && !is_my_lock;
-
-	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 	qwr::QwrException::ExpectTrue(lockedActions.isObjectOrNull(), "`lockedActions` argument is not an object nor null");
+
+	const auto is_my_lock = PlaylistLock::is_my_lock(playlistIndex);
+	const auto other_lock = m_api->playlist_lock_is_present(playlistIndex) && !is_my_lock;
 	qwr::QwrException::ExpectTrue(!other_lock, "This lock is owned by a different component");
 
 	uint32_t newLockMask{};
 
 	if (lockedActions.isObject())
 	{
-		const auto lockedActionsVec = convert::to_native::ToValue<Strings>(pJsCtx_, lockedActions);
+		const auto lockedActionsVec = convert::to_native::ToValue<Strings>(m_ctx, lockedActions);
 
 		for (const auto& action: lockedActionsVec)
 		{
@@ -721,7 +693,7 @@ void Plman::SetPlaylistLockedActions(uint32_t playlistIndex, JS::HandleValue loc
 		}
 	}
 
-	if (newLockMask == api->playlist_lock_get_filter_mask(playlistIndex))
+	if (newLockMask == m_api->playlist_lock_get_filter_mask(playlistIndex))
 		return;
 
 	if (is_my_lock)
@@ -746,26 +718,25 @@ void Plman::SetPlaylistLockedActionsWithOpt(size_t optArgCount, uint32_t playlis
 
 void Plman::SetPlaylistSelection(uint32_t playlistIndex, JS::HandleValue affectedItems, bool state)
 {
-	auto api = playlist_manager::get();
-	pfc::bit_array_bittable affected(api->playlist_get_item_count(playlistIndex));
+	pfc::bit_array_bittable affected(m_api->playlist_get_item_count(playlistIndex));
 
 	convert::to_native::ProcessArray<uint32_t>(
-		pJsCtx_,
+		m_ctx,
 		affectedItems,
 		[&affected](uint32_t index) { affected.set(index, true); });
 
 	pfc::bit_array_val status(state);
-	api->playlist_set_selection(playlistIndex, affected, status);
+	m_api->playlist_set_selection(playlistIndex, affected, status);
 }
 
 void Plman::SetPlaylistSelectionSingle(uint32_t playlistIndex, uint32_t playlistItemIndex, bool state)
 {
-	playlist_manager::get()->playlist_set_selection_single(playlistIndex, playlistItemIndex, state);
+	m_api->playlist_set_selection_single(playlistIndex, playlistItemIndex, state);
 }
 
 bool Plman::ShowAutoPlaylistUI(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < playlist_manager::get()->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	auto api = autoplaylist_manager::get();
 	if (!api->is_client_present(playlistIndex))
@@ -781,7 +752,7 @@ bool Plman::ShowAutoPlaylistUI(uint32_t playlistIndex)
 
 bool Plman::SortByFormat(uint32_t playlistIndex, const std::string& pattern, bool selOnly)
 {
-	return playlist_manager::get()->playlist_sort_by_format(playlistIndex, pattern.empty() ? nullptr : pattern.c_str(), selOnly);
+	return m_api->playlist_sort_by_format(playlistIndex, pattern.empty() ? nullptr : pattern.c_str(), selOnly);
 }
 
 bool Plman::SortByFormatWithOpt(size_t optArgCount, uint32_t playlistIndex, const std::string& pattern, bool selOnly)
@@ -799,10 +770,8 @@ bool Plman::SortByFormatWithOpt(size_t optArgCount, uint32_t playlistIndex, cons
 
 bool Plman::SortByFormatV2(uint32_t playlistIndex, const std::string& pattern, int8_t direction)
 {
-	auto api = playlist_manager::get();
-
 	metadb_handle_list handles;
-	api->playlist_get_all_items(playlistIndex, handles);
+	m_api->playlist_get_all_items(playlistIndex, handles);
 
 	auto order = ranges::views::indices(handles.get_count()) | ranges::to_vector;
 
@@ -810,8 +779,7 @@ bool Plman::SortByFormatV2(uint32_t playlistIndex, const std::string& pattern, i
 	titleformat_compiler::get()->compile_safe(script, pattern.c_str());
 
 	metadb_handle_list_helper::sort_by_format_get_order(handles, order.data(), script, nullptr, direction);
-
-	return api->playlist_reorder_items(playlistIndex, order.data(), order.size());
+	return m_api->playlist_reorder_items(playlistIndex, order.data(), order.size());
 }
 
 bool Plman::SortByFormatV2WithOpt(size_t optArgCount, uint32_t playlistIndex, const std::string& pattern, int8_t direction)
@@ -829,8 +797,7 @@ bool Plman::SortByFormatV2WithOpt(size_t optArgCount, uint32_t playlistIndex, co
 
 void Plman::SortPlaylistsByName(int8_t direction)
 {
-	auto api = playlist_manager::get();
-	const auto count = api->get_playlist_count();
+	const auto count = m_api->get_playlist_count();
 
 	pfc::array_t<CustomSort::Item> items;
 	items.set_size(count);
@@ -840,13 +807,13 @@ void Plman::SortPlaylistsByName(int8_t direction)
 
 	for (auto&& [index, item] : ranges::views::enumerate(items))
 	{
-		api->playlist_get_name(index, name);
+		m_api->playlist_get_name(index, name);
 		item.index = index;
 		item.text = pfc::wideFromUTF8(name);
 	}
 
 	auto order = CustomSort::sort(items, direction);
-	api->reorder(order.get_ptr(), count);
+	m_api->reorder(order.get_ptr(), count);
 }
 
 void Plman::SortPlaylistsByNameWithOpt(size_t optArgCount, int8_t direction)
@@ -866,32 +833,31 @@ void Plman::Undo(uint32_t playlistIndex)
 {
 	qwr::QwrException::ExpectTrue(IsUndoAvailable(playlistIndex), "Undo is not available");
 
-	(void)playlist_manager::get()->playlist_undo_restore(playlistIndex);
+	m_api->playlist_undo_restore(playlistIndex);
 }
 
 void Plman::UndoBackup(uint32_t playlistIndex)
 {
-	auto api = playlist_manager::get();
-	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
-	api->playlist_undo_backup(playlistIndex);
+	m_api->playlist_undo_backup(playlistIndex);
 }
 
 int32_t Plman::get_ActivePlaylist()
 {
-	uint32_t upos = playlist_manager::get()->get_active_playlist();
-	return (pfc_infinite == upos ? -1 : static_cast<int32_t>(upos));
+	const auto upos = m_api->get_active_playlist();
+	return static_cast<int32_t>(upos);
 }
 
 uint32_t Plman::get_PlaybackOrder()
 {
-	return playlist_manager::get()->playback_order_get_active();
+	return m_api->playback_order_get_active();
 }
 
 int32_t Plman::get_PlayingPlaylist()
 {
-	uint32_t upos = playlist_manager::get()->get_playing_playlist();
-	return (pfc_infinite == upos ? -1 : static_cast<int32_t>(upos));
+	const auto upos = m_api->get_playing_playlist();
+	return static_cast<int32_t>(upos);
 }
 
 uint32_t Plman::get_PlaylistCount()
@@ -901,36 +867,33 @@ uint32_t Plman::get_PlaylistCount()
 
 JSObject* Plman::get_PlaylistRecycler()
 {
-	if (!jsPlaylistRecycler_.initialized())
+	if (!m_recycler.initialized())
 	{
-		jsPlaylistRecycler_.init(pJsCtx_, JsFbPlaylistRecycler::CreateJs(pJsCtx_));
+		m_recycler.init(m_ctx, JsFbPlaylistRecycler::CreateJs(m_ctx));
 	}
 
-	return jsPlaylistRecycler_;
+	return m_recycler;
 }
 
 void Plman::put_ActivePlaylist(uint32_t playlistIndex)
 {
-	auto api = playlist_manager::get();
-	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
-	api->set_active_playlist(playlistIndex);
+	m_api->set_active_playlist(playlistIndex);
 }
 
 void Plman::put_PlaybackOrder(uint32_t order)
 {
-	auto api = playlist_manager::get();
-	qwr::QwrException::ExpectTrue(order < api->playback_order_get_count(), "Unknown playback order id: {}", order);
+	qwr::QwrException::ExpectTrue(order < m_api->playback_order_get_count(), "Unknown playback order id: {}", order);
 
-	api->playback_order_set_active(order);
+	m_api->playback_order_set_active(order);
 }
 
 void Plman::put_PlayingPlaylist(uint32_t playlistIndex)
 {
-	auto api = playlist_manager::get();
-	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
-	api->set_playing_playlist(playlistIndex);
+	m_api->set_playing_playlist(playlistIndex);
 }
 
 } // namespace mozjs

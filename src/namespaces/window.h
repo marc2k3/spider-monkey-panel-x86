@@ -32,7 +32,7 @@ public:
 	// @remark No need to cleanup JS here, since it must be performed manually beforehand anyway
 	~Window() override;
 
-	static std::unique_ptr<Window> CreateNative(JSContext* cx, smp::panel::js_panel_window& parentPanel);
+	static std::unique_ptr<Window> CreateNative(JSContext* ctx, smp::panel::js_panel_window& parentPanel);
 	static size_t GetInternalSize(const smp::panel::js_panel_window& parentPanel);
 
 public:
@@ -112,7 +112,7 @@ public: // props
 	void put_MinWidth(uint32_t width);
 
 private:
-	Window(JSContext* cx, smp::panel::js_panel_window& parentPanel, std::unique_ptr<FbProperties> fbProperties);
+	Window(JSContext* ctx, smp::panel::js_panel_window& parent, std::unique_ptr<FbProperties> properties);
 
 	struct DefineScriptOptions
 	{
@@ -120,23 +120,19 @@ private:
 		std::string version;
 		struct Features
 		{
-			bool dragAndDrop = false;
+			bool dragAndDrop{};
 			bool grabFocus = true;
 		} features;
 	};
 	DefineScriptOptions ParseDefineScriptOptions(JS::HandleValue options);
 
 private:
-	JSContext* pJsCtx_;
-	smp::panel::js_panel_window& parentPanel_;
-
-	bool isFinalized_ = false; ///< if true, then parentPanel_ might be already inaccessible
-
-	bool isScriptDefined_ = false;
-	std::unique_ptr<FbProperties> fbProperties_;
-
-	JS::PersistentRootedObject jsTooltip_;
-	JsFbTooltip* pNativeTooltip_ = nullptr;
+	JSContext* m_ctx{};
+	smp::panel::js_panel_window& m_parent;
+	bool m_isFinalized{}, m_isScriptDefined{};
+	std::unique_ptr<FbProperties> m_properties;
+	JS::PersistentRootedObject m_tooltip;
+	JsFbTooltip* m_native_tooltip{};
 };
 
 } // namespace mozjs

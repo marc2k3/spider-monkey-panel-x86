@@ -28,7 +28,7 @@ public:
 public:
 	~Plman() override;
 
-	static std::unique_ptr<Plman> CreateNative(JSContext* cx);
+	static std::unique_ptr<Plman> CreateNative(JSContext* ctx);
 	static size_t GetInternalSize();
 
 	void PrepareForGc();
@@ -111,7 +111,7 @@ public:
 	void put_PlayingPlaylist(uint32_t playlistIndex);
 
 private:
-	Plman(JSContext* cx);
+	Plman(JSContext* ctx);
 
 private:
 	static inline const std::unordered_map<std::string, uint32_t> s_actionToMask = {
@@ -124,8 +124,9 @@ private:
 		{ "ExecuteDefaultAction", playlist_lock::filter_default_action }
 	};
 
-	JSContext* pJsCtx_ = nullptr;
-	JS::PersistentRootedObject jsPlaylistRecycler_;
+	JSContext* m_ctx{};
+	JS::PersistentRootedObject m_recycler;
+	playlist_manager_v5::ptr m_api;
 };
 
 } // namespace mozjs

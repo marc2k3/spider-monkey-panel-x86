@@ -23,7 +23,7 @@ public:
 public:
 	~Gdi() override = default;
 
-	static std::unique_ptr<Gdi> CreateNative(JSContext* cx);
+	static std::unique_ptr<Gdi> CreateNative(JSContext* ctx);
 	static size_t GetInternalSize();
 
 public:
@@ -35,10 +35,10 @@ public:
 	JSObject* LoadImageAsyncV2(uint32_t /*window_id*/, const std::wstring& path);
 
 private:
-	Gdi(JSContext* cx);
+	Gdi(JSContext* ctx);
 
 private:
-	JSContext* pJsCtx_ = nullptr;
+	JSContext* m_ctx{};
 };
 
 } // namespace mozjs

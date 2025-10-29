@@ -224,16 +224,14 @@ const JSClass Fb::JsClass = jsClass;
 const JSFunctionSpec* Fb::JsFunctions = jsFunctions.data();
 const JSPropertySpec* Fb::JsProperties = jsProperties.data();
 
-Fb::Fb(JSContext* cx)
-	: pJsCtx_(cx)
+Fb::Fb(JSContext* ctx) : m_ctx(ctx)
 {
 	visualisation_manager::get()->create_stream(vis_, visualisation_manager::KStreamFlagNewFFT);
 }
 
-std::unique_ptr<Fb>
-Fb::CreateNative(JSContext* cx)
+std::unique_ptr<Fb> Fb::CreateNative(JSContext* ctx)
 {
-	return std::unique_ptr<Fb>(new Fb(cx));
+	return std::unique_ptr<Fb>(new Fb(ctx));
 }
 
 size_t Fb::GetInternalSize()
@@ -243,7 +241,7 @@ size_t Fb::GetInternalSize()
 
 JSObject* Fb::AcquireUiSelectionHolder()
 {
-	return JsFbUiSelectionHolder::CreateJs(pJsCtx_, ui_selection_manager::get()->acquire());
+	return JsFbUiSelectionHolder::CreateJs(m_ctx, ui_selection_manager::get()->acquire());
 }
 
 void Fb::AddDirectory()
@@ -261,12 +259,12 @@ uint32_t Fb::AddLocationsAsync(JS::HandleValue locations)
 	static uint32_t s_task_id{};
 	static constexpr uint32_t s_flags = playlist_incoming_item_filter_v2::op_flag_no_filter | playlist_incoming_item_filter_v2::op_flag_delay_ui;
 
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	pfc::string_list_impl location_list;
 	convert::to_native::ProcessArray<std::string>(
-		pJsCtx_,
+		m_ctx,
 		locations,
 		[&location_list](const auto& location)
 		{
@@ -324,22 +322,22 @@ bool Fb::CopyHandleListToClipboard(JsFbMetadbHandleList* handles)
 
 JSObject* Fb::CreateContextMenuManager()
 {
-	return JsContextMenuManager::CreateJs(pJsCtx_);
+	return JsContextMenuManager::CreateJs(m_ctx);
 }
 
 JSObject* Fb::CreateHandleList()
 {
-	return JsFbMetadbHandleList::Constructor(pJsCtx_, JS::UndefinedHandleValue);
+	return JsFbMetadbHandleList::Constructor(m_ctx, JS::UndefinedHandleValue);
 }
 
 JSObject* Fb::CreateMainMenuManager()
 {
-	return JsMainMenuManager::CreateJs(pJsCtx_);
+	return JsMainMenuManager::CreateJs(m_ctx);
 }
 
 JSObject* Fb::CreateProfiler(const std::string& name)
 {
-	return JsFbProfiler::Constructor(pJsCtx_, name);
+	return JsFbProfiler::Constructor(m_ctx, name);
 }
 
 JSObject* Fb::CreateProfilerWithOpt(size_t optArgCount, const std::string& name)
@@ -357,7 +355,7 @@ JSObject* Fb::CreateProfilerWithOpt(size_t optArgCount, const std::string& name)
 
 uint32_t Fb::DoDragDrop(uint32_t, JsFbMetadbHandleList* handles, uint32_t okEffects, JS::HandleValue options)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
@@ -429,7 +427,7 @@ JSObject* Fb::GetAudioChunk(double requested_length, double offset)
 
 	if (vis_->get_absolute_time(time) && vis_->get_chunk_absolute(chunk, time + offset, requested_length))
 	{
-		return JsFbAudioChunk::CreateJs(pJsCtx_, chunk);
+		return JsFbAudioChunk::CreateJs(m_ctx, chunk);
 	}
 	
 	return nullptr;
@@ -447,7 +445,7 @@ JSObject* Fb::GetAudioChunkWithOpt(size_t optArgCount, double requested_length, 
 
 JSObject* Fb::GetClipboardContents(uint32_t)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	auto api = ole_interaction::get();
@@ -469,7 +467,7 @@ JSObject* Fb::GetClipboardContents(uint32_t)
 		}
 	}
 
-	return JsFbMetadbHandleList::CreateJs(pJsCtx_, items);
+	return JsFbMetadbHandleList::CreateJs(m_ctx, items);
 }
 
 JSObject* Fb::GetClipboardContentsWithOpt(size_t optArgCount, uint32_t hWnd)
@@ -520,7 +518,7 @@ JSObject* Fb::GetFocusItem(bool force)
 		return nullptr;
 	}
 
-	return JsFbMetadbHandle::CreateJs(pJsCtx_, metadb);
+	return JsFbMetadbHandle::CreateJs(m_ctx, metadb);
 }
 
 JSObject* Fb::GetFocusItemWithOpt(size_t optArgCount, bool force)
@@ -541,7 +539,7 @@ JSObject* Fb::GetLibraryItems()
 	metadb_handle_list items;
 	library_manager::get()->get_all_items(items);
 
-	return JsFbMetadbHandleList::CreateJs(pJsCtx_, items);
+	return JsFbMetadbHandleList::CreateJs(m_ctx, items);
 }
 
 pfc::string8 Fb::GetLibraryRelativePath(JsFbMetadbHandle* handle)
@@ -561,7 +559,7 @@ JSObject* Fb::GetNowPlaying()
 		return nullptr;
 	}
 
-	return JsFbMetadbHandle::CreateJs(pJsCtx_, metadb);
+	return JsFbMetadbHandle::CreateJs(m_ctx, metadb);
 }
 
 std::string Fb::GetOutputDevices()
@@ -613,7 +611,7 @@ JSObject* Fb::GetQueryItems(JsFbMetadbHandleList* handles, const std::string& qu
 	filter->test_multi(dst_list, mask.get_ptr());
 	dst_list.filter_mask(mask.get_ptr());
 
-	return JsFbMetadbHandleList::CreateJs(pJsCtx_, dst_list);
+	return JsFbMetadbHandleList::CreateJs(m_ctx, dst_list);
 }
 
 JSObject* Fb::GetSelection()
@@ -626,7 +624,7 @@ JSObject* Fb::GetSelection()
 		return nullptr;
 	}
 
-	return JsFbMetadbHandle::CreateJs(pJsCtx_, items[0]);
+	return JsFbMetadbHandle::CreateJs(m_ctx, items[0]);
 }
 
 JSObject* Fb::GetSelections(uint32_t flags)
@@ -634,7 +632,7 @@ JSObject* Fb::GetSelections(uint32_t flags)
 	metadb_handle_list items;
 	ui_selection_manager_v2::get()->get_selection(items, flags);
 
-	return JsFbMetadbHandleList::CreateJs(pJsCtx_, items);
+	return JsFbMetadbHandleList::CreateJs(m_ctx, items);
 }
 
 JSObject* Fb::GetSelectionsWithOpt(size_t optArgCount, uint32_t flags)
@@ -713,7 +711,7 @@ void Fb::Random()
 
 void Fb::RegisterMainMenuCommand(uint32_t id, const std::string& name, const std::optional<std::string>& description)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	DynamicMainMenuManager::Get().RegisterCommand(wnd, id, name, description);
@@ -773,10 +771,10 @@ bool Fb::RunContextCommandWithMetadb(const std::string& command, JS::HandleValue
 {
 	qwr::QwrException::ExpectTrue(handle.isObject(), "handle argument is invalid");
 
-	JS::RootedObject jsObject(pJsCtx_, &handle.toObject());
+	JS::RootedObject jsObject(m_ctx, &handle.toObject());
 
-	auto* jsHandle = GetInnerInstancePrivate<JsFbMetadbHandle>(pJsCtx_, jsObject);
-	auto* jsHandleList = GetInnerInstancePrivate<JsFbMetadbHandleList>(pJsCtx_, jsObject);
+	auto* jsHandle = GetInnerInstancePrivate<JsFbMetadbHandle>(m_ctx, jsObject);
+	auto* jsHandleList = GetInnerInstancePrivate<JsFbMetadbHandleList>(m_ctx, jsObject);
 	qwr::QwrException::ExpectTrue(jsHandle || jsHandleList, "handle argument is invalid");
 
 	metadb_handle_list handle_list;
@@ -900,12 +898,12 @@ void Fb::Stop()
 
 JSObject* Fb::TitleFormat(const std::string& expression)
 {
-	return JsFbTitleFormat::Constructor(pJsCtx_, expression);
+	return JsFbTitleFormat::Constructor(m_ctx, expression);
 }
 
 void Fb::UnregisterMainMenuCommand(uint32_t id)
 {
-	const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
 	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	DynamicMainMenuManager::Get().UnregisterCommand(wnd, id);
@@ -1067,12 +1065,12 @@ Fb::DoDragDropOptions Fb::ParseDoDragDropOptions(JS::HandleValue options)
 	if (!options.isNullOrUndefined())
 	{
 		qwr::QwrException::ExpectTrue(options.isObject(), "options argument is not an object");
-		JS::RootedObject jsOptions(pJsCtx_, &options.toObject());
+		JS::RootedObject jsOptions(m_ctx, &options.toObject());
 
-		parsedoptions.useTheming = GetOptionalProperty<bool>(pJsCtx_, jsOptions, "use_theming").value_or(true);
-		parsedoptions.useAlbumArt = GetOptionalProperty<bool>(pJsCtx_, jsOptions, "use_album_art").value_or(true);
-		parsedoptions.showText = GetOptionalProperty<bool>(pJsCtx_, jsOptions, "show_text").value_or(true);
-		auto jsImage = GetOptionalProperty<JsGdiBitmap*>(pJsCtx_, jsOptions, "custom_image").value_or(nullptr);
+		parsedoptions.useTheming = GetOptionalProperty<bool>(m_ctx, jsOptions, "use_theming").value_or(true);
+		parsedoptions.useAlbumArt = GetOptionalProperty<bool>(m_ctx, jsOptions, "use_album_art").value_or(true);
+		parsedoptions.showText = GetOptionalProperty<bool>(m_ctx, jsOptions, "show_text").value_or(true);
+		auto jsImage = GetOptionalProperty<JsGdiBitmap*>(m_ctx, jsOptions, "custom_image").value_or(nullptr);
 		if (jsImage)
 		{
 			parsedoptions.pCustomImage = jsImage->GdiBitmap();

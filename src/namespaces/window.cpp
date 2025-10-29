@@ -33,39 +33,34 @@ class TimeoutJsTask
 	: public mozjs::JsAsyncTaskImpl<JS::HandleValue, JS::HandleValue>
 {
 public:
-	TimeoutJsTask(JSContext* cx, JS::HandleValue funcValue, JS::HandleValue argArrayValue);
+	TimeoutJsTask(JSContext* ctx, JS::HandleValue funcValue, JS::HandleValue argArrayValue);
 	~TimeoutJsTask() override = default;
 
 private:
 	/// @throw JsException
-	bool InvokeJsImpl(JSContext* cx, JS::HandleObject jsGlobal, JS::HandleValue funcValue, JS::HandleValue argArrayValue) override;
+	bool InvokeJsImpl(JSContext* ctx, JS::HandleObject jsGlobal, JS::HandleValue funcValue, JS::HandleValue argArrayValue) override;
 };
 
-TimeoutJsTask::TimeoutJsTask(JSContext* cx, JS::HandleValue funcValue, JS::HandleValue argArrayValue)
-	: JsAsyncTaskImpl(cx, funcValue, argArrayValue)
-{
-}
+TimeoutJsTask::TimeoutJsTask(JSContext* ctx, JS::HandleValue funcValue, JS::HandleValue argArrayValue) : JsAsyncTaskImpl(ctx, funcValue, argArrayValue) {}
 
-bool TimeoutJsTask::InvokeJsImpl(JSContext* cx, JS::HandleObject jsGlobal, JS::HandleValue funcValue, JS::HandleValue argArrayValue)
+bool TimeoutJsTask::InvokeJsImpl(JSContext* ctx, JS::HandleObject jsGlobal, JS::HandleValue funcValue, JS::HandleValue argArrayValue)
 {
-	JS::RootedFunction jsFunc(cx, JS_ValueToFunction(cx, funcValue));
-	JS::RootedObject jsArrayObject(cx, argArrayValue.toObjectOrNull());
-	assert(jsArrayObject);
+	JS::RootedFunction jsFunc(ctx, JS_ValueToFunction(ctx, funcValue));
+	JS::RootedObject jsArrayObject(ctx, argArrayValue.toObjectOrNull());
 
 	bool is;
-	if (!JS::IsArrayObject(cx, jsArrayObject, &is))
+	if (!JS::IsArrayObject(ctx, jsArrayObject, &is))
 	{
 		throw smp::JsException();
 	}
-	assert(is);
 
 	uint32_t arraySize;
-	if (!JS::GetArrayLength(cx, jsArrayObject, &arraySize))
+	if (!JS::GetArrayLength(ctx, jsArrayObject, &arraySize))
 	{
 		throw smp::JsException();
 	}
 
-	JS::RootedValueVector jsVector(cx);
+	JS::RootedValueVector jsVector(ctx);
 	if (arraySize)
 	{
 		if (!jsVector.reserve(arraySize))
@@ -73,10 +68,10 @@ bool TimeoutJsTask::InvokeJsImpl(JSContext* cx, JS::HandleObject jsGlobal, JS::H
 			throw std::bad_alloc();
 		}
 
-		JS::RootedValue arrayElement(cx);
+		JS::RootedValue arrayElement(ctx);
 		for (uint32_t i = 0; i < arraySize; ++i)
 		{
-			if (!JS_GetElement(cx, jsArrayObject, i, &arrayElement))
+			if (!JS_GetElement(ctx, jsArrayObject, i, &arrayElement))
 			{
 				throw smp::JsException();
 			}
@@ -88,8 +83,8 @@ bool TimeoutJsTask::InvokeJsImpl(JSContext* cx, JS::HandleObject jsGlobal, JS::H
 		}
 	}
 
-	JS::RootedValue dummyRetVal(cx);
-	return JS::Call(cx, jsGlobal, jsFunc, jsVector, &dummyRetVal);
+	JS::RootedValue dummyRetVal(ctx);
+	return JS::Call(ctx, jsGlobal, jsFunc, jsVector, &dummyRetVal);
 }
 
 } // namespace
@@ -237,23 +232,23 @@ Window::~Window()
 {
 }
 
-Window::Window(JSContext* cx, smp::panel::js_panel_window& parentPanel, std::unique_ptr<FbProperties> fbProperties)
-	: pJsCtx_(cx)
-	, parentPanel_(parentPanel)
-	, fbProperties_(std::move(fbProperties))
+Window::Window(JSContext* ctx, smp::panel::js_panel_window& parent, std::unique_ptr<FbProperties> properties)
+	: m_ctx(ctx)
+	, m_parent(parent)
+	, m_properties(std::move(properties))
 {
 }
 
 std::unique_ptr<Window>
-Window::CreateNative(JSContext* cx, smp::panel::js_panel_window& parentPanel)
+Window::CreateNative(JSContext* ctx, smp::panel::js_panel_window& parentPanel)
 {
-	std::unique_ptr<FbProperties> fbProperties = FbProperties::Create(cx, parentPanel);
+	std::unique_ptr<FbProperties> fbProperties = FbProperties::Create(ctx, parentPanel);
 	if (!fbProperties)
 	{ // report in Create
 		return nullptr;
 	}
 
-	return std::unique_ptr<Window>(new Window(cx, parentPanel, std::move(fbProperties)));
+	return std::unique_ptr<Window>(new Window(ctx, parentPanel, std::move(fbProperties)));
 }
 
 size_t Window::GetInternalSize(const smp::panel::js_panel_window&)
@@ -264,102 +259,100 @@ size_t Window::GetInternalSize(const smp::panel::js_panel_window&)
 void Window::Trace(JSTracer* trc, JSObject* obj)
 {
 	auto x = static_cast<Window*>(JS::GetPrivate(obj));
-	if (x && x->fbProperties_)
+	if (x && x->m_properties)
 	{
-		x->fbProperties_->Trace(trc);
+		x->m_properties->Trace(trc);
 	}
 }
 
 void Window::PrepareForGc()
 {
-	if (fbProperties_)
+	if (m_properties)
 	{
-		fbProperties_->PrepareForGc();
-		fbProperties_.reset();
-	}
-	if (pNativeTooltip_)
-	{
-		assert(pNativeTooltip_);
-		pNativeTooltip_->PrepareForGc();
-		pNativeTooltip_ = nullptr;
-		jsTooltip_.reset();
+		m_properties->PrepareForGc();
+		m_properties.reset();
 	}
 
-	isFinalized_ = true;
+	if (m_native_tooltip)
+	{
+		m_native_tooltip->PrepareForGc();
+		m_native_tooltip = nullptr;
+		m_tooltip.reset();
+	}
+
+	m_isFinalized = true;
 }
 
 HWND Window::GetHwnd() const
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return nullptr;
 	}
 
-	return parentPanel_.GetHWND();
+	return m_parent.GetHWND();
 }
 
 void Window::ClearInterval(uint32_t intervalId) const
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	parentPanel_.GetTimeoutManager().ClearTimeout(intervalId);
+	m_parent.GetTimeoutManager().ClearTimeout(intervalId);
 }
 
 void Window::ClearTimeout(uint32_t timeoutId) const
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	parentPanel_.GetTimeoutManager().ClearTimeout(timeoutId);
+	m_parent.GetTimeoutManager().ClearTimeout(timeoutId);
 }
 
 JSObject* Window::CreatePopupMenu()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return nullptr;
 	}
 
-	return JsMenuObject::CreateJs(pJsCtx_, parentPanel_.GetHWND());
+	return JsMenuObject::CreateJs(m_ctx, m_parent.GetHWND());
 }
 
 JSObject* Window::CreateThemeManager(const std::wstring& classid)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return nullptr;
 	}
 
-	if (!JsThemeManager::HasThemeData(parentPanel_.GetHWND(), classid))
+	if (!JsThemeManager::HasThemeData(m_parent.GetHWND(), classid))
 	{ // Not a error: not found
 		return nullptr;
 	}
 
-	return JsThemeManager::CreateJs(pJsCtx_, parentPanel_.GetHWND(), classid);
+	return JsThemeManager::CreateJs(m_ctx, m_parent.GetHWND(), classid);
 }
 
 JSObject* Window::CreateTooltip(const std::wstring& name, uint32_t pxSize, uint32_t style)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return nullptr;
 	}
 
-	if (!jsTooltip_.initialized())
+	if (!m_tooltip.initialized())
 	{
-		jsTooltip_.init(pJsCtx_, JsFbTooltip::CreateJs(pJsCtx_, parentPanel_.GetHWND()));
-		pNativeTooltip_ = static_cast<JsFbTooltip*>(JS::GetPrivate(jsTooltip_));
+		m_tooltip.init(m_ctx, JsFbTooltip::CreateJs(m_ctx, m_parent.GetHWND()));
+		m_native_tooltip = static_cast<JsFbTooltip*>(JS::GetPrivate(m_tooltip));
 	}
 
-	assert(pNativeTooltip_);
-	pNativeTooltip_->SetFont(name, pxSize, style);
-
-	return jsTooltip_;
+	m_native_tooltip->SetFont(name, pxSize, style);
+	return m_tooltip;
 }
 
 JSObject* Window::CreateTooltipWithOpt(size_t optArgCount, const std::wstring& name, uint32_t pxSize, uint32_t style)
@@ -382,18 +375,18 @@ JSObject* Window::CreateTooltipWithOpt(size_t optArgCount, const std::wstring& n
 void Window::DefinePanel(const std::string& name, JS::HandleValue options)
 {
 	qwr::QwrException::ExpectTrue(
-		parentPanel_.GetSettings().GetSourceType() != config::ScriptSourceType::Package,
+		m_parent.GetSettings().GetSourceType() != config::ScriptSourceType::Package,
 		"`DefinePanel` can't be used to change package script information - use `Configure` instead");
-	qwr::QwrException::ExpectTrue(!isScriptDefined_, "DefinePanel/DefineScript can't be called twice");
+	qwr::QwrException::ExpectTrue(!m_isScriptDefined, "DefinePanel/DefineScript can't be called twice");
 
 	const auto parsedOptions = ParseDefineScriptOptions(options);
 
-	parentPanel_.SetSettings_PanelName(name);
-	parentPanel_.SetSettings_ScriptInfo(name, parsedOptions.author, parsedOptions.version);
-	parentPanel_.SetSettings_DragAndDropStatus(parsedOptions.features.dragAndDrop);
-	parentPanel_.SetSettings_CaptureFocusStatus(parsedOptions.features.grabFocus);
+	m_parent.SetSettings_PanelName(name);
+	m_parent.SetSettings_ScriptInfo(name, parsedOptions.author, parsedOptions.version);
+	m_parent.SetSettings_DragAndDropStatus(parsedOptions.features.dragAndDrop);
+	m_parent.SetSettings_CaptureFocusStatus(parsedOptions.features.grabFocus);
 
-	isScriptDefined_ = true;
+	m_isScriptDefined = true;
 }
 
 void Window::DefinePanelWithOpt(size_t optArgCount, const std::string& name, JS::HandleValue options)
@@ -411,23 +404,23 @@ void Window::DefinePanelWithOpt(size_t optArgCount, const std::string& name, JS:
 
 void Window::DefineScript(const std::string& name, JS::HandleValue options)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
 	qwr::QwrException::ExpectTrue(
-		parentPanel_.GetSettings().GetSourceType() != config::ScriptSourceType::Package,
+		m_parent.GetSettings().GetSourceType() != config::ScriptSourceType::Package,
 		"`DefineScript` can't be used to change package script information - use `Configure` instead");
-	qwr::QwrException::ExpectTrue(!isScriptDefined_, "DefineScript can't be called twice");
+	qwr::QwrException::ExpectTrue(!m_isScriptDefined, "DefineScript can't be called twice");
 
 	const auto parsedOptions = ParseDefineScriptOptions(options);
 
-	parentPanel_.SetSettings_ScriptInfo(name, parsedOptions.author, parsedOptions.version);
-	parentPanel_.SetSettings_DragAndDropStatus(parsedOptions.features.dragAndDrop);
-	parentPanel_.SetSettings_CaptureFocusStatus(parsedOptions.features.grabFocus);
+	m_parent.SetSettings_ScriptInfo(name, parsedOptions.author, parsedOptions.version);
+	m_parent.SetSettings_DragAndDropStatus(parsedOptions.features.dragAndDrop);
+	m_parent.SetSettings_CaptureFocusStatus(parsedOptions.features.grabFocus);
 
-	isScriptDefined_ = true;
+	m_isScriptDefined = true;
 }
 
 void Window::DefineScriptWithOpt(size_t optArgCount, const std::string& name, JS::HandleValue options)
@@ -445,22 +438,22 @@ void Window::DefineScriptWithOpt(size_t optArgCount, const std::string& name, JS
 
 void Window::EditScript()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	EventDispatcher::Get().PutEvent(parentPanel_.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptEdit), EventPriority::kControl);
+	EventDispatcher::Get().PutEvent(m_parent.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptEdit), EventPriority::kControl);
 }
 
 uint32_t Window::GetColourCUI(uint32_t type, const std::wstring& guidstr)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
-	qwr::QwrException::ExpectTrue(parentPanel_.GetPanelType() == panel::PanelType::CUI, "Can be called only in CUI");
+	qwr::QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::CUI, "Can be called only in CUI");
 	qwr::QwrException::ExpectTrue(type <= cui::colours::colour_active_item_frame, "Invalid colour type specified");
 
 	GUID guid{};
@@ -471,7 +464,7 @@ uint32_t Window::GetColourCUI(uint32_t type, const std::wstring& guidstr)
 		qwr::error::CheckHR(hr, "CLSIDFromString");
 	}
 
-	return parentPanel_.GetColour(guid, type);
+	return m_parent.GetColour(guid, type);
 }
 
 uint32_t Window::GetColourCUIWithOpt(size_t optArgCount, uint32_t type, const std::wstring& guidstr)
@@ -497,25 +490,25 @@ uint32_t Window::GetColourDUI(uint32_t type)
 		&ui_color_selection,
 	};
 
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
-	qwr::QwrException::ExpectTrue(parentPanel_.GetPanelType() == panel::PanelType::DUI, "Can be called only in DUI");
+	qwr::QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::DUI, "Can be called only in DUI");
 	qwr::QwrException::ExpectTrue(type < guids.size(), "Invalid colour type specified");
 
-	return parentPanel_.GetColour(*guids[type]);
+	return m_parent.GetColour(*guids[type]);
 }
 
 JSObject* Window::GetFontCUI(uint32_t type, const std::wstring& guidstr)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return nullptr;
 	}
 
-	qwr::QwrException::ExpectTrue(parentPanel_.GetPanelType() == panel::PanelType::CUI, "Can be called only in CUI");
+	qwr::QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::CUI, "Can be called only in CUI");
 	qwr::QwrException::ExpectTrue(type <= cui::fonts::font_type_labels, "Invalid font type specified");
 
 	GUID guid{};
@@ -526,12 +519,12 @@ JSObject* Window::GetFontCUI(uint32_t type, const std::wstring& guidstr)
 		qwr::error::CheckHR(hr, "CLSIDFromString");
 	}
 
-	auto hFont = gdi::CreateUniquePtr(parentPanel_.GetFont(guid, type));
-	std::unique_ptr<Gdiplus::Font> pGdiFont(new Gdiplus::Font(parentPanel_.GetHDC(), hFont.get()));
+	auto hFont = gdi::CreateUniquePtr(m_parent.GetFont(guid, type));
+	std::unique_ptr<Gdiplus::Font> pGdiFont(new Gdiplus::Font(m_parent.GetHDC(), hFont.get()));
 
 	if (gdi::IsGdiPlusObjectValid(pGdiFont))
 	{
-		return JsGdiFont::CreateJs(pJsCtx_, std::move(pGdiFont), hFont.release(), true);
+		return JsGdiFont::CreateJs(m_ctx, std::move(pGdiFont), hFont.release(), true);
 	}
 
 	return nullptr;
@@ -562,20 +555,20 @@ JSObject* Window::GetFontDUI(uint32_t type)
 		&ui_font_console,
 	};
 
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return nullptr;
 	}
 
-	qwr::QwrException::ExpectTrue(parentPanel_.GetPanelType() == panel::PanelType::DUI, "Can be called only in DUI");
+	qwr::QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::DUI, "Can be called only in DUI");
 	qwr::QwrException::ExpectTrue(type < guids.size(), "Invalid font type specified");
 
-	auto hFont = parentPanel_.GetFont(*guids[type]); 
-	std::unique_ptr<Gdiplus::Font> pGdiFont(new Gdiplus::Font(parentPanel_.GetHDC(), hFont));
+	auto hFont = m_parent.GetFont(*guids[type]);
+	std::unique_ptr<Gdiplus::Font> pGdiFont(new Gdiplus::Font(m_parent.GetHDC(), hFont));
 
 	if (gdi::IsGdiPlusObjectValid(pGdiFont))
 	{
-		return JsGdiFont::CreateJs(pJsCtx_, std::move(pGdiFont), hFont, false);
+		return JsGdiFont::CreateJs(m_ctx, std::move(pGdiFont), hFont, false);
 	}
 
 	return nullptr;
@@ -583,12 +576,12 @@ JSObject* Window::GetFontDUI(uint32_t type)
 
 JS::Value Window::GetProperty(const std::wstring& name, JS::HandleValue defaultval)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return JS::UndefinedValue();
 	}
 
-	return fbProperties_->GetProperty(name, defaultval);
+	return m_properties->GetProperty(name, defaultval);
 }
 
 JS::Value Window::GetPropertyWithOpt(size_t optArgCount, const std::wstring& name, JS::HandleValue defaultval)
@@ -606,32 +599,32 @@ JS::Value Window::GetPropertyWithOpt(size_t optArgCount, const std::wstring& nam
 
 void Window::NotifyOthers(const std::wstring& name, JS::HandleValue info)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	EventDispatcher::Get().NotifyOthers(parentPanel_.GetHWND(), std::make_unique<Event_NotifyOthers>(pJsCtx_, name, info));
+	EventDispatcher::Get().NotifyOthers(m_parent.GetHWND(), std::make_unique<Event_NotifyOthers>(m_ctx, name, info));
 }
 
 void Window::Reload()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	EventDispatcher::Get().PutEvent(parentPanel_.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptReload), EventPriority::kControl);
+	EventDispatcher::Get().PutEvent(m_parent.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptReload), EventPriority::kControl);
 }
 
 void Window::Repaint(bool force)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	parentPanel_.Repaint(force);
+	m_parent.Repaint(force);
 }
 
 void Window::RepaintWithOpt(size_t optArgCount, bool force)
@@ -649,12 +642,12 @@ void Window::RepaintWithOpt(size_t optArgCount, bool force)
 
 void Window::RepaintRect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, bool force)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	parentPanel_.RepaintRect(CRect{ static_cast<int>(x), static_cast<int>(y), static_cast<int>(x + w), static_cast<int>(y + h) }, force);
+	m_parent.RepaintRect(CRect{ static_cast<int>(x), static_cast<int>(y), static_cast<int>(x + w), static_cast<int>(y + h) }, force);
 }
 
 void Window::RepaintRectWithOpt(size_t optArgCount, uint32_t x, uint32_t y, uint32_t w, uint32_t h, bool force)
@@ -672,7 +665,7 @@ void Window::RepaintRectWithOpt(size_t optArgCount, uint32_t x, uint32_t y, uint
 
 void Window::SetCursor(uint32_t id)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
@@ -682,7 +675,7 @@ void Window::SetCursor(uint32_t id)
 
 uint32_t Window::SetInterval(JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
@@ -690,14 +683,14 @@ uint32_t Window::SetInterval(JS::HandleValue func, uint32_t delay, JS::HandleVal
 	qwr::QwrException::ExpectTrue(func.isObject() && JS_ObjectIsFunction(&func.toObject()), "`func` argument is not a JS function");
 	qwr::QwrException::ExpectTrue(delay > 0, "`delay` must be non-zero");
 
-	JS::RootedFunction jsFunction(pJsCtx_, JS_ValueToFunction(pJsCtx_, func));
-	JS::RootedValue jsFuncValue(pJsCtx_, JS::ObjectValue(*JS_GetFunctionObject(jsFunction)));
+	JS::RootedFunction jsFunction(m_ctx, JS_ValueToFunction(m_ctx, func));
+	JS::RootedValue jsFuncValue(m_ctx, JS::ObjectValue(*JS_GetFunctionObject(jsFunction)));
 
-	JS::RootedObject jsArrayObject(pJsCtx_, JS::NewArrayObject(pJsCtx_, funcArgs));
+	JS::RootedObject jsArrayObject(m_ctx, JS::NewArrayObject(m_ctx, funcArgs));
 	smp::JsException::ExpectTrue(jsArrayObject);
-	JS::RootedValue jsArrayValue(pJsCtx_, JS::ObjectValue(*jsArrayObject));
+	JS::RootedValue jsArrayValue(m_ctx, JS::ObjectValue(*jsArrayObject));
 
-	return parentPanel_.GetTimeoutManager().SetInterval(delay, std::make_unique<TimeoutJsTask>(pJsCtx_, jsFuncValue, jsArrayValue));
+	return m_parent.GetTimeoutManager().SetInterval(delay, std::make_unique<TimeoutJsTask>(m_ctx, jsFuncValue, jsArrayValue));
 }
 
 uint32_t Window::SetIntervalWithOpt(size_t optArgCount, JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
@@ -715,12 +708,12 @@ uint32_t Window::SetIntervalWithOpt(size_t optArgCount, JS::HandleValue func, ui
 
 void Window::SetProperty(const std::wstring& name, JS::HandleValue val)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	fbProperties_->SetProperty(name, val);
+	m_properties->SetProperty(name, val);
 }
 
 void Window::SetPropertyWithOpt(size_t optArgCount, const std::wstring& name, JS::HandleValue val)
@@ -738,21 +731,21 @@ void Window::SetPropertyWithOpt(size_t optArgCount, const std::wstring& name, JS
 
 uint32_t Window::SetTimeout(JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
 	qwr::QwrException::ExpectTrue(func.isObject() && JS_ObjectIsFunction(&func.toObject()), "func argument is not a JS function");
 
-	JS::RootedFunction jsFunction(pJsCtx_, JS_ValueToFunction(pJsCtx_, func));
-	JS::RootedValue jsFuncValue(pJsCtx_, JS::ObjectValue(*JS_GetFunctionObject(jsFunction)));
+	JS::RootedFunction jsFunction(m_ctx, JS_ValueToFunction(m_ctx, func));
+	JS::RootedValue jsFuncValue(m_ctx, JS::ObjectValue(*JS_GetFunctionObject(jsFunction)));
 
-	JS::RootedObject jsArrayObject(pJsCtx_, JS::NewArrayObject(pJsCtx_, funcArgs));
+	JS::RootedObject jsArrayObject(m_ctx, JS::NewArrayObject(m_ctx, funcArgs));
 	smp::JsException::ExpectTrue(jsArrayObject);
-	JS::RootedValue jsArrayValue(pJsCtx_, JS::ObjectValue(*jsArrayObject));
+	JS::RootedValue jsArrayValue(m_ctx, JS::ObjectValue(*jsArrayObject));
 
-	return parentPanel_.GetTimeoutManager().SetTimeout(delay, std::make_unique<TimeoutJsTask>(pJsCtx_, jsFuncValue, jsArrayValue));
+	return m_parent.GetTimeoutManager().SetTimeout(delay, std::make_unique<TimeoutJsTask>(m_ctx, jsFuncValue, jsArrayValue));
 }
 
 uint32_t Window::SetTimeoutWithOpt(size_t optArgCount, JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
@@ -770,42 +763,42 @@ uint32_t Window::SetTimeoutWithOpt(size_t optArgCount, JS::HandleValue func, uin
 
 void Window::ShowConfigure()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	EventDispatcher::Get().PutEvent(parentPanel_.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptShowConfigureLegacy), EventPriority::kControl);
+	EventDispatcher::Get().PutEvent(m_parent.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptShowConfigureLegacy), EventPriority::kControl);
 }
 
 void Window::ShowConfigureV2()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	EventDispatcher::Get().PutEvent(parentPanel_.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptShowConfigure), EventPriority::kControl);
+	EventDispatcher::Get().PutEvent(m_parent.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptShowConfigure), EventPriority::kControl);
 }
 
 void Window::ShowProperties()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	EventDispatcher::Get().PutEvent(parentPanel_.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptShowProperties), EventPriority::kControl);
+	EventDispatcher::Get().PutEvent(m_parent.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptShowProperties), EventPriority::kControl);
 }
 
 uint32_t Window::get_DlgCode()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
-	return parentPanel_.DlgCode();
+	return m_parent.DlgCode();
 }
 
 uint32_t Window::get_DPI()
@@ -816,12 +809,12 @@ uint32_t Window::get_DPI()
 
 uint32_t Window::get_Height()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
-	return parentPanel_.GetHeight();
+	return m_parent.GetHeight();
 }
 
 uint32_t Window::get_ID() const
@@ -832,79 +825,79 @@ uint32_t Window::get_ID() const
 
 uint32_t Window::get_InstanceType()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
-	return static_cast<uint32_t>(parentPanel_.GetPanelType());
+	return static_cast<uint32_t>(m_parent.GetPanelType());
 }
 
 bool Window::get_IsDark()
 {
-	return parentPanel_.IsDark();
+	return m_parent.IsDark();
 }
 
 bool Window::get_IsTransparent()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return false;
 	}
 
-	return parentPanel_.GetSettings().isPseudoTransparent;
+	return m_parent.GetSettings().isPseudoTransparent;
 }
 
 bool Window::get_IsVisible()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return false;
 	}
 
-	return IsWindowVisible(parentPanel_.GetHWND());
+	return IsWindowVisible(m_parent.GetHWND());
 }
 
 JSObject* Window::get_JsMemoryStats()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return nullptr;
 	}
 
-	JS::RootedObject jsObject(pJsCtx_, JS_NewPlainObject(pJsCtx_));
+	JS::RootedObject jsObject(m_ctx, JS_NewPlainObject(m_ctx));
 
-	JS::RootedObject jsGlobal(pJsCtx_, JS::CurrentGlobalOrNull(pJsCtx_));
-	AddProperty(pJsCtx_, jsObject, "MemoryUsage", JsGc::GetTotalHeapUsageForGlobal(pJsCtx_, jsGlobal));
-	AddProperty(pJsCtx_, jsObject, "TotalMemoryUsage", JsEngine::GetInstance().GetGcEngine().GetTotalHeapUsage());
-	AddProperty(pJsCtx_, jsObject, "TotalMemoryLimit", JsGc::GetMaxHeap());
+	JS::RootedObject jsGlobal(m_ctx, JS::CurrentGlobalOrNull(m_ctx));
+	AddProperty(m_ctx, jsObject, "MemoryUsage", JsGc::GetTotalHeapUsageForGlobal(m_ctx, jsGlobal));
+	AddProperty(m_ctx, jsObject, "TotalMemoryUsage", JsEngine::GetInstance().GetGcEngine().GetTotalHeapUsage());
+	AddProperty(m_ctx, jsObject, "TotalMemoryLimit", JsGc::GetMaxHeap());
 
 	return jsObject;
 }
 
 uint32_t Window::get_MaxHeight()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
-	return parentPanel_.MaxSize().y;
+	return m_parent.MaxSize().y;
 }
 
 uint32_t Window::get_MaxWidth()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
-	return parentPanel_.MaxSize().x;
+	return m_parent.MaxSize().x;
 }
 
 uint32_t Window::get_MemoryLimit() const
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
@@ -914,68 +907,68 @@ uint32_t Window::get_MemoryLimit() const
 
 uint32_t Window::get_MinHeight()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
-	return parentPanel_.MinSize().y;
+	return m_parent.MinSize().y;
 }
 
 uint32_t Window::get_MinWidth()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
-	return parentPanel_.MinSize().x;
+	return m_parent.MinSize().x;
 }
 
 std::string Window::get_Name()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return std::string{};
 	}
 
-	return parentPanel_.GetPanelId();
+	return m_parent.GetPanelId();
 }
 
 uint64_t Window::get_PanelMemoryUsage()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
-	JS::RootedObject jsGlobal(pJsCtx_, JS::CurrentGlobalOrNull(pJsCtx_));
-	return JsGc::GetTotalHeapUsageForGlobal(pJsCtx_, jsGlobal);
+	JS::RootedObject jsGlobal(m_ctx, JS::CurrentGlobalOrNull(m_ctx));
+	return JsGc::GetTotalHeapUsageForGlobal(m_ctx, jsGlobal);
 }
 
 JSObject* Window::get_ScriptInfo()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return nullptr;
 	}
 
-	const auto& settings = parentPanel_.GetSettings();
+	const auto& settings = m_parent.GetSettings();
 
-	JS::RootedObject jsObject(pJsCtx_, JS_NewPlainObject(pJsCtx_));
+	JS::RootedObject jsObject(m_ctx, JS_NewPlainObject(m_ctx));
 
-	AddProperty(pJsCtx_, jsObject, "Name", settings.scriptName);
+	AddProperty(m_ctx, jsObject, "Name", settings.scriptName);
 	if (!settings.scriptAuthor.empty())
 	{
-		AddProperty(pJsCtx_, jsObject, "Author", settings.scriptAuthor);
+		AddProperty(m_ctx, jsObject, "Author", settings.scriptAuthor);
 	}
 	if (!settings.scriptVersion.empty())
 	{
-		AddProperty(pJsCtx_, jsObject, "Version", settings.scriptVersion);
+		AddProperty(m_ctx, jsObject, "Version", settings.scriptVersion);
 	}
 	if (settings.packageId)
 	{
-		AddProperty(pJsCtx_, jsObject, "PackageId", *settings.packageId);
+		AddProperty(m_ctx, jsObject, "PackageId", *settings.packageId);
 	}
 
 	return jsObject;
@@ -983,7 +976,7 @@ JSObject* Window::get_ScriptInfo()
 
 uint64_t Window::get_TotalMemoryUsage() const
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
@@ -998,66 +991,66 @@ JSObject* Window::get_Tooltip()
 
 uint32_t Window::get_Width()
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return 0;
 	}
 
-	return parentPanel_.GetWidth();
+	return m_parent.GetWidth();
 }
 
 void Window::put_DlgCode(uint32_t code)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	parentPanel_.DlgCode() = code;
+	m_parent.DlgCode() = code;
 }
 
 void Window::put_MaxHeight(uint32_t height)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	parentPanel_.MaxSize().y = height;
-	parentPanel_.NotifySizeLimitChanged();
+	m_parent.MaxSize().y = height;
+	m_parent.NotifySizeLimitChanged();
 }
 
 void Window::put_MaxWidth(uint32_t width)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	parentPanel_.MaxSize().x = width;
-	parentPanel_.NotifySizeLimitChanged();
+	m_parent.MaxSize().x = width;
+	m_parent.NotifySizeLimitChanged();
 }
 
 void Window::put_MinHeight(uint32_t height)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	parentPanel_.MinSize().y = height;
-	parentPanel_.NotifySizeLimitChanged();
+	m_parent.MinSize().y = height;
+	m_parent.NotifySizeLimitChanged();
 }
 
 void Window::put_MinWidth(uint32_t width)
 {
-	if (isFinalized_)
+	if (m_isFinalized)
 	{
 		return;
 	}
 
-	parentPanel_.MinSize().x = width;
-	parentPanel_.NotifySizeLimitChanged();
+	m_parent.MinSize().x = width;
+	m_parent.NotifySizeLimitChanged();
 }
 
 Window::DefineScriptOptions Window::ParseDefineScriptOptions(JS::HandleValue options)
@@ -1066,30 +1059,30 @@ Window::DefineScriptOptions Window::ParseDefineScriptOptions(JS::HandleValue opt
 	if (!options.isNullOrUndefined())
 	{
 		qwr::QwrException::ExpectTrue(options.isObject(), "options argument is not an object");
-		JS::RootedObject jsOptions(pJsCtx_, &options.toObject());
+		JS::RootedObject jsOptions(m_ctx, &options.toObject());
 
-		parsedOptions.author = GetOptionalProperty<std::string>(pJsCtx_, jsOptions, "author").value_or("");
-		parsedOptions.version = GetOptionalProperty<std::string>(pJsCtx_, jsOptions, "version").value_or("");
+		parsedOptions.author = GetOptionalProperty<std::string>(m_ctx, jsOptions, "author").value_or("");
+		parsedOptions.version = GetOptionalProperty<std::string>(m_ctx, jsOptions, "version").value_or("");
 
 		bool hasProperty;
-		if (!JS_HasProperty(pJsCtx_, jsOptions, "features", &hasProperty))
+		if (!JS_HasProperty(m_ctx, jsOptions, "features", &hasProperty))
 		{
 			throw JsException();
 		}
 
 		if (hasProperty)
 		{
-			JS::RootedValue jsFeaturesValue(pJsCtx_);
-			if (!JS_GetProperty(pJsCtx_, jsOptions, "features", &jsFeaturesValue))
+			JS::RootedValue jsFeaturesValue(m_ctx);
+			if (!JS_GetProperty(m_ctx, jsOptions, "features", &jsFeaturesValue))
 			{
 				throw JsException();
 			}
 
 			qwr::QwrException::ExpectTrue(jsFeaturesValue.isObject(), "`features` is not an object");
 
-			JS::RootedObject jsFeatures(pJsCtx_, &jsFeaturesValue.toObject());
-			parsedOptions.features.dragAndDrop = GetOptionalProperty<bool>(pJsCtx_, jsFeatures, "drag_n_drop").value_or(false);
-			parsedOptions.features.grabFocus = GetOptionalProperty<bool>(pJsCtx_, jsFeatures, "grab_focus").value_or(true);
+			JS::RootedObject jsFeatures(m_ctx, &jsFeaturesValue.toObject());
+			parsedOptions.features.dragAndDrop = GetOptionalProperty<bool>(m_ctx, jsFeatures, "drag_n_drop").value_or(false);
+			parsedOptions.features.grabFocus = GetOptionalProperty<bool>(m_ctx, jsFeatures, "grab_focus").value_or(true);
 		}
 	}
 

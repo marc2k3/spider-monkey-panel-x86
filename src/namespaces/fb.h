@@ -27,7 +27,7 @@ public:
 public:
 	~Fb() override = default;
 
-	static std::unique_ptr<Fb> CreateNative(JSContext* cx);
+	static std::unique_ptr<Fb> CreateNative(JSContext* ctx);
 	static size_t GetInternalSize();
 
 public:
@@ -123,7 +123,7 @@ public:
 	void put_Volume(float value);
 
 private:
-	Fb(JSContext* cx);
+	Fb(JSContext* ctx);
 
 	struct DoDragDropOptions
 	{
@@ -135,7 +135,7 @@ private:
 	DoDragDropOptions ParseDoDragDropOptions(JS::HandleValue options);
 
 private:
-	JSContext* pJsCtx_ = nullptr;
+	JSContext* m_ctx{};
 	visualisation_stream_v2::ptr vis_;
 };
 

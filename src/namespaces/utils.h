@@ -23,7 +23,7 @@ public:
 	static const JSPropertySpec* JsProperties;
 
 public:
-	static std::unique_ptr<Utils> CreateNative(JSContext* cx);
+	static std::unique_ptr<Utils> CreateNative(JSContext* ctx);
 	static size_t GetInternalSize();
 
 public:
@@ -81,10 +81,10 @@ public:
 	std::string get_Version() const;
 
 private:
-	Utils(JSContext* cx);
+	Utils(JSContext* ctx);
 
 private:
-	JSContext* pJsCtx_ = nullptr;
+	JSContext* m_ctx{};
 };
 
 } // namespace mozjs
