@@ -101,6 +101,7 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClCompile Include="callbacks\PlaylistCallbackStatic.cpp" />
     <ClCompile Include="callbacks\ReplaygainCoreSettingsNotify.cpp" />
     <ClCompile Include="callbacks\UISelectionCallback.cpp" />
+    <ClCompile Include="component_defines.cpp" />
     <ClCompile Include="component_paths.cpp" />
     <ClCompile Include="com_objects\file_drop_target.cpp" />
     <ClCompile Include="com_utils\com_destruction_handler.cpp" />

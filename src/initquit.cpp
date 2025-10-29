@@ -1,19 +1,12 @@
 #include <stdafx.h>
-
-#include <libPPUI/gdiplus_helpers.h>
-
 #include <2K3/PlaylistLock.hpp>
 #include <config/delayed_package_utils.h>
 #include <events/event_dispatcher.h>
 #include <js_engine/js_engine.h>
-
 #include <utils/thread_pool_instance.h>
-#include <qwr/error_popup.h>
 
+#include <libPPUI/gdiplus_helpers.h>
 #include <Scintilla.h>
-
-DECLARE_COMPONENT_VERSION(SMP_NAME, SMP_VERSION, about_smp().c_str());
-VALIDATE_COMPONENT_FILENAME(SMP_DLL_NAME);
 
 namespace smp::com
 {

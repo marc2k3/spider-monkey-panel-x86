@@ -203,13 +203,13 @@ LRESULT CEditor::OnOptionProperties(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 LRESULT CEditor::OnHelp(WORD, WORD, HWND)
 {
-	ShellExecute(nullptr, L"open", path::JsDocsIndex().c_str(), nullptr, nullptr, SW_SHOW);
+	ShellExecuteW(nullptr, L"open", path::JsDocsIndex().c_str(), nullptr, nullptr, SW_SHOW);
 	return 0;
 }
 
 LRESULT CEditor::OnAbout(WORD, WORD, HWND)
 {
-	popup_message_v3::get()->messageBox(*this, about_smp().c_str(), "About Spider Monkey Panel", MB_SETFOREGROUND);
+	smp::about_popup(m_hWnd);
 	return 0;
 }
 

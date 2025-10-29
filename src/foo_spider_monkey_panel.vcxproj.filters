@@ -472,6 +472,7 @@
     <ClCompile Include="2K3\PlaylistLock.cpp">
       <Filter>2K3</Filter>
     </ClCompile>
+    <ClCompile Include="component_defines.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="js_engine\js_engine.h">
