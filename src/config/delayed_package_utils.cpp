@@ -342,7 +342,7 @@ void ProcessDelayedPackages()
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		throw qwr::QwrException(e);
+		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, fmt::format("Failed to process delayed packages:\n{}", e.what()));
 	}
 }
 

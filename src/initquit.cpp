@@ -32,14 +32,7 @@ namespace
 		{
 			if (stage == init_stages::before_config_read)
 			{
-				try
-				{
-					smp::config::ProcessDelayedPackages();
-				}
-				catch (const qwr::QwrException& e)
-				{
-					qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, fmt::format("Failed to process delayed packages:\n{}", e.what()));
-				}
+				smp::config::ProcessDelayedPackages();
 			}
 			else if (stage == init_stages::before_ui_init)
 			{

@@ -28,7 +28,6 @@ void MarkPackageAsToBeInstalled(const std::string& packageId, const std::filesys
 /// @throw qwr::QwrException
 void MarkPackageAsInUse(const std::string& packageId);
 
-/// @throw qwr::QwrException
 void ProcessDelayedPackages();
 
 } // namespace smp::config
