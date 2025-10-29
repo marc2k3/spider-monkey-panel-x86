@@ -10,6 +10,15 @@ requires at least `foobar2000` `2.0`.
 
 # Changelog
 
+## 1.6.2.25.10.29
+- Fix long standing `plman.SetPlaylistLockedActions` bug related to `ExecuteDefaultAction`.
+
+https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/198
+
+This may be considered a breaking change considering it was unusable in the previous state and
+workarounds must have been added to use it. Those workarounds will now be broken by the
+newly correct behaviour!
+
 ## 1.6.2.25.10.16
 - Update panel error text replacing `Aw, crashed :(` with `Spider Monkey Panel JavaScript error`.
 - Add `fb.RequestBacklog(time)` for `AudioChunk` users. See this thread:
