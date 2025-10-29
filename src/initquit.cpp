@@ -17,14 +17,14 @@ VALIDATE_COMPONENT_FILENAME(SMP_DLL_NAME);
 
 namespace smp::com
 {
-	ITypeLibPtr g_typelib;
+	wil::com_ptr<ITypeLib> typelib;
 }
 
 namespace
 {
 	CAppModule wtl_module;
 	GdiplusScope scope;
-	HMODULE rich_edit_ctrl{};
+	wil::unique_hmodule rich_edit_ctrl;
 
 	class InitStageCallback : public init_stage_callback
 	{
@@ -36,17 +36,15 @@ namespace
 			}
 			else if (stage == init_stages::before_ui_init)
 			{
-				PlaylistLock::before_ui_init();
-
 				const auto ins = core_api::get_my_instance();
-
 				Scintilla_RegisterClasses(ins);
-				rich_edit_ctrl = LoadLibraryW(CRichEditCtrl::GetLibraryName());
+				PlaylistLock::before_ui_init();
+				
+				rich_edit_ctrl.reset(LoadLibraryW(CRichEditCtrl::GetLibraryName()));
+				std::ignore = wtl_module.Init(nullptr, ins);
 
 				const auto path = wil::GetModuleFileNameW(ins);
-				std::ignore = LoadTypeLibEx(path.get(), REGKIND_NONE, &smp::com::g_typelib);
-
-				std::ignore = wtl_module.Init(nullptr, ins);
+				std::ignore = LoadTypeLibEx(path.get(), REGKIND_NONE, &smp::com::typelib);
 			}
 		}
 	};
@@ -57,9 +55,9 @@ namespace
 		smp::EventDispatcher::Get().NotifyAllAboutExit();
 		smp::GetThreadPoolInstance().Finalize();
 		Scintilla_ReleaseResources();
-		FreeLibrary(rich_edit_ctrl);
+		rich_edit_ctrl.reset();
+		smp::com::typelib.reset();
 		wtl_module.Term();
-		smp::com::g_typelib.Release();
 	}
 
 	FB2K_SERVICE_FACTORY(InitStageCallback);

@@ -28,7 +28,7 @@ protected:
 
 } // namespace internal
 
-extern ITypeLibPtr g_typelib;
+extern wil::com_ptr<ITypeLib> typelib;
 
 //-- IDispatch --
 template <class T>
@@ -71,9 +71,9 @@ public:
 protected:
 	IDispatchWithCachedTypes<T>()
 	{
-		if (g_typeInfoCacheHolder.Empty() && g_typelib)
+		if (g_typeInfoCacheHolder.Empty() && typelib)
 		{
-			g_typeInfoCacheHolder.InitFromTypelib(g_typelib, __uuidof(T));
+			g_typeInfoCacheHolder.InitFromTypelib(typelib.get(), __uuidof(T));
 		}
 	}
 
