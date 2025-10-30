@@ -360,7 +360,7 @@ bool Plman::ExecutePlaylistDefaultAction(uint32_t playlistIndex, uint32_t playli
 int32_t Plman::FindByGUID(const std::string& str)
 {
 	const auto guid = pfc::GUID_from_text(str.c_str());
-	return static_cast<int32_t>(playlist_manager_v5::get()->find_playlist_by_guid(guid));
+	return static_cast<int32_t>(m_api->find_playlist_by_guid(guid));
 }
 
 uint32_t Plman::FindOrCreatePlaylist(const std::string& name, bool unlocked)
@@ -401,11 +401,9 @@ void Plman::FlushPlaybackQueue()
 
 std::string Plman::GetGUID(uint32_t playlistIndex)
 {
-	const auto api = playlist_manager_v5::get();
+	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
-	qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
-
-	const auto guid = api->playlist_get_guid(playlistIndex);
+	const auto guid = m_api->playlist_get_guid(playlistIndex);
 	return pfc::print_guid(guid).get_ptr();
 }
 
