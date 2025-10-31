@@ -153,12 +153,15 @@ void UpdatePackages()
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME,
-									fmt::format(
-										"Failed to update package `{}`:\n{}",
-										packageId,
-										qwr::ToU8_FromAcpToWide(e.what())
-									));
+			qwr::ReportErrorWithPopup(
+				SMP_UNDERSCORE_NAME,
+				fmt::format(
+					"Failed to update package `{}`:\n{}",
+					packageId,
+					qwr::ToU8_FromAcpToWide(e.what())
+				)
+			);
+
 			continue;
 		}
 
@@ -189,13 +192,16 @@ void UpdatePackages()
 			TextFile(main_file.native()).write(restorationScript);
 			TextFile(package_json.native()).write(j.dump(2));
 
-			qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME,
-									fmt::format(
-										"Critical error encountered when updating package `{}`!\n\n"
-										"The panel was replaced with recovery package.\n"
-										"Follow the instructions to restore your old package.",
-										packageId
-									));
+			qwr::ReportErrorWithPopup(
+				SMP_UNDERSCORE_NAME,
+				fmt::format(
+					"Critical error encountered when updating package `{}`!\n\n"
+					"The panel was replaced with recovery package.\n"
+					"Follow the instructions to restore your old package.",
+					packageId
+				)
+			);
+
 			throw;
 		}
 	}
@@ -342,7 +348,13 @@ void ProcessDelayedPackages()
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, fmt::format("Failed to process delayed packages:\n{}", e.what()));
+		qwr::ReportErrorWithPopup(
+			SMP_UNDERSCORE_NAME,
+			fmt::format(
+				"Failed to process delayed packages:\n{}",
+				qwr::ToU8_FromAcpToWide(e.what())
+			)
+		);
 	}
 }
 
