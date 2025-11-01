@@ -2,50 +2,49 @@
 
 namespace qwr
 {
-
-class HookHandler
-{
-private:
-	using HookCallback = std::function<void(int, WPARAM, LPARAM)>;
-
-public:
-	~HookHandler();
-	static HookHandler& GetInstance();
-
-	/// @throw smp::SmpException
-	template <typename T>
-	uint32_t RegisterHook(T&& callback)
+	class HookHandler
 	{
-		if (callbacks_.empty())
+	private:
+		using HookCallback = std::function<void(int, WPARAM, LPARAM)>;
+
+	public:
+		~HookHandler();
+
+		static HookHandler& GetInstance();
+
+		/// @throw smp::SmpException
+		template <typename T>
+		uint32_t RegisterHook(T&& callback)
 		{
-			MaybeRegisterGlobalHook();
+			if (s_callbacks.empty())
+			{
+				MaybeRegisterGlobalHook();
+			}
+
+			uint32_t id = m_cur_id++;
+
+			while (s_callbacks.contains(id) || !id)
+			{
+				id = m_cur_id++;
+			}
+
+			s_callbacks.emplace(id, std::make_shared<HookCallback>(std::move(callback)));
+			return id;
 		}
 
-		uint32_t id = curId_++;
-		while (callbacks_.contains(id) || !id)
-		{
-			id = curId_++;
-		}
+		void UnregisterHook(uint32_t hookId);
 
-		callbacks_.emplace(id, std::make_shared<HookCallback>(std::move(callback)));
-		return id;
-	}
+	private:
+		HookHandler() = default;
 
-	void UnregisterHook(uint32_t hookId);
+		static LRESULT CALLBACK GetMsgProc(int code, WPARAM wParam, LPARAM lParam);
+		static inline std::unordered_map<uint32_t, std::shared_ptr<HookCallback>> s_callbacks;
 
-private:
-	HookHandler() = default;
+		/// @throw smp::SmpException
+		void MaybeRegisterGlobalHook();
 
-	/// @throw smp::SmpException
-	void MaybeRegisterGlobalHook();
-	static LRESULT CALLBACK GetMsgProc(int code, WPARAM wParam, LPARAM lParam);
-
-private:
-	uint32_t curId_ = 1;
-
-	// TODO: add handlers for different hooks if needed
-	HHOOK hHook_ = nullptr;
-	static std::unordered_map<uint32_t, std::shared_ptr<HookCallback>> callbacks_;
-};
-
-} // namespace qwr
+		// TODO: add handlers for different hooks if needed
+		HHOOK m_hook{};
+		uint32_t m_cur_id = 1;
+	};
+}

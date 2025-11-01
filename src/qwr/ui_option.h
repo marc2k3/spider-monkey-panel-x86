@@ -2,108 +2,101 @@
 
 namespace qwr::ui
 {
-
-class IUiOption
-{
-public:
-	IUiOption() = default;
-	virtual ~IUiOption() = default;
-
-	virtual bool HasChanged() const = 0;
-	virtual void Apply() = 0;
-	virtual void Revert() = 0;
-	virtual void ResetToDefault() = 0;
-};
-
-template <typename T, typename = void>
-class UiOption
-	: public IUiOption
-{
-public:
-	using value_type = typename T;
-
-public:
-	UiOption() = default;
-
-	UiOption(const value_type& value, const value_type& defaultValue)
+	class IUiOption
 	{
-		InitializeValue(value, defaultValue);
-	}
+	public:
+		IUiOption() = default;
+		virtual ~IUiOption() = default;
 
-	UiOption(const UiOption&) = delete;
+		virtual bool HasChanged() const = 0;
+		virtual void Apply() = 0;
+		virtual void Revert() = 0;
+		virtual void ResetToDefault() = 0;
+	};
 
-	UiOption& operator=(const value_type& value)
+	template <typename T, typename = void>
+	class UiOption : public IUiOption
 	{
-		SetValue(value);
-		return *this;
-	}
+	public:
+		using value_type = typename T;
 
-	operator const value_type&() const
-	{
-		return GetCurrentValue();
-	}
+	public:
+		UiOption() = default;
 
-	const value_type& GetSavedValue() const
-	{
-		return savedValue_;
-	}
-
-	const value_type& GetCurrentValue() const
-	{
-		return curValue_;
-	}
-
-	void InitializeValue(const value_type& value, const value_type& defaultValue)
-	{
-		defaultValue_ = defaultValue;
-		savedValue_ = value;
-		curValue_ = value;
-		hasChanged_ = false;
-	}
-
-	void SetValue(const value_type& value, bool dontCheck = false)
-	{
-		hasChanged_ = (dontCheck ? true : (savedValue_ != value));
-		curValue_ = value;
-	}
-
-	// > IOptionWrap
-
-	bool HasChanged() const override
-	{
-		return hasChanged_;
-	}
-
-	void Apply() override
-	{
-		if (hasChanged_)
+		UiOption(const value_type& value, const value_type& defaultValue)
 		{
-			savedValue_ = curValue_;
+			InitializeValue(value, defaultValue);
+		}
+
+		UiOption(const UiOption&) = delete;
+
+		UiOption& operator=(const value_type& value)
+		{
+			SetValue(value);
+			return *this;
+		}
+
+		operator const value_type&() const
+		{
+			return GetCurrentValue();
+		}
+
+		const value_type& GetSavedValue() const
+		{
+			return savedValue_;
+		}
+
+		const value_type& GetCurrentValue() const
+		{
+			return curValue_;
+		}
+
+		void InitializeValue(const value_type& value, const value_type& defaultValue)
+		{
+			defaultValue_ = defaultValue;
+			savedValue_ = value;
+			curValue_ = value;
 			hasChanged_ = false;
 		}
-	}
 
-	void Revert() override
-	{
-		if (hasChanged_)
+		void SetValue(const value_type& value, bool dontCheck = false)
 		{
-			curValue_ = savedValue_;
-			hasChanged_ = false;
+			hasChanged_ = (dontCheck ? true : (savedValue_ != value));
+			curValue_ = value;
 		}
-	}
 
-	void ResetToDefault() override
-	{
-		SetValue(defaultValue_);
-	}
+		bool HasChanged() const override
+		{
+			return hasChanged_;
+		}
 
-	// < IOptionWrap
+		void Apply() override
+		{
+			if (hasChanged_)
+			{
+				savedValue_ = curValue_;
+				hasChanged_ = false;
+			}
+		}
 
-private:
-	bool hasChanged_ = false;
-	value_type defaultValue_{};
-	value_type savedValue_{};
-	value_type curValue_{};
-};
+		void Revert() override
+		{
+			if (hasChanged_)
+			{
+				curValue_ = savedValue_;
+				hasChanged_ = false;
+			}
+		}
 
-} // namespace qwr::ui
+		void ResetToDefault() override
+		{
+			SetValue(defaultValue_);
+		}
+
+	private:
+		bool hasChanged_ = false;
+		value_type defaultValue_{};
+		value_type savedValue_{};
+		value_type curValue_{};
+	};
+}

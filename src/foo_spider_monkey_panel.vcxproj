@@ -199,7 +199,6 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClCompile Include="panel\modal_blocking_scope.cpp" />
     <ClCompile Include="qwr\error_popup.cpp" />
     <ClCompile Include="qwr\hook_handler.cpp" />
-    <ClCompile Include="qwr\string_helpers.cpp" />
     <ClCompile Include="qwr\thread_pool.cpp" />
     <ClCompile Include="qwr\unicode.cpp" />
     <ClCompile Include="qwr\winapi_error_helpers.cpp" />

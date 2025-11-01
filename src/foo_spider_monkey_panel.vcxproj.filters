@@ -448,9 +448,6 @@
     <ClCompile Include="qwr\hook_handler.cpp">
       <Filter>qwr</Filter>
     </ClCompile>
-    <ClCompile Include="qwr\string_helpers.cpp">
-      <Filter>qwr</Filter>
-    </ClCompile>
     <ClCompile Include="qwr\thread_pool.cpp">
       <Filter>qwr</Filter>
     </ClCompile>
