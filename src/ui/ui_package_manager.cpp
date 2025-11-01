@@ -192,7 +192,7 @@ void CDialogPackageManager::OnDeletePackage(UINT /*uNotifyCode*/, int /*nID*/, C
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 	catch (const qwr::QwrException& e)
 	{
@@ -243,7 +243,7 @@ void CDialogPackageManager::OnExportPackage(UINT /*uNotifyCode*/, int /*nID*/, C
 			}
 			catch (const fs::filesystem_error& e)
 			{
-				qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+				qwr::ReportFSErrorWithPopup(e);
 			}
 			catch (const qwr::QwrException& e)
 			{
@@ -261,7 +261,7 @@ void CDialogPackageManager::OnOpenFolder(UINT /*uNotifyCode*/, int /*nID*/, CWin
 
 	try
 	{
-		const auto hInstance = ShellExecute(
+		const auto hInstance = ShellExecuteW(
 			nullptr,
 			L"explore",
 			config::GetPackagePath(*packages_[focusedPackageIdx_].parsedSettings).c_str(),
@@ -277,7 +277,7 @@ void CDialogPackageManager::OnOpenFolder(UINT /*uNotifyCode*/, int /*nID*/, CWin
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 	catch (const qwr::QwrException& e)
 	{
@@ -426,7 +426,7 @@ void CDialogPackageManager::LoadPackages()
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 }
 
@@ -642,7 +642,7 @@ bool CDialogPackageManager::ImportPackage(const std::filesystem::path& path)
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 	catch (const qwr::QwrException& e)
 	{

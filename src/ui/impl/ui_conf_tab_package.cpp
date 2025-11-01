@@ -211,7 +211,7 @@ void CConfigTabPackage::OnNewScript(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 }
 
@@ -241,7 +241,7 @@ void CConfigTabPackage::OnRemoveFile(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 
 	files_.erase(files_.cbegin() + focusedFileIdx_);
@@ -278,7 +278,7 @@ void CConfigTabPackage::OnRenameFile(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 }
 
@@ -314,7 +314,7 @@ void CConfigTabPackage::OnOpenContainingFolder(UINT uNotifyCode, int nID, CWindo
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 	catch (const qwr::QwrException& e)
 	{
@@ -350,7 +350,7 @@ void CConfigTabPackage::OnEditScript(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 	catch (const qwr::QwrException& e)
 	{
@@ -499,7 +499,7 @@ void CConfigTabPackage::InitializeFilesListBox()
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 }
 
@@ -551,7 +551,7 @@ void CConfigTabPackage::UpdateListBoxFromData()
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 }
 
@@ -605,7 +605,7 @@ void CConfigTabPackage::AddFile(const std::filesystem::path& path)
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
+		qwr::ReportFSErrorWithPopup(e);
 	}
 	catch (const qwr::QwrException& e)
 	{
