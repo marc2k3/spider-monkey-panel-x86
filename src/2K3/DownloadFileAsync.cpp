@@ -20,7 +20,7 @@ void DownloadFileAsync::run() noexcept
 		auto& aborter = fb2k::mainAborter();
 
 		auto request = http_client::get()->create_request("GET");
-		request->add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0");
+		request->add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0");
 
 		auto response = request->run(m_url.c_str(), aborter);
 
