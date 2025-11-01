@@ -11,8 +11,8 @@ let thumbs = new _thumbs();
 
 panel.item_focus_change();
 
-function on_http_request_done(task_id, success, response_text) {
-	thumbs.http_request_done(task_id, success, response_text);
+function on_http_request_done(task_id, success, response_text, status, response_headers) {
+	thumbs.http_request_done(task_id, success, response_text, status, response_headers);
 }
 
 function on_size() {
