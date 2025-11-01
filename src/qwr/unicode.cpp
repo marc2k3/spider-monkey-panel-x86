@@ -5,40 +5,29 @@
 
 namespace qwr
 {
-std::string ToU8(std::wstring_view src)
-{
-	return pfc::utf8FromWide(src.data(), src.length()).get_ptr();
-}
-
-std::wstring ToWide(std::string_view str)
-{
-	return pfc::wideFromUTF8(str.data(), str.length()).c_str();
-}
-
-std::wstring ToWide(const pfc::string_base& src)
-{
-	return pfc::wideFromUTF8(src, src.length()).c_str();
-}
-
-std::string ToU8_FromAcpToWide(std::string_view src)
-{
-	return ToU8(ToWide_FromAcp(src));
-}
-
-std::wstring ToWide_FromAcp(std::string_view src)
-{
-	if (src.empty())
+	std::string ToU8(std::wstring_view src)
 	{
-		return std::wstring{};
+		return pfc::utf8FromWide(src.data(), src.length()).get_ptr();
 	}
 
-	size_t stringLen = MultiByteToWideChar(CP_ACP, 0, src.data(), src.size(), nullptr, 0);
-	std::wstring strVal;
-	strVal.resize(stringLen);
+	std::wstring ToWide(std::string_view str)
+	{
+		return pfc::wideFromUTF8(str.data(), str.length()).c_str();
+	}
 
-	stringLen = MultiByteToWideChar(CP_ACP, 0, src.data(), src.size(), strVal.data(), strVal.size());
-	strVal.resize(stringLen);
+	std::wstring ToWide(const pfc::string_base& src)
+	{
+		return pfc::wideFromUTF8(src, src.length()).c_str();
+	}
 
-	return strVal;
+	std::string FS_Error_ToU8(const std::filesystem::filesystem_error& e)
+	{
+		const std::wstring msg = qwr::ToWide(e.code().message());
+		std::wstring ret = fmt::format(L"{} \"{}\"", msg, e.path1().native());
+
+		if (!e.path2().empty())
+			ret += fmt::format(L", \"{}\"", e.path2().native());
+
+		return ToU8(ret);
+	}
 }
-} // namespace qwr

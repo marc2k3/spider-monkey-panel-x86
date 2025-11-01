@@ -9,11 +9,6 @@ using namespace qwr;
 namespace
 {
 
-std::string MessageFromErrorCode(DWORD errorCode)
-{
-	return qwr::ToU8_FromAcpToWide(std::system_category().message(errorCode));
-}
-
 void ThrowParsedWinapiError(DWORD errorCode, std::string_view functionName)
 {
 	const auto errorMessage = [errorCode]() -> std::string {
@@ -24,15 +19,18 @@ void ThrowParsedWinapiError(DWORD errorCode, std::string_view functionName)
 		}
 		else
 		{
-			return MessageFromErrorCode(errorCode);
+			return std::system_category().message(errorCode);
 		}
 	}();
-	throw QwrException("WinAPI error:\n"
-						"  {} failed with error ({:#x}):\n"
-						"    {}",
-						functionName,
-						errorCode,
-						errorMessage);
+
+	throw QwrException(
+		"WinAPI error:\n"
+		" {} failed with error ({:#x}):\n"
+		"  {}",
+		functionName,
+		errorCode,
+		errorMessage
+	);
 }
 
 } // namespace

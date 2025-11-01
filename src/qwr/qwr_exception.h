@@ -21,7 +21,7 @@ public:
 	}
 
 	explicit QwrException(const std::filesystem::filesystem_error& e)
-		: std::runtime_error(qwr::ToU8_FromAcpToWide(e.what()))
+		: std::runtime_error(qwr::FS_Error_ToU8(e))
 	{
 	}
 

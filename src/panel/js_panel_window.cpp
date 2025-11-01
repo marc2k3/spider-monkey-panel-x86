@@ -1159,7 +1159,7 @@ void js_panel_window::GenerateContextMenu(HMENU hMenu, int x, int y, uint32_t id
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
+		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::FS_Error_ToU8(e));
 	}
 	catch (const qwr::QwrException& e)
 	{

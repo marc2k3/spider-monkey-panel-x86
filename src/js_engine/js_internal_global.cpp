@@ -100,7 +100,7 @@ JSScript* JsInternalGlobal::GetCachedScript(const std::filesystem::path& absolut
 		}
 		catch (const std::filesystem::filesystem_error& e)
 		{
-			throw qwr::QwrException("Failed to open file `{}`:\n  {}", cleanPath.u8string(), qwr::ToU8_FromAcpToWide(e.what()));
+			throw qwr::QwrException("Failed to open file `{}`:\n  {}", cleanPath.u8string(), qwr::FS_Error_ToU8(e));
 		}
 	}();
 

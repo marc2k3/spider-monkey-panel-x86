@@ -158,7 +158,7 @@ void UpdatePackages()
 				fmt::format(
 					"Failed to update package `{}`:\n{}",
 					packageId,
-					qwr::ToU8_FromAcpToWide(e.what())
+					qwr::FS_Error_ToU8(e)
 				)
 			);
 
@@ -352,7 +352,7 @@ void ProcessDelayedPackages()
 			SMP_UNDERSCORE_NAME,
 			fmt::format(
 				"Failed to process delayed packages:\n{}",
-				qwr::ToU8_FromAcpToWide(e.what())
+				qwr::FS_Error_ToU8(e)
 			)
 		);
 	}

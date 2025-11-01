@@ -115,7 +115,7 @@ auto FindSuitableFileForInclude(const fs::path& path, const std::span<const fs::
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		throw qwr::QwrException("Failed to open file `{}`:\n  {}", path.u8string(), qwr::ToU8_FromAcpToWide(e.what()));
+		throw qwr::QwrException("Failed to open file `{}`:\n  {}", path.u8string(), qwr::FS_Error_ToU8(e));
 	}
 }
 
