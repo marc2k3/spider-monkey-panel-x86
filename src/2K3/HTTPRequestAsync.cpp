@@ -35,7 +35,7 @@ void HTTPRequestAsync::add_headers() noexcept
 {
 	if (m_user_agent_or_headers.empty())
 	{
-		m_session.SetUserAgent(SMP_UNDERSCORE_NAME);
+		m_session.SetUserAgent(SMP_USER_AGENT);
 	}
 	else
 	{

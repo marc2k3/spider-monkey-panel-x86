@@ -7,6 +7,7 @@
 
 #define SMP_VERSION "1.6.2.25.10.29"
 #define SMP_NAME_WITH_VERSION SMP_NAME " v" SMP_VERSION
+#define SMP_USER_AGENT SMP_DLL_NAME "/" SMP_VERSION
 
 namespace smp
 {
