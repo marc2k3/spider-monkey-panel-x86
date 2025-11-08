@@ -3,6 +3,8 @@
 #include "fb.h"
 
 #include <2K3/AlbumArtStatic.hpp>
+#include <2K3/ContextMenuCommand.hpp>
+#include <2K3/MainMenuCommand.hpp>
 #include <com_objects/drop_source_impl.h>
 #include <events/event_dispatcher.h>
 #include <events/event_js_callback.h>
@@ -742,16 +744,7 @@ void Fb::Restart()
 
 bool Fb::RunContextCommand(const std::string& command, uint32_t flags)
 {
-	metadb_handle_list dummy_list;
-	try
-	{
-		utils::ExecuteContextCommandByName(command, dummy_list, flags);
-		return true;
-	}
-	catch (const qwr::QwrException&)
-	{
-		return false;
-	}
+	return ContextMenuCommand(command, flags).execute();
 }
 
 bool Fb::RunContextCommandWithOpt(size_t optArgCount, const std::string& command, uint32_t flags)
@@ -772,12 +765,12 @@ bool Fb::RunContextCommandWithMetadb(const std::string& command, JS::HandleValue
 	qwr::QwrException::ExpectTrue(handle.isObject(), "handle argument is invalid");
 
 	JS::RootedObject jsObject(m_ctx, &handle.toObject());
+	metadb_handle_list handle_list;
 
 	auto* jsHandle = GetInnerInstancePrivate<JsFbMetadbHandle>(m_ctx, jsObject);
 	auto* jsHandleList = GetInnerInstancePrivate<JsFbMetadbHandleList>(m_ctx, jsObject);
 	qwr::QwrException::ExpectTrue(jsHandle || jsHandleList, "handle argument is invalid");
 
-	metadb_handle_list handle_list;
 	if (jsHandleList)
 	{
 		handle_list = jsHandleList->GetHandleList();
@@ -787,15 +780,7 @@ bool Fb::RunContextCommandWithMetadb(const std::string& command, JS::HandleValue
 		handle_list.add_item(jsHandle->GetHandle());
 	}
 
-	try
-	{
-		utils::ExecuteContextCommandByName(command, handle_list, flags);
-		return true;
-	}
-	catch (const qwr::QwrException&)
-	{
-		return false;
-	}
+	return ContextMenuCommand(command, handle_list, flags).execute();
 }
 
 bool Fb::RunContextCommandWithMetadbWithOpt(size_t optArgCount, const std::string& command, JS::HandleValue handle, uint32_t flags)
@@ -813,15 +798,7 @@ bool Fb::RunContextCommandWithMetadbWithOpt(size_t optArgCount, const std::strin
 
 bool Fb::RunMainMenuCommand(const std::string& command)
 {
-	try
-	{
-		utils::ExecuteMainmenuCommandByName(command);
-		return true;
-	}
-	catch (qwr::QwrException&)
-	{
-		return false;
-	}
+	return MainMenuCommand(command).execute();
 }
 
 void Fb::SavePlaylist()

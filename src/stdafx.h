@@ -22,6 +22,7 @@
 #include <queue>
 #include <set>
 #include <span>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <type_traits>

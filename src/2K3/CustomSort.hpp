@@ -1,13 +1,5 @@
 #pragma once
 
-struct CmpW
-{
-	bool operator()(const std::wstring& lhs, const std::wstring& rhs) const
-	{
-		return StrCmpLogicalW(lhs.data(), rhs.data()) < 0;
-	}
-};
-
 namespace CustomSort
 {
 	struct Item

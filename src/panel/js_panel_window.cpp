@@ -1116,11 +1116,11 @@ void js_panel_window::GenerateContextMenu(HMENU hMenu, int x, int y, uint32_t id
 
 		auto curIdx = id_base;
 
-		menu.AppendMenu(MF_STRING, ++curIdx, L"&Reload");
-		menu.AppendMenu(MF_SEPARATOR, UINT_PTR{}, LPCWSTR{});
-		menu.AppendMenu(MF_STRING, ++curIdx, L"&Open component folder");
-		menu.AppendMenu(MF_STRING, ++curIdx, L"&Open documentation");
-		menu.AppendMenu(MF_SEPARATOR, UINT_PTR{}, LPCWSTR{});
+		menu.AppendMenuW(MF_STRING, ++curIdx, L"&Reload");
+		menu.AppendMenuW(MF_SEPARATOR, UINT_PTR{}, LPCWSTR{});
+		menu.AppendMenuW(MF_STRING, ++curIdx, L"&Open component folder");
+		menu.AppendMenuW(MF_STRING, ++curIdx, L"&Open documentation");
+		menu.AppendMenuW(MF_SEPARATOR, UINT_PTR{}, LPCWSTR{});
 		if (settings_.GetSourceType() == config::ScriptSourceType::Package)
 		{
 			++curIdx;
@@ -1135,7 +1135,7 @@ void js_panel_window::GenerateContextMenu(HMENU hMenu, int x, int y, uint32_t id
 			for (const auto& file: scriptFiles)
 			{
 				const auto relativePath = [&] {
-					if (file.filename() == "main.js")
+					if (fs::path(file).filename() == "main.js")
 					{
 						return fs::path("main.js");
 					}
@@ -1144,18 +1144,18 @@ void js_panel_window::GenerateContextMenu(HMENU hMenu, int x, int y, uint32_t id
 						return fs::relative(file, scriptsDir);
 					}
 				}();
-				cSubMenu.AppendMenu(MF_STRING, ++scriptIdx, relativePath.c_str());
+				cSubMenu.AppendMenuW(MF_STRING, ++scriptIdx, relativePath.c_str());
 			}
 
-			menu.AppendMenu(MF_STRING, cSubMenu, L"&Edit panel script");
+			menu.AppendMenuW(MF_STRING, cSubMenu, L"&Edit panel script");
 			cSubMenu.Detach(); ///< AppendMenu takes ownership
 		}
 		else
 		{
-			menu.AppendMenu(MF_STRING, ++curIdx, L"&Edit panel script...");
+			menu.AppendMenuW(MF_STRING, ++curIdx, L"&Edit panel script...");
 		}
-		menu.AppendMenu(MF_STRING, ++curIdx, L"&Panel properties...");
-		menu.AppendMenu(MF_STRING, ++curIdx, L"&Configure panel...");
+		menu.AppendMenuW(MF_STRING, ++curIdx, L"&Panel properties...");
+		menu.AppendMenuW(MF_STRING, ++curIdx, L"&Configure panel...");
 	}
 	catch (const fs::filesystem_error& e)
 	{
@@ -1574,7 +1574,7 @@ void js_panel_window::OnPaint(HDC dc, const CRect& updateRc)
 	}
 
 	CDC memDc{ CreateCompatibleDC(dc) };
-	gdi::ObjectSelector autoBmp(memDc, bmp_.m_hBitmap);
+	auto _ = wil::SelectObject(memDc, bmp_.m_hBitmap);
 
 	if (hasFailed_
 		|| !pJsContainer_
@@ -1633,7 +1633,7 @@ void js_panel_window::OnPaintErrorScreen(HDC memdc)
 		L"Tahoma"
 	);
 
-	gdi::ObjectSelector autoFontSelector(cdc, font.m_hFont);
+	auto _ = wil::SelectObject(cdc, font.m_hFont);
 
 	LOGBRUSH lbBack = { BS_SOLID, RGB(225, 60, 45), 0 };
 	CBrush brush;

@@ -80,18 +80,18 @@ JsFbTooltip::JsFbTooltip(JSContext* cx, HWND hParentWnd)
 	: pJsCtx_(cx)
 	, hParentWnd_(hParentWnd)
 	, tipBuffer_(TEXT(SMP_NAME))
-	, pFont_(smp::gdi::CreateUniquePtr<HFONT>(nullptr))
 {
-	auto autoHwnd = wil::scope_exit([&] {
-		if (tooltipManual_.IsWindow())
+	auto autoHwnd = wil::scope_exit([&]
 		{
-			if (pToolinfoManual_)
+			if (tooltipManual_.IsWindow())
 			{
-				tooltipManual_.DelTool(pToolinfoManual_.get());
+				if (pToolinfoManual_)
+				{
+					tooltipManual_.DelTool(pToolinfoManual_.get());
+				}
+				tooltipManual_.DestroyWindow();
 			}
-			tooltipManual_.DestroyWindow();
-		}
-	});
+		});
 
 	tooltipManual_.Create(hParentWnd_);
 	qwr::error::CheckWinApi(tooltipManual_, "tooltip::Create");
@@ -169,7 +169,7 @@ void JsFbTooltip::SetFont(const std::wstring& name, uint32_t pxSize, uint32_t st
 
 	if (!fontName_.empty())
 	{
-		pFont_.reset(CreateFont(
+		pFont_.reset(CreateFontW(
 			// from msdn: "< 0, The font mapper transforms this value into device units
 			//             and matches its absolute value against the character height of the available fonts."
 			-static_cast<int>(fontSize_),
@@ -186,6 +186,7 @@ void JsFbTooltip::SetFont(const std::wstring& name, uint32_t pxSize, uint32_t st
 			DEFAULT_QUALITY,
 			DEFAULT_PITCH | FF_DONTCARE,
 			fontName_.c_str()));
+
 		qwr::error::CheckWinApi(!!pFont_, "CreateFont");
 		tooltipManual_.SetFont(pFont_.get(), FALSE);
 	}

@@ -56,7 +56,7 @@ private:
 
 	HWND hParentWnd_ = nullptr;
 
-	smp::gdi::unique_gdi_ptr<HFONT> pFont_;
+	wil::unique_hfont pFont_;
 	std::wstring tipBuffer_;
 	std::wstring fontName_;
 	uint32_t fontSize_{};

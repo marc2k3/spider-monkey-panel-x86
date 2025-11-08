@@ -103,9 +103,6 @@
     <ClCompile Include="js_objects\enumerator.cpp">
       <Filter>js_objects</Filter>
     </ClCompile>
-    <ClCompile Include="utils\stackblur.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
     <ClCompile Include="utils\kmeans.cpp">
       <Filter>utils</Filter>
     </ClCompile>
@@ -140,9 +137,6 @@
       <Filter>com_objects</Filter>
     </ClCompile>
     <ClCompile Include="utils\gdi_error_helpers.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\gdi_helpers.cpp">
       <Filter>utils</Filter>
     </ClCompile>
     <ClCompile Include="utils\image_helpers.cpp">
@@ -208,14 +202,8 @@
     <ClCompile Include="js_engine\heartbeat_window.cpp">
       <Filter>js_engine</Filter>
     </ClCompile>
-    <ClCompile Include="utils\js_exception.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
     <ClCompile Include="initquit.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="utils\thread_pool_instance.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
     <ClCompile Include="fb2k\advanced_config.cpp">
       <Filter>fb2k</Filter>
     </ClCompile>
@@ -288,9 +276,6 @@
     </ClCompile>
     <ClCompile Include="js_objects\fb_metadb_handle_list_iterator.cpp">
       <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\path_helpers.cpp">
-      <Filter>utils</Filter>
     </ClCompile>
     <ClCompile Include="utils\guid_helpers.cpp">
       <Filter>utils</Filter>
@@ -470,6 +455,15 @@
       <Filter>2K3</Filter>
     </ClCompile>
     <ClCompile Include="component_defines.cpp" />
+    <ClCompile Include="2K3\ContextMenuCommand.cpp">
+      <Filter>2K3</Filter>
+    </ClCompile>
+    <ClCompile Include="2K3\MainMenuCommand.cpp">
+      <Filter>2K3</Filter>
+    </ClCompile>
+    <ClCompile Include="2K3\StackBlur.cpp">
+      <Filter>2K3</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="js_engine\js_engine.h">
@@ -590,9 +584,6 @@
       <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="utils\kmeans.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\stackblur.h">
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="ui\ui_input_box.h">
@@ -717,12 +708,6 @@
     </ClInclude>
     <ClInclude Include="component_guids.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="utils\make_unique_ptr.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\thread_pool_instance.h">
-      <Filter>utils</Filter>
-    </ClInclude>
     <ClInclude Include="fb2k\advanced_config.h">
       <Filter>fb2k</Filter>
     </ClInclude>
@@ -806,9 +791,6 @@
     <ClInclude Include="js_objects\fb_metadb_handle_list_iterator.h">
       <Filter>js_objects</Filter>
     </ClInclude>
-    <ClInclude Include="utils\path_helpers.h">
-      <Filter>utils</Filter>
-    </ClInclude>
     <ClInclude Include="utils\guid_helpers.h">
       <Filter>utils</Filter>
     </ClInclude>
@@ -826,9 +808,6 @@
     </ClInclude>
     <ClInclude Include="fb2k\mainmenu_dynamic.h">
       <Filter>fb2k</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\resource_helpers.h">
-      <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="com_utils\com_destruction_handler.h">
       <Filter>com_utils</Filter>
@@ -996,6 +975,18 @@
       <Filter>2K3</Filter>
     </ClInclude>
     <ClInclude Include="2K3\PlaylistLock.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\ContextMenuCommand.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\MainMenuCommand.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\StackBlur.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\DirectoryIterator.hpp">
       <Filter>2K3</Filter>
     </ClInclude>
   </ItemGroup>

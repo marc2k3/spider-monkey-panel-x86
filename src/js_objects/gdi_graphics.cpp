@@ -140,7 +140,7 @@ uint32_t JsGdiGraphics::CalcTextHeight(const std::wstring& str, JsGdiFont* font)
 
 	const auto hDc = pGdi_->GetHDC();
 	auto autoHdcReleaser = wil::scope_exit([hDc, pGdi = pGdi_] { pGdi->ReleaseHDC(hDc); });
-	gdi::ObjectSelector autoFont(hDc, font->GetHFont());
+	auto _ = wil::SelectObject(hDc, font->GetHFont());
 
 	return smp::utils::GetTextHeight(hDc, str);
 }
@@ -152,7 +152,7 @@ uint32_t JsGdiGraphics::CalcTextWidth(const std::wstring& str, JsGdiFont* font, 
 
 	const auto hDc = pGdi_->GetHDC();
 	auto autoHdcReleaser = wil::scope_exit([hDc, pGdi = pGdi_] { pGdi->ReleaseHDC(hDc); });
-	gdi::ObjectSelector autoFont(hDc, font->GetHFont());
+	auto _ = wil::SelectObject(hDc, font->GetHFont());
 
 	return smp::utils::GetTextWidth(hDc, str, use_exact);
 }
@@ -353,7 +353,7 @@ JSObject* JsGdiGraphics::EstimateLineWrap(const std::wstring& str, JsGdiFont* fo
 	{
 		const auto hDc = pGdi_->GetHDC();
 		auto autoHdcReleaser = wil::scope_exit([hDc, pGdi = pGdi_] { pGdi->ReleaseHDC(hDc); });
-		gdi::ObjectSelector autoFont(hDc, font->GetHFont());
+		auto _ = wil::SelectObject(hDc, font->GetHFont());
 
 		result = smp::utils::WrapText(hDc, str, max_width);
 	}
@@ -526,7 +526,7 @@ void JsGdiGraphics::GdiDrawText(const std::wstring& str, JsGdiFont* font, uint32
 
 	const auto hDc = pGdi_->GetHDC();
 	auto autoHdcReleaser = wil::scope_exit([pGdi = pGdi_, hDc] { pGdi->ReleaseHDC(hDc); });
-	gdi::ObjectSelector autoFont(hDc, font->GetHFont());
+	auto _ = wil::SelectObject(hDc, font->GetHFont());
 
 	RECT rc{ x, y, static_cast<LONG>(x + w), static_cast<LONG>(y + h) };
 	DRAWTEXTPARAMS dpt = { sizeof(DRAWTEXTPARAMS), 4, 0, 0, 0 };

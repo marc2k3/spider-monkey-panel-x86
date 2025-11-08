@@ -1,283 +1,125 @@
 #include <stdafx.h>
-
 #include "menu_helpers.h"
 
+#include <2K3/MainMenuCommand.hpp>
 #include <utils/guid_helpers.h>
 
 namespace
 {
-
-using GuidMenuMap = std::unordered_map<GUID, mainmenu_group::ptr, smp::utils::GuidHasher>;
-
-bool DoesPathMatchCommand(const std::string& path, const std::string& command)
-{
-	const auto commandLen = command.length();
-	const auto pathLen = path.length();
-
-	if (commandLen > pathLen)
+	mainmenu_node::ptr FindMainmenuCommandV2NodeRecur(mainmenu_node::ptr node, const std::string& basePath, const std::string& name)
 	{
-		return false;
-	}
-
-	if (commandLen == pathLen)
-	{
-		return !_stricmp(command.c_str(), path.c_str());
-	}
-
-	return ((path[pathLen - commandLen - 1] == '/') && !_stricmp(path.c_str() + pathLen - commandLen, command.c_str()));
-}
-
-contextmenu_node* FindContextCommandRecur(const std::string& p_command, std::string& basePath, contextmenu_node* p_parent)
-{
-	assert(p_parent && p_parent->get_type() == contextmenu_item_node::TYPE_POPUP);
-
-	for (const auto idx: ranges::views::indices(p_parent->get_num_children()))
-	{
-		auto* pChild = p_parent->get_child(idx);
-		if (!pChild)
-		{
-			continue;
-		}
+		if (mainmenu_node::type_separator == node->get_type())
+			return {};
 
 		auto curPath = basePath;
-		curPath += pChild->get_name();
 
-		switch (pChild->get_type())
+		pfc::string8 displayName;
+		uint32_t tmp;
+		node->get_display(displayName, tmp);
+		if (!displayName.is_empty())
 		{
-		case contextmenu_item_node::TYPE_POPUP:
-		{
-			curPath += '/';
+			curPath += displayName.c_str();
+		}
 
-			if (auto retVal = FindContextCommandRecur(p_command, curPath, pChild); retVal)
+		switch (node->get_type())
+		{
+		case mainmenu_node::type_command:
+		{
+			if (smp::utils::DoesPathMatchCommand(curPath, name))
 			{
-				return retVal;
+				return node;
 			}
-
 			break;
 		}
-		case contextmenu_item_node::TYPE_COMMAND:
+		case mainmenu_node::type_group:
 		{
-			if (DoesPathMatchCommand(curPath, p_command))
+			if (curPath.back() != '/')
 			{
-				return pChild;
+				curPath += '/';
+			}
+
+			for (auto i: ranges::views::indices(node->get_children_count()))
+			{
+				auto pChild = node->get_child(i);
+				if (auto retVal = FindMainmenuCommandV2NodeRecur(pChild, curPath, name); retVal.is_valid())
+				{
+					return retVal;
+				}
 			}
 			break;
 		}
 		default:
-		{
 			break;
 		}
-		}
-	}
 
-	return nullptr;
-}
-
-/// @throw pfc::exception
-bool ExecuteContextCommandByNameUnsafe(const std::string& name, const metadb_handle_list& handles, uint32_t flags)
-{
-	contextmenu_manager::ptr cm;
-	contextmenu_manager::g_create(cm);
-
-	if (handles.get_count())
-	{
-		cm->init_context(handles, flags);
-	}
-	else
-	{
-		cm->init_context_now_playing(flags);
-	}
-
-	auto pRoot = cm->get_root();
-	if (!pRoot || pRoot->get_type() != contextmenu_item_node::TYPE_POPUP)
-	{
-		return false;
-	}
-
-	std::string emptyPath;
-	if (auto retVal = FindContextCommandRecur(name, emptyPath, pRoot); retVal)
-	{
-		retVal->execute();
-		return true;
-	}
-
-	return false;
-}
-
-GuidMenuMap GenerateGuidMainmenuMap()
-{
-	GuidMenuMap guidMap;
-	for (service_enum_t<mainmenu_group> e; !e.finished(); ++e)
-	{
-		const auto mmg = e.get();
-		guidMap.try_emplace(mmg->get_guid(), mmg);
-	}
-
-	return guidMap;
-}
-
-std::string GenerateMainmenuCommandPath(const GuidMenuMap& group_guid_map, const service_ptr_t<mainmenu_commands>& ptr)
-{
-	std::string path;
-
-	auto groupGuid = ptr->get_parent();
-	while (group_guid_map.contains(groupGuid))
-	{
-		const auto& pGroup = group_guid_map.at(groupGuid);
-
-		if (mainmenu_group_popup::ptr pGroupPopup; pGroup->service_query_t(pGroupPopup))
-		{
-			pfc::string8 displayName;
-			pGroupPopup->get_display_string(displayName);
-
-			if (!displayName.is_empty())
-			{
-				path = fmt::format("{}/{}", displayName.get_ptr(), path);
-			}
-		}
-
-		groupGuid = pGroup->get_parent();
-	}
-
-	return path;
-}
-
-mainmenu_node::ptr FindMainmenuCommandV2NodeRecur(mainmenu_node::ptr node, const std::string& basePath, const std::string& name)
-{
-	assert(node.is_valid());
-
-	if (mainmenu_node::type_separator == node->get_type())
-	{
 		return {};
 	}
 
-	auto curPath = basePath;
+	template <typename F_New, typename F_Old>
+	bool ApplyFnOnMainmenuNode(const std::string& name, F_New fnNew, F_Old fnOld)
+	{
+		// Ensure commands on the Edit menu are enabled
+		ui_edit_context_manager::get()->set_context_active_playlist();
 
-	pfc::string8 displayName;
-	uint32_t tmp;
-	node->get_display(displayName, tmp);
-	if (!displayName.is_empty())
-	{
-		curPath += displayName.c_str();
-	}
+		for (auto ptr : mainmenu_commands::enumerate())
+		{
+			mainmenu_commands_v2::ptr v2_ptr;
+			ptr->cast(v2_ptr);
 
-	switch (node->get_type())
-	{
-	case mainmenu_node::type_command:
-	{
-		if (DoesPathMatchCommand(curPath, name))
-		{
-			return node;
-		}
-		break;
-	}
-	case mainmenu_node::type_group:
-	{
-		if (curPath.back() != '/')
-		{
-			curPath += '/';
-		}
+			const auto parent_path = MainMenuCommand::build_parent_path(ptr->get_parent());
 
-		for (auto i: ranges::views::indices(node->get_children_count()))
-		{
-			auto pChild = node->get_child(i);
-			if (auto retVal = FindMainmenuCommandV2NodeRecur(pChild, curPath, name); retVal.is_valid())
+			for (const auto idx: ranges::views::indices(ptr->get_command_count()))
 			{
-				return retVal;
-			}
-		}
-		break;
-	}
-	default:
-	{
-		assert(0);
-	}
-	}
-
-	return {};
-}
-
-/// @throw pfc::exception
-template <typename F_New, typename F_Old>
-bool ApplyFnOnMainmenuNode(const std::string& name, F_New fnNew, F_Old fnOld)
-{
-	const auto group_guid_text_map = GenerateGuidMainmenuMap();
-
-	for (service_enum_t<mainmenu_commands> e; !e.finished(); ++e)
-	{
-		auto mmc = e.get();
-
-		for (const auto idx: ranges::views::indices(mmc->get_command_count()))
-		{
-			auto path = GenerateMainmenuCommandPath(group_guid_text_map, mmc);
-
-			if (mainmenu_commands_v2::ptr mmc_v2; mmc->service_query_t(mmc_v2) && mmc_v2->is_command_dynamic(idx))
-			{ // new fb2k v1.0 commands
-				auto node = mmc_v2->dynamic_instantiate(idx);
-
-				if (auto retVal = FindMainmenuCommandV2NodeRecur(node, path, name); retVal.is_valid())
+				if (v2_ptr.is_valid() && v2_ptr->is_command_dynamic(idx))
 				{
-					fnNew(retVal);
-					return true;
+					auto node = v2_ptr->dynamic_instantiate(idx);
+
+					if (auto retVal = FindMainmenuCommandV2NodeRecur(node, parent_path, name); retVal.is_valid())
+					{
+						fnNew(retVal);
+						return true;
+					}
 				}
+				else
+				{
+					pfc::string8 command;
+					ptr->get_name(idx, command);
+					const auto path = fmt::format("{}{}", parent_path, command.get_ptr());
 
-				continue;
-			}
-
-			// old commands
-			pfc::string8 command;
-			mmc->get_name(idx, command);
-			path += command;
-
-			if (DoesPathMatchCommand(path, name))
-			{
-				fnOld(idx, mmc);
-				return true;
+					if (smp::utils::DoesPathMatchCommand(path, name))
+					{
+						fnOld(idx, ptr);
+						return true;
+					}
+				}
 			}
 		}
+
+		return false;
 	}
-
-	return false;
 }
-
-} // namespace
 
 namespace smp::utils
 {
-
-void ExecuteContextCommandByName(const std::string& name, const metadb_handle_list& handles, uint32_t flags)
-{
-	try
+	bool DoesPathMatchCommand(std::string_view path, std::string_view command)
 	{
-		bool bRet = ExecuteContextCommandByNameUnsafe(name, handles, flags);
-		qwr::QwrException::ExpectTrue(bRet, "Unknown menu command: {}", name);
-	}
-	catch (const pfc::exception& e)
-	{
-		throw qwr::QwrException(e.what());
-	}
-}
+		const auto commandLen = command.length();
+		const auto pathLen = path.length();
 
-void ExecuteMainmenuCommandByName(const std::string& name)
-{
-	try
-	{
-		const bool bRet = ApplyFnOnMainmenuNode(
-			name,
-			[](auto node) { node->execute(nullptr); },
-			[](auto idx, auto ptr) { ptr->execute(idx, nullptr); });
+		if (commandLen > pathLen)
+		{
+			return false;
+		}
 
-		qwr::QwrException::ExpectTrue(bRet, "Unknown menu command: {}", name);
-	}
-	catch (const pfc::exception& e)
-	{
-		throw qwr::QwrException(e.what());
-	}
-}
+		if (commandLen == pathLen)
+		{
+			return _stricmp(command.data(), path.data()) == 0;
+		}
 
-uint32_t GetMainmenuCommandStatusByName(const std::string& name)
-{
-	try
+		return (path[pathLen - commandLen - 1] == '/') && _stricmp(path.data() + pathLen - commandLen, command.data()) == 0;
+	}
+
+	uint32_t GetMainmenuCommandStatusByName(const std::string& name)
 	{
 		uint32_t status{};
 
@@ -297,10 +139,4 @@ uint32_t GetMainmenuCommandStatusByName(const std::string& name)
 		qwr::QwrException::ExpectTrue(bRet, "Unknown menu command: {}", name);
 		return status;
 	}
-	catch (const pfc::exception& e)
-	{
-		throw qwr::QwrException(e.what());
-	}
 }
-
-} // namespace smp::utils

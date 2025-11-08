@@ -44,17 +44,14 @@ public: // props
 	std::uint32_t get_Width();
 
 private:
-	JsGdiRawBitmap(JSContext* cx,
-					smp::gdi::unique_gdi_ptr<HDC> hDc,
-					smp::gdi::unique_gdi_ptr<HBITMAP> hBmp,
-					uint32_t width,
-					uint32_t height);
+	JsGdiRawBitmap(JSContext* cx, wil::unique_hbitmap hBmp, uint32_t width, uint32_t height);
 
-private:
+	static wil::unique_hbitmap CreateHBitmapFromGdiPlusBitmap(Gdiplus::Bitmap& bitmap);
+
 	[[maybe_unused]] JSContext* pJsCtx_ = nullptr;
-	const smp::gdi::unique_gdi_ptr<HDC> pDc_;
-	const smp::gdi::unique_gdi_ptr<HBITMAP> hBmp_;
-	const smp::gdi::ObjectSelector<HBITMAP> autoBmp_;
+	const wil::unique_hdc pDc_;
+	const wil::unique_hbitmap hBmp_;
+	const wil::unique_select_object autoBmp_;
 	uint32_t width_;
 	uint32_t height_;
 };

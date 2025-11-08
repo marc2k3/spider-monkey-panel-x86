@@ -84,10 +84,13 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
   <ItemGroup>
     <ClCompile Include="2K3\AlbumArtStatic.cpp" />
     <ClCompile Include="2K3\Attach.cpp" />
+    <ClCompile Include="2K3\ContextMenuCommand.cpp" />
     <ClCompile Include="2K3\DownloadFileAsync.cpp" />
     <ClCompile Include="2K3\FileHelper.cpp" />
     <ClCompile Include="2K3\HTTPRequestAsync.cpp" />
+    <ClCompile Include="2K3\MainMenuCommand.cpp" />
     <ClCompile Include="2K3\PlaylistLock.cpp" />
+    <ClCompile Include="2K3\StackBlur.cpp" />
     <ClCompile Include="2K3\TagWriter.cpp" />
     <ClCompile Include="2K3\TextFile.cpp" />
     <ClCompile Include="callbacks\ConfigObjectNotify.cpp" />
@@ -233,24 +236,21 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClCompile Include="ui\ui_slow_script.cpp" />
     <ClCompile Include="utils\edit_text.cpp" />
     <ClCompile Include="utils\gdi_error_helpers.cpp" />
-    <ClCompile Include="utils\gdi_helpers.cpp" />
     <ClCompile Include="utils\guid_helpers.cpp" />
     <ClCompile Include="utils\image_helpers.cpp" />
-    <ClCompile Include="utils\js_exception.cpp" />
     <ClCompile Include="utils\kmeans.cpp" />
     <ClCompile Include="utils\location_processor.cpp" />
     <ClCompile Include="utils\logging.cpp" />
     <ClCompile Include="utils\menu_helpers.cpp" />
-    <ClCompile Include="utils\path_helpers.cpp" />
-    <ClCompile Include="utils\stackblur.cpp" />
     <ClCompile Include="utils\text_helpers.cpp" />
-    <ClCompile Include="utils\thread_pool_instance.cpp" />
     <ClCompile Include="utils\zip_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2K3\AlbumArtStatic.hpp" />
     <ClInclude Include="2K3\Attach.hpp" />
+    <ClInclude Include="2K3\ContextMenuCommand.hpp" />
     <ClInclude Include="2K3\CustomSort.hpp" />
+    <ClInclude Include="2K3\DirectoryIterator.hpp" />
     <ClInclude Include="2K3\DownloadFileAsync.hpp" />
     <ClInclude Include="2K3\FileDialog.hpp" />
     <ClInclude Include="2K3\FileHelper.hpp" />
@@ -258,7 +258,9 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClInclude Include="2K3\GetAlbumArtAsync.hpp" />
     <ClInclude Include="2K3\HTTPRequestAsync.hpp" />
     <ClInclude Include="2K3\LoadImageAsync.hpp" />
+    <ClInclude Include="2K3\MainMenuCommand.hpp" />
     <ClInclude Include="2K3\PlaylistLock.hpp" />
+    <ClInclude Include="2K3\StackBlur.hpp" />
     <ClInclude Include="2K3\String.hpp" />
     <ClInclude Include="2K3\TagWriter.hpp" />
     <ClInclude Include="2K3\TextFile.hpp" />
@@ -418,13 +420,8 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClInclude Include="utils\kmeans.h" />
     <ClInclude Include="utils\location_processor.h" />
     <ClInclude Include="utils\logging.h" />
-    <ClInclude Include="utils\make_unique_ptr.h" />
     <ClInclude Include="utils\menu_helpers.h" />
-    <ClInclude Include="utils\path_helpers.h" />
-    <ClInclude Include="utils\resource_helpers.h" />
-    <ClInclude Include="utils\stackblur.h" />
     <ClInclude Include="utils\text_helpers.h" />
-    <ClInclude Include="utils\thread_pool_instance.h" />
     <ClInclude Include="utils\zip_utils.h" />
   </ItemGroup>
   <ItemGroup>

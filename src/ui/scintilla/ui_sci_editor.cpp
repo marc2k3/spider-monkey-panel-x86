@@ -1,13 +1,12 @@
 #include <stdafx.h>
-
 #include "ui_sci_editor.h"
 
 #include <ui/scintilla/sci_prop_sets.h>
 #include <ui/scintilla/ui_sci_goto.h>
 #include <utils/colour_helpers.h>
 #include <utils/logging.h>
-#include <utils/resource_helpers.h>
 
+#include <2K3/String.hpp>
 #include <2K3/TextFile.hpp>
 #include <qwr/string_helpers.h>
 
@@ -461,48 +460,23 @@ bool CScriptEditorCtrl::ProcessKey(uint32_t vk)
 
 void CScriptEditorCtrl::ReadAPI()
 {
-	namespace fs = std::filesystem;
-
 	m_apis.clear();
 
-	const auto readApi = [&m_apis = m_apis](const auto& content) {
-		for (const auto& line: qwr::string::SplitByLines(content))
+	const auto readApi = [this](int id)
 		{
-			if (!line.empty() && IsCSym(line[0]))
+			const auto content = get_resource_text(id);
+
+			for (const auto& line: qwr::string::SplitByLines(content))
 			{
-				m_apis.emplace(line.data(), line.size());
+				if (!line.empty() && IsCSym(line[0]))
+				{
+					m_apis.emplace(line.data(), line.size());
+				}
 			}
-		}
-	};
+		};
 
-	readApi(LoadStringResource(IDR_SCINTILLA_JS_API));
-	readApi(LoadStringResource(IDR_SCINTILLA_INTERFACE_API));
-
-	const auto propvalRet = GetPropertyExpanded_Opt("api.extra");
-	if (!propvalRet || propvalRet->empty())
-	{
-		return;
-	}
-
-	const auto files = qwr::string::Split<char>(*propvalRet, ';');
-	std::string content;
-	for (const auto& file: files)
-	{
-		try
-		{
-			const auto wfile = qwr::ToWide(file);
-			const auto content = TextFile(wfile).read();
-			readApi(content);
-		}
-		catch (const qwr::QwrException& e)
-		{
-			smp::utils::LogWarning(fmt::format(
-				"Could not load editor API file {}:\n"
-				"  {}",
-				std::string{ file.data(), file.size() },
-				e.what()));
-		}
-	}
+	readApi(IDR_SCINTILLA_JS_API);
+	readApi(IDR_SCINTILLA_INTERFACE_API);
 }
 
 void CScriptEditorCtrl::SetContent(const char* text, bool clear_undo_buffer)

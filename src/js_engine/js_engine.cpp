@@ -14,7 +14,6 @@
 #include <panel/modal_blocking_scope.h>
 #include <panel/user_message.h>
 #include <timeout/timer_interface.h>
-#include <utils/make_unique_ptr.h>
 
 #include <js/Initialization.h>
 #include <qwr/error_popup.h>
@@ -24,35 +23,35 @@ using namespace smp;
 
 namespace
 {
+	constexpr uint32_t kHeartbeatRateMs = 73;
+	[[maybe_unused]] constexpr uint32_t kJobsMaxBudgetMs = 500;
 
-constexpr uint32_t kHeartbeatRateMs = 73;
-[[maybe_unused]] constexpr uint32_t kJobsMaxBudgetMs = 500;
+	// Half the size of the actual C stack, to be safe (default stack size in VS is 1MB).
+	constexpr size_t kMaxStackLimit = 1024LL * 1024 / 2;
 
-// Half the size of the actual C stack, to be safe (default stack size in VS is 1MB).
-constexpr size_t kMaxStackLimit = 1024LL * 1024 / 2;
+	template <typename T, typename D>
+	[[nodiscard]] std::unique_ptr<T, D> make_unique_with_dtor(T* t, D d)
+	{
+		return std::unique_ptr<T, D>(t, d);
+	}
 
-} // namespace
+	void ReportException(const std::string& errorText) noexcept
+	{
+		const std::string errorTextPadded = [&errorText]()
+			{
+				std::string text = "Critical JS engine error: " SMP_NAME_WITH_VERSION;
+				if (!errorText.empty())
+				{
+					text += "\n";
+					text += errorText;
+				}
 
-namespace
-{
+				return text;
+			}();
 
-void ReportException(const std::string& errorText) noexcept
-{
-	const std::string errorTextPadded = [&errorText]() {
-		std::string text = "Critical JS engine error: " SMP_NAME_WITH_VERSION;
-		if (!errorText.empty())
-		{
-			text += "\n";
-			text += errorText;
-		}
-
-		return text;
-	}();
-
-	qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, errorTextPadded);
+		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, errorTextPadded);
+	}
 }
-
-} // namespace
 
 namespace mozjs
 {
@@ -62,10 +61,7 @@ JsEngine::JsEngine()
 	JS_Init();
 }
 
-JsEngine::~JsEngine()
-{ // Can't clean up here, since mozjs.dll might be already unloaded
-	assert(!isInitialized_);
-}
+JsEngine::~JsEngine() {}
 
 JsEngine& JsEngine::GetInstance() noexcept
 {
@@ -90,10 +86,7 @@ bool JsEngine::RegisterContainer(JsContainer& jsContainer) noexcept
 	}
 
 	jsContainer.SetJsCtx(pJsCtx_);
-
-	assert(!registeredContainers_.contains(&jsContainer));
 	registeredContainers_.emplace(&jsContainer, jsContainer);
-
 	jsMonitor_.AddContainer(jsContainer);
 
 	return true;
@@ -192,7 +185,6 @@ const JsGc& JsEngine::GetGcEngine() const noexcept
 
 JsInternalGlobal& JsEngine::GetInternalGlobal() noexcept
 {
-	assert(internalGlobal_);
 	return *internalGlobal_;
 }
 
@@ -222,9 +214,10 @@ bool JsEngine::Initialize() noexcept
 		return true;
 	}
 
-	auto autoJsCtx = utils::make_unique_with_dtor<JSContext>(nullptr, [](auto pCtx) {
-		JS_DestroyContext(pCtx);
-	});
+	auto autoJsCtx = make_unique_with_dtor<JSContext>(nullptr, [](auto pCtx)
+		{
+			JS_DestroyContext(pCtx);
+		});
 
 	try
 	{
@@ -257,16 +250,13 @@ bool JsEngine::Initialize() noexcept
 		jsGc_.Initialize(cx);
 
 		rejectedPromises_.init(cx, JS::GCVector<JSObject*, 0, js::SystemAllocPolicy>(js::SystemAllocPolicy()));
-
 		internalGlobal_ = JsInternalGlobal::Create(cx);
-		assert(internalGlobal_);
 
 		StartHeartbeatThread();
 		jsMonitor_.Start(cx);
 	}
 	catch (const JsException&)
 	{
-		assert(JS_IsExceptionPending(autoJsCtx.get()));
 		ReportException(mozjs::error::JsErrorToText(autoJsCtx.get()));
 		return false;
 	}
@@ -314,19 +304,17 @@ void JsEngine::StartHeartbeatThread() noexcept
 	if (!heartbeatWindow_)
 	{
 		heartbeatWindow_ = smp::HeartbeatWindow::Create();
-		assert(heartbeatWindow_);
 	}
 
 	shouldStopHeartbeatThread_ = false;
-	heartbeatThread_ = std::thread([parent = this] {
-		while (!parent->shouldStopHeartbeatThread_)
+	heartbeatThread_ = std::thread([parent = this]
 		{
-			std::this_thread::sleep_for(
-				std::chrono::milliseconds(kHeartbeatRateMs));
-
-			PostMessage(parent->heartbeatWindow_->GetHwnd(), static_cast<UINT>(smp::MiscMessage::heartbeat), 0, 0);
-		}
-	});
+			while (!parent->shouldStopHeartbeatThread_)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(kHeartbeatRateMs));
+				PostMessageW(parent->heartbeatWindow_->GetHwnd(), static_cast<UINT>(smp::MiscMessage::heartbeat), 0, 0);
+			}
+		});
 }
 
 void JsEngine::StopHeartbeatThread() noexcept

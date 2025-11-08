@@ -12,6 +12,12 @@ namespace qwr
 		ThreadPool(const ThreadPool&) = delete;
 		ThreadPool& operator=(const ThreadPool&) = delete;
 
+		static ThreadPool& GetInstance()
+		{
+			static ThreadPool tp;
+			return tp;
+		}
+
 		template <typename T>
 		void AddTask(T&& task) noexcept
 		{

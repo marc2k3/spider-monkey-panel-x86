@@ -13,9 +13,9 @@
 #include <js_utils/js_object_helper.h>
 #include <js_utils/js_property_helper.h>
 #include <utils/gdi_helpers.h>
-#include <utils/thread_pool_instance.h>
 
 #include <qwr/string_helpers.h>
+#include <qwr/thread_pool.h>
 
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/Promise.h>
@@ -173,9 +173,10 @@ JSObject* GetAlbumArtPromise(JSContext* cx, HWND hWnd, const metadb_handle_ptr& 
 	JS::RootedObject jsObject(cx, JS::NewPromiseObject(cx, nullptr));
 	JsException::ExpectTrue(jsObject);
 
-	smp::GetThreadPoolInstance().AddTask([task = std::make_shared<AlbumArtV2FetchTask>(cx, jsObject, hWnd, handle, art_id, want_stub, only_embed)] {
-		std::invoke(*task);
-	});
+	qwr::ThreadPool::GetInstance().AddTask([task = std::make_shared<AlbumArtV2FetchTask>(cx, jsObject, hWnd, handle, art_id, want_stub, only_embed)]
+		{
+			std::invoke(*task);
+		});
 
 	return jsObject;
 }

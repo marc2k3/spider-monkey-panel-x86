@@ -1,13 +1,12 @@
 #include <stdafx.h>
-
 #include "ui_conf_tab_package.h"
 
 #include <config/package_utils.h>
 #include <ui/ui_conf.h>
 #include <ui/ui_input_box.h>
 #include <utils/edit_text.h>
-#include <utils/path_helpers.h>
 
+#include <2K3/DirectoryIterator.hpp>
 #include <2K3/FileDialog.hpp>
 #include <2K3/TextFile.hpp>
 #include <qwr/error_popup.h>
@@ -17,32 +16,21 @@ namespace fs = std::filesystem;
 
 namespace
 {
-
-/// @throw qwr::QwrException
-std::vector<fs::path> GetAllFilesFromPath(const fs::path& path)
-{
-	try
+	std::vector<std::wstring> GetAllFilesFromPath(const fs::path& path)
 	{
-		if (fs::is_regular_file(path))
+		std::error_code ec;
+
+		if (fs::is_regular_file(path, ec))
 		{
 			return { path };
 		}
-		else
-		{
-			return smp::utils::GetFilesRecursive(path);
-		}
-	}
-	catch (const fs::filesystem_error& e)
-	{
-		throw qwr::QwrException(e);
+
+		return DirectoryIterator(path).list_files(true);
 	}
 }
 
-} // namespace
-
 namespace smp::ui
 {
-
 CConfigTabPackage::CConfigTabPackage(CDialogConf& parent, config::ParsedPanelSettings& settings)
 	: parent_(parent)
 	, settings_(settings)
@@ -120,7 +108,6 @@ BOOL CConfigTabPackage::OnInitDialog(HWND hwndFocus, LPARAM lParam)
 
 void CConfigTabPackage::OnDestroy()
 {
-	assert(pFilesListBoxDrop_);
 	pFilesListBoxDrop_->RevokeDragDrop();
 	pFilesListBoxDrop_.Release();
 }
@@ -128,9 +115,7 @@ void CConfigTabPackage::OnDestroy()
 void CConfigTabPackage::OnDdxUiChange(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (suppressDdxFromUi_)
-	{
 		return;
-	}
 
 	{
 		auto it = ranges::find_if(ddx_, [nID](auto& ddx) {
@@ -145,7 +130,6 @@ void CConfigTabPackage::OnDdxUiChange(UINT uNotifyCode, int nID, CWindow wndCtl)
 
 	if (nID == IDC_LIST_PACKAGE_FILES)
 	{
-		assert(focusedFileIdx_ < static_cast<int>(files_.size()));
 		focusedFile_ = files_[focusedFileIdx_];
 	}
 
@@ -159,41 +143,39 @@ void CConfigTabPackage::OnDdxUiChange(UINT uNotifyCode, int nID, CWindow wndCtl)
 
 void CConfigTabPackage::OnNewScript(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	assert(static_cast<size_t>(focusedFileIdx_) < files_.size());
-
 	try
 	{
 		const auto scriptsDir = config::GetPackageScriptsDir(settings_);
-
-		const auto newFilenameOpt = [&]() -> std::optional<fs::path> {
-			while (true)
+		const auto newFilenameOpt = [&]() -> std::optional<fs::path>
 			{
-				CInputBox dlg("Enter script name", "Create new script file");
-				if (dlg.DoModal(m_hWnd) != IDOK)
+				while (true)
 				{
-					return std::nullopt;
-				}
+					CInputBox dlg("Enter script name", "Create new script file");
+					if (dlg.DoModal(m_hWnd) != IDOK)
+					{
+						return std::nullopt;
+					}
 
-				auto path = scriptsDir / dlg.GetValue();
-				if (path.extension() != ".js")
-				{
-					path += ".js";
-				}
+					auto path = scriptsDir / dlg.GetValue();
+					if (path.extension() != ".js")
+					{
+						path += ".js";
+					}
 
-				if (fs::exists(path))
-				{
-					popup_message_v3::get()->messageBox(
-						*this,
-						"File with this name already exists!",
-						"Creating file",
-						MB_OK | MB_ICONWARNING);
+					if (fs::exists(path))
+					{
+						popup_message_v3::get()->messageBox(
+							*this,
+							"File with this name already exists!",
+							"Creating file",
+							MB_OK | MB_ICONWARNING);
+					}
+					else
+					{
+						return path;
+					}
 				}
-				else
-				{
-					return path;
-				}
-			}
-		}();
+			}();
 
 		if (!newFilenameOpt)
 		{
@@ -234,7 +216,6 @@ void CConfigTabPackage::OnRemoveFile(UINT uNotifyCode, int nID, CWindow wndCtl)
 		return;
 	}
 
-	assert(static_cast<size_t>(focusedFileIdx_) < files_.size());
 	try
 	{
 		fs::remove_all(files_[focusedFileIdx_]);
@@ -254,9 +235,7 @@ void CConfigTabPackage::OnRemoveFile(UINT uNotifyCode, int nID, CWindow wndCtl)
 
 void CConfigTabPackage::OnRenameFile(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	assert(static_cast<size_t>(focusedFileIdx_) < files_.size());
-
-	auto& filepath = files_[focusedFileIdx_];
+	auto filepath = fs::path(files_[focusedFileIdx_]);
 
 	CInputBox dlg("Enter new file name", "Rename file", filepath.filename().u8string().c_str());
 	if (dlg.DoModal(m_hWnd) != IDOK)
@@ -284,21 +263,21 @@ void CConfigTabPackage::OnRenameFile(UINT uNotifyCode, int nID, CWindow wndCtl)
 
 void CConfigTabPackage::OnOpenContainingFolder(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	const std::wstring arg = [&] {
-		if (files_.empty())
+	const std::wstring arg = [&] -> std::wstring
 		{
-			return std::wstring{};
-		}
-		else
-		{
-			std::wstring tmp = files_[focusedFileIdx_].wstring();
-			return L"\"" + tmp + L"\"";
-		}
-	}();
+			if (files_.empty())
+			{
+				return {};
+			}
+			else
+			{
+				return L"\"" + files_[focusedFileIdx_] + L"\"";
+			}
+		}();
 
 	try
 	{
-		const auto hInstance = ShellExecute(
+		const auto hInstance = ShellExecuteW(
 			nullptr,
 			L"explore",
 			packagePath_.wstring().c_str(),
@@ -343,7 +322,7 @@ void CConfigTabPackage::OnEditScript(UINT uNotifyCode, int nID, CWindow wndCtl)
 			}
 		}
 
-		const auto filePath = files_[focusedFileIdx_];
+		const auto filePath = fs::path(files_[focusedFileIdx_]);
 		qwr::QwrException::ExpectTrue(fs::exists(filePath), "Script is missing: {}", filePath.u8string());
 
 		smp::EditTextFile(*this, filePath, true, true);
@@ -490,7 +469,7 @@ void CConfigTabPackage::InitializeFilesListBox()
 		}
 
 		files_ = config::GetPackageFiles(settings_);
-		if (const auto it = ranges::find(files_, focusedFile_); it == files_.cend())
+		if (const auto it = ranges::find(files_, focusedFile_.native()); it == files_.cend())
 		{ // in case file was deleted
 			focusedFile_ = mainScriptPath_;
 		}
@@ -538,7 +517,7 @@ void CConfigTabPackage::UpdateListBoxFromData()
 	{
 		SortFiles();
 
-		const auto it = ranges::find(files_, focusedFile_);
+		const auto it = ranges::find(files_, focusedFile_.native());
 		assert(it != files_.cend());
 
 		focusedFileIdx_ = ranges::distance(files_.cbegin(), it);
@@ -571,17 +550,16 @@ void CConfigTabPackage::AddFile(const std::filesystem::path& path)
 		}();
 
 		auto lastNewFile = focusedFile_;
+
 		for (const auto& file: GetAllFilesFromPath(path))
 		{
 			const auto newFile = (file == path ? newPath : newPath / fs::relative(file, path));
+
 			if (fs::exists(newFile))
 			{
 				const int iRet = popup_message_v3::get()->messageBox(
 					*this,
-					fmt::format(
-						"File already exists:\n{}\n\nDo you want to rewrite it?",
-						newFile.u8string()
-					).c_str(),
+					fmt::format("File already exists:\n{}\n\nDo you want to rewrite it?", newFile.u8string()).c_str(),
 					"Adding file",
 					MB_YESNO | MB_ICONWARNING
 				);

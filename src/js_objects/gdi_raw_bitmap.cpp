@@ -62,33 +62,47 @@ const JSFunctionSpec* JsGdiRawBitmap::JsFunctions = jsFunctions.data();
 const JSPropertySpec* JsGdiRawBitmap::JsProperties = jsProperties.data();
 const JsPrototypeId JsGdiRawBitmap::PrototypeId = JsPrototypeId::GdiRawBitmap;
 
-JsGdiRawBitmap::JsGdiRawBitmap(JSContext* cx,
-								gdi::unique_gdi_ptr<HDC> hDc,
-								gdi::unique_gdi_ptr<HBITMAP> hBmp,
-								uint32_t width,
-								uint32_t height)
+JsGdiRawBitmap::JsGdiRawBitmap(JSContext* cx, wil::unique_hbitmap hBmp, uint32_t width, uint32_t height)
 	: pJsCtx_(cx)
-	, pDc_(std::move(hDc))
+	, pDc_(CreateCompatibleDC(nullptr))
 	, hBmp_(std::move(hBmp))
-	, autoBmp_(pDc_.get(), hBmp_.get())
+	, autoBmp_(SelectObject(pDc_.get(), hBmp_.get()))
 	, width_(width)
 	, height_(height)
 {
 }
 
-std::unique_ptr<JsGdiRawBitmap>
-JsGdiRawBitmap::CreateNative(JSContext* cx, Gdiplus::Bitmap* pBmp)
+wil::unique_hbitmap JsGdiRawBitmap::CreateHBitmapFromGdiPlusBitmap(Gdiplus::Bitmap& bitmap)
+{
+	const Gdiplus::Rect rect{ 0, 0, static_cast<int>(bitmap.GetWidth()), static_cast<int>(bitmap.GetHeight()) };
+	Gdiplus::BitmapData bmpdata{};
+
+	if (bitmap.LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppPARGB, &bmpdata) != Gdiplus::Ok)
+		return nullptr;
+
+	BITMAP bm{};
+	bm.bmType = 0;
+	bm.bmWidth = bmpdata.Width;
+	bm.bmHeight = bmpdata.Height;
+	bm.bmWidthBytes = bmpdata.Stride;
+	bm.bmPlanes = 1;
+	bm.bmBitsPixel = 32;
+	bm.bmBits = bmpdata.Scan0;
+
+	auto hBitmap = wil::unique_hbitmap(CreateBitmapIndirect(&bm));
+	bitmap.UnlockBits(&bmpdata);
+
+	return hBitmap;
+}
+
+std::unique_ptr<JsGdiRawBitmap> JsGdiRawBitmap::CreateNative(JSContext* cx, Gdiplus::Bitmap* pBmp)
 {
 	qwr::QwrException::ExpectTrue(pBmp, "Internal error: Gdiplus::Bitmap is null");
 
-	auto pDc = gdi::CreateUniquePtr(CreateCompatibleDC(nullptr));
-	qwr::error::CheckWinApi(!!pDc, "CreateCompatibleDC");
+	auto hBitmap = CreateHBitmapFromGdiPlusBitmap(*pBmp);
+	qwr::QwrException::ExpectTrue(hBitmap.get(), "Internal error: failed to get HBITMAP from Gdiplus::Bitmap");
 
-	auto hBitmap = gdi::CreateHBitmapFromGdiPlusBitmap(*pBmp);
-	qwr::QwrException::ExpectTrue(!!hBitmap, "Internal error: failed to get HBITMAP from Gdiplus::Bitmap");
-
-	return std::unique_ptr<JsGdiRawBitmap>(
-		new JsGdiRawBitmap(cx, std::move(pDc), std::move(hBitmap), pBmp->GetWidth(), pBmp->GetHeight()));
+	return std::unique_ptr<JsGdiRawBitmap>(new JsGdiRawBitmap(cx, std::move(hBitmap), pBmp->GetWidth(), pBmp->GetHeight()));
 }
 
 size_t JsGdiRawBitmap::GetInternalSize(Gdiplus::Bitmap* pBmp)
@@ -102,9 +116,7 @@ size_t JsGdiRawBitmap::GetInternalSize(Gdiplus::Bitmap* pBmp)
 	return pBmp->GetWidth() * pBmp->GetHeight() * Gdiplus::GetPixelFormatSize(PixelFormat32bppPARGB) / 8;
 }
 
-__notnull
-	HDC
-	JsGdiRawBitmap::GetHDC() const
+HDC JsGdiRawBitmap::GetHDC() const
 {
 	return pDc_.get();
 }
@@ -118,5 +130,4 @@ std::uint32_t JsGdiRawBitmap::get_Width()
 {
 	return width_;
 }
-
-} // namespace mozjs
+}

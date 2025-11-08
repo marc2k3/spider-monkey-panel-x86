@@ -61,10 +61,9 @@ void CInputBox::AdjustPromptControlToFit()
 		CPaintDC dc(m_hWnd);
 		HDC hDc = dc.m_hDC;
 
-		gdi::ObjectSelector autoFont(hDc, promptCtrl.GetFont());
-
+		auto _ = wil::SelectObject(hDc, promptCtrl.GetFont());
 		const auto promptW = qwr::ToWide(prompt_);
-		DrawText(hDc, const_cast<wchar_t*>(promptW.c_str()), -1, &newPromptRc, DT_CALCRECT | DT_NOPREFIX | DT_WORDBREAK);
+		DrawTextW(hDc, const_cast<wchar_t*>(promptW.c_str()), -1, &newPromptRc, DT_CALCRECT | DT_NOPREFIX | DT_WORDBREAK);
 	}
 
 	if (newPromptRc.bottom > promptRc.bottom || newPromptRc.right > promptRc.right)

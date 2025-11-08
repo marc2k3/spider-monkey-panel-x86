@@ -1,7 +1,7 @@
 #include <stdafx.h>
-
 #include "gdi_bitmap.h"
 
+#include <2K3/StackBlur.hpp>
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/gdi_graphics.h>
 #include <js_objects/gdi_raw_bitmap.h>
@@ -10,7 +10,6 @@
 #include <utils/gdi_error_helpers.h>
 #include <utils/image_helpers.h>
 #include <utils/kmeans.h>
-#include <utils/stackblur.h>
 
 using namespace smp;
 
@@ -567,7 +566,25 @@ bool JsGdiBitmap::SaveAsWithOpt(size_t optArgCount, const std::wstring& path, co
 
 void JsGdiBitmap::StackBlur(uint32_t radius)
 {
-	smp::utils::stack_blur_filter(*pGdi_, radius);
+	radius = std::clamp(radius, 2u, 254u);
+
+	Gdiplus::BitmapData bmpdata;
+	const auto size = D2D1_SIZE_U(pGdi_->GetWidth(), pGdi_->GetHeight());
+
+	const auto rect = Gdiplus::Rect(
+		0,
+		0,
+		static_cast<int>(size.width),
+		static_cast<int>(size.height)
+	);
+
+	if (Gdiplus::Ok == pGdi_->LockBits(&rect, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeWrite, PixelFormat32bppPARGB, &bmpdata))
+	{
+		::StackBlur job(radius, size);
+		job.Run(static_cast<uint8_t*>(bmpdata.Scan0));
+
+		pGdi_->UnlockBits(&bmpdata);
+	}
 }
 
 } // namespace mozjs

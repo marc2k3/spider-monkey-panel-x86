@@ -519,10 +519,10 @@ JSObject* Window::GetFontCUI(uint32_t type, const std::wstring& guidstr)
 		qwr::error::CheckHR(hr, "CLSIDFromString");
 	}
 
-	auto hFont = gdi::CreateUniquePtr(m_parent.GetFont(guid, type));
+	auto hFont = wil::unique_hfont(m_parent.GetFont(guid, type));
 	std::unique_ptr<Gdiplus::Font> pGdiFont(new Gdiplus::Font(m_parent.GetHDC(), hFont.get()));
 
-	if (gdi::IsGdiPlusObjectValid(pGdiFont))
+	if (gdi::IsGdiPlusObjectValid(pGdiFont.get()))
 	{
 		return JsGdiFont::CreateJs(m_ctx, std::move(pGdiFont), hFont.release(), true);
 	}
@@ -566,7 +566,7 @@ JSObject* Window::GetFontDUI(uint32_t type)
 	auto hFont = m_parent.GetFont(*guids[type]);
 	std::unique_ptr<Gdiplus::Font> pGdiFont(new Gdiplus::Font(m_parent.GetHDC(), hFont));
 
-	if (gdi::IsGdiPlusObjectValid(pGdiFont))
+	if (gdi::IsGdiPlusObjectValid(pGdiFont.get()))
 	{
 		return JsGdiFont::CreateJs(m_ctx, std::move(pGdiFont), hFont, false);
 	}

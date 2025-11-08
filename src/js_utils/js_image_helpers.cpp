@@ -11,9 +11,9 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <utils/gdi_helpers.h>
-#include <utils/thread_pool_instance.h>
 
 #include <qwr/string_helpers.h>
+#include <qwr/thread_pool.h>
 
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/Promise.h>
@@ -142,7 +142,7 @@ JSObject* GetImagePromise(JSContext* cx, HWND hWnd, const std::wstring& imagePat
 	JS::RootedObject jsObject(cx, JS::NewPromiseObject(cx, nullptr));
 	JsException::ExpectTrue(jsObject);
 
-	smp::GetThreadPoolInstance().AddTask([task = std::make_shared<ImageFetchTask>(cx, jsObject, hWnd, imagePath)] {
+	qwr::ThreadPool::GetInstance().AddTask([task = std::make_shared<ImageFetchTask>(cx, jsObject, hWnd, imagePath)] {
 		std::invoke(*task);
 	});
 

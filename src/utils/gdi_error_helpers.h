@@ -1,47 +1,38 @@
 #pragma once
-
 #include <utils/gdi_helpers.h>
 
 namespace qwr::error
 {
+	[[nodiscard]] std::string GdiErrorCodeToText(Gdiplus::Status errorCode);
 
-[[nodiscard]] const char* GdiErrorCodeToText(Gdiplus::Status errorCode);
+	/// @throw qwr::QwrException
+	void CheckGdi(Gdiplus::Status gdiStatus, std::string_view functionName);
 
-/// @throw qwr::QwrException
-void CheckGdi(Gdiplus::Status gdiStatus, std::string_view functionName);
+	/// @throw qwr::QwrException
+	template <typename T, typename T_Parent = T>
+	void CheckGdiPlusObject(const std::unique_ptr<T>& obj, const T_Parent* pParentObj = nullptr)
+	{
+		// GetLastStatus() resets status, so it needs to be saved here
+		const auto status = [&obj, pParentObj]() -> std::optional<Gdiplus::Status>
+			{
+				if (obj)
+					return obj->GetLastStatus();
+				else if (pParentObj)
+					return pParentObj->GetLastStatus();
+				else
+					return std::nullopt;
+			}();
 
-/// @throw qwr::QwrException
-template <typename T, typename T_Parent = T>
-void CheckGdiPlusObject(const std::unique_ptr<T>& obj, const T_Parent* pParentObj = nullptr)
-{
-	// GetLastStatus() resets status, so it needs to be saved here
-	const auto status = [&obj, pParentObj]() -> std::optional<Gdiplus::Status> {
-		if (obj)
+		if (obj && Gdiplus::Status::Ok == status)
+			return;
+
+		if (status)
 		{
-			return obj->GetLastStatus();
+			throw qwr::QwrException("Failed to create GdiPlus object ({:#x}): {}", static_cast<int>(*status), GdiErrorCodeToText(*status));
 		}
-
-		if (pParentObj)
+		else
 		{
-			return pParentObj->GetLastStatus();
+			throw qwr::QwrException("Failed to create GdiPlus object");
 		}
-
-		return std::nullopt;
-	}();
-
-	if (obj && Gdiplus::Status::Ok == status)
-	{
-		return;
-	}
-
-	if (status)
-	{
-		throw qwr::QwrException("Failed to create GdiPlus object ({:#x}): {}", static_cast<int>(*status), GdiErrorCodeToText(*status));
-	}
-	else
-	{
-		throw qwr::QwrException("Failed to create GdiPlus object");
 	}
 }
-
-} // namespace qwr::error

@@ -3,7 +3,7 @@
 #include <config/delayed_package_utils.h>
 #include <events/event_dispatcher.h>
 #include <js_engine/js_engine.h>
-#include <utils/thread_pool_instance.h>
+#include <qwr/thread_pool.h>
 
 #include <libPPUI/gdiplus_helpers.h>
 #include <Scintilla.h>
@@ -46,7 +46,7 @@ namespace
 	{
 		mozjs::JsEngine::GetInstance().PrepareForExit();
 		smp::EventDispatcher::Get().NotifyAllAboutExit();
-		smp::GetThreadPoolInstance().Finalize();
+		qwr::ThreadPool::GetInstance().Finalize();
 		Scintilla_ReleaseResources();
 		rich_edit_ctrl.reset();
 		smp::com::typelib.reset();

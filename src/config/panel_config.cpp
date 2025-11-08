@@ -1,12 +1,11 @@
 #include <stdafx.h>
-
 #include "panel_config.h"
 
+#include <2K3/String.hpp>
 #include <config/panel_config_binary.h>
 #include <config/panel_config_json.h>
 #include <resources/resource.h>
 #include <utils/guid_helpers.h>
-#include <utils/resource_helpers.h>
 #include <qwr/string_helpers.h>
 
 namespace smp::config
@@ -34,7 +33,7 @@ namespace smp::config
 
 	std::string PanelSettings_InMemory::GetDefaultScript()
 	{
-		return smp::LoadStringResource(IDR_DEFAULT_SCRIPT);
+		return get_resource_text(IDR_DEFAULT_SCRIPT);
 	}
 
 	PanelSettings::PanelSettings()
