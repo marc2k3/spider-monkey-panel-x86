@@ -276,7 +276,6 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClInclude Include="com_objects\host_external.h" />
     <ClInclude Include="com_objects\internal\drag_image.h" />
     <ClInclude Include="com_objects\internal\drag_utils.h" />
-    <ClInclude Include="com_objects\internal\handle.h" />
     <ClInclude Include="com_objects\com_interface.h" />
     <ClInclude Include="com_utils\com_destruction_handler.h" />
     <ClInclude Include="com_utils\com_error_helpers.h" />

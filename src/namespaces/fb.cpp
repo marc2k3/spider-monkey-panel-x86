@@ -364,40 +364,45 @@ uint32_t Fb::DoDragDrop(uint32_t, JsFbMetadbHandleList* handles, uint32_t okEffe
 	const metadb_handle_list& handleList = handles->GetHandleList();
 	const size_t handleCount = handleList.get_count();
 
-	std::unique_ptr<Gdiplus::Bitmap> autoImage;
+	if (modal::IsModalBlocked() || handleCount == 0uz || okEffects == DROPEFFECT_NONE)
+		return DROPEFFECT_NONE;
+
+	std::unique_ptr<Gdiplus::Bitmap> bitmap;
 	auto parsedOptions = ParseDoDragDropOptions(options);
-	if (!parsedOptions.pCustomImage && parsedOptions.useAlbumArt && handleCount)
+
+	if (parsedOptions.show_album_art && !parsedOptions.custom_image)
 	{
-		metadb_handle_ptr metadb;
-		(void)playlist_manager::get()->activeplaylist_get_focus_item_handle(metadb);
-		if (!metadb.is_valid() || pfc_infinite == handleList.find_item(metadb))
+		metadb_handle_ptr handle;
+
+		if (!playlist_manager::get()->activeplaylist_get_focus_item_handle(handle) || handleList.find_item(handle) == SIZE_MAX)
 		{
-			metadb = handleList[handleCount - 1];
+			handle = handleList[0];
+		}
+
+		std::string dummy;
+		auto data = AlbumArtStatic::get(handle, 0uz, false, false, dummy);
+		bitmap = AlbumArtStatic::to_bitmap(data);
+
+		if (bitmap)
+		{
+			parsedOptions.custom_image = bitmap.get();
 		}
 	}
 
-	if (modal::IsModalBlocked() || !handleCount || okEffects == DROPEFFECT_NONE)
-	{
-		return DROPEFFECT_NONE;
-	}
-
 	modal::MessageBlockingScope scope;
-
 	pfc::com_ptr_t<IDataObject> pDO = ole_interaction::get()->create_dataobject(handleList);
-
 	pfc::com_ptr_t<com::IDropSourceImpl> pIDropSource = new com::IDropSourceImpl(
 		wnd,
 		pDO.get_ptr(),
 		handleCount,
-		parsedOptions.useTheming,
-		parsedOptions.showText,
-		parsedOptions.pCustomImage
+		parsedOptions.show_text,
+		parsedOptions.custom_image
 	);
 
 	SendMessageW(wnd, static_cast<UINT>(smp::InternalSyncMessage::wnd_internal_drag_start), 0, 0);
 
-	DWORD returnEffect;
-	HRESULT hr = SHDoDragDrop(nullptr, pDO.get_ptr(), pIDropSource.get_ptr(), okEffects, &returnEffect);
+	DWORD returnEffect{};
+	const auto hr = SHDoDragDrop(nullptr, pDO.get_ptr(), pIDropSource.get_ptr(), okEffects, &returnEffect);
 
 	SendMessageW(wnd, static_cast<UINT>(smp::InternalSyncMessage::wnd_internal_drag_stop), 0, 0);
 
@@ -1038,23 +1043,27 @@ void Fb::put_Volume(float value)
 
 Fb::DoDragDropOptions Fb::ParseDoDragDropOptions(JS::HandleValue options)
 {
-	DoDragDropOptions parsedoptions;
-	if (!options.isNullOrUndefined())
-	{
-		qwr::QwrException::ExpectTrue(options.isObject(), "options argument is not an object");
-		JS::RootedObject jsOptions(m_ctx, &options.toObject());
+	if (options.isNullOrUndefined())
+		return {};
 
-		parsedoptions.useTheming = GetOptionalProperty<bool>(m_ctx, jsOptions, "use_theming").value_or(true);
-		parsedoptions.useAlbumArt = GetOptionalProperty<bool>(m_ctx, jsOptions, "use_album_art").value_or(true);
-		parsedoptions.showText = GetOptionalProperty<bool>(m_ctx, jsOptions, "show_text").value_or(true);
+	qwr::QwrException::ExpectTrue(options.isObject(), "options argument is not an object");
+	auto jsOptions = JS::RootedObject(m_ctx, &options.toObject());
+
+	DoDragDropOptions parsedOptions;
+	parsedOptions.show_album_art = GetOptionalProperty<bool>(m_ctx, jsOptions, "show_album_art").value_or(true);
+	parsedOptions.show_text = GetOptionalProperty<bool>(m_ctx, jsOptions, "show_text").value_or(true);
+		
+	if (parsedOptions.show_album_art)
+	{
 		auto jsImage = GetOptionalProperty<JsGdiBitmap*>(m_ctx, jsOptions, "custom_image").value_or(nullptr);
+
 		if (jsImage)
 		{
-			parsedoptions.pCustomImage = jsImage->GdiBitmap();
+			parsedOptions.custom_image = jsImage->GdiBitmap();
 		}
 	}
 
-	return parsedoptions;
+	return parsedOptions;
 }
 
 } // namespace mozjs

@@ -127,11 +127,11 @@ private:
 
 	struct DoDragDropOptions
 	{
-		bool useTheming = true;
-		bool useAlbumArt = true;
-		bool showText = true;
-		Gdiplus::Bitmap* pCustomImage = nullptr;
+		bool show_album_art = true;
+		bool show_text = true;
+		Gdiplus::Bitmap* custom_image = nullptr;
 	};
+
 	DoDragDropOptions ParseDoDragDropOptions(JS::HandleValue options);
 
 private:

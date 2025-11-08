@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "drag_utils.h"
 
 #include <com_objects/internal/drag_image.h>
@@ -7,147 +6,126 @@
 
 namespace
 {
-
-template <typename T>
-HRESULT GetDataObjectDataSimple(IDataObject* pDataObj, CLIPFORMAT cf, T& p_out)
-{
-	FORMATETC fe = { 0 };
-	fe.cfFormat = cf;
-	fe.dwAspect = DVASPECT_CONTENT;
-	fe.lindex = -1;
-	fe.tymed = TYMED_HGLOBAL;
-
-	STGMEDIUM stgm = { 0 };
-
-	if (HRESULT hr = pDataObj->GetData(&fe, &stgm); FAILED(hr))
+	template <typename T>
+	HRESULT GetDataObjectDataSimple(IDataObject* pDataObj, CLIPFORMAT cf, T& p_out)
 	{
+		FORMATETC fmte = { cf, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+		STGMEDIUM stgm{};
+
+		RETURN_IF_FAILED(pDataObj->GetData(&fmte, &stgm));
+
+		if (void* pData = GlobalLock(stgm.hGlobal); pData)
+		{
+			p_out = *static_cast<T*>(pData);
+			GlobalUnlock(pData);
+		}
+
+		ReleaseStgMedium(&stgm);
+		return S_OK;
+	}
+
+	HRESULT SetDataBlob(IDataObject* pdtobj, CLIPFORMAT cf, const void* pvBlob, UINT cbBlob)
+	{
+		auto pv = GlobalAlloc(GPTR, cbBlob);
+
+		if (!pv)
+		{
+			return E_OUTOFMEMORY;
+		}
+
+		CopyMemory(pv, pvBlob, cbBlob);
+
+		FORMATETC fmte = { cf, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+		STGMEDIUM stgm{};
+		stgm.tymed = TYMED_HGLOBAL;
+		stgm.hGlobal = pv;
+
+		const auto hr = pdtobj->SetData(&fmte, &stgm, TRUE);
+
+		if FAILED(hr)
+		{
+			GlobalFree(pv);
+		}
+
 		return hr;
 	}
 
-	if (void* pData = GlobalLock(stgm.hGlobal); pData)
+	std::string FormatDragText(t_size selectionCount)
 	{
-		p_out = *static_cast<T*>(pData);
-		GlobalUnlock(pData);
+		return fmt::format("{} {}", selectionCount, (selectionCount > 1 ? "tracks" : "track"));
 	}
-	ReleaseStgMedium(&stgm);
-
-	return S_OK;
 }
-
-HRESULT SetDataBlob(IDataObject* pdtobj, CLIPFORMAT cf, const void* pvBlob, UINT cbBlob)
-{
-	HRESULT hr = E_OUTOFMEMORY;
-	void* pv = GlobalAlloc(GPTR, cbBlob);
-	if (!pv)
-	{
-		return E_OUTOFMEMORY;
-	}
-
-	CopyMemory(pv, pvBlob, cbBlob);
-
-	FORMATETC fmte = { cf, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
-
-	// The STGMEDIUM structure is used to define how to handle a global memory transfer.
-	// This structure includes a flag, tymed, which indicates the medium
-	// to be used, and a union comprising pointers and a handle for getting whichever
-	// medium is specified in tymed.
-	STGMEDIUM medium = { 0 };
-	medium.tymed = TYMED_HGLOBAL;
-	medium.hGlobal = pv;
-
-	hr = pdtobj->SetData(&fmte, &medium, TRUE);
-	if (FAILED(hr))
-	{
-		GlobalFree(pv);
-	}
-
-	return hr;
-}
-
-std::string FormatDragText(t_size selectionCount)
-{
-	return fmt::format("{} {}", selectionCount, (selectionCount > 1 ? "tracks" : "track"));
-}
-
-} // namespace
 
 namespace smp::com::drag
 {
-
-HRESULT SetDefaultImage(IDataObject* pdtobj)
-{
-	static const auto cfRet = static_cast<CLIPFORMAT>(RegisterClipboardFormat(L"UsingDefaultDragImage"));
-	const BOOL blobValue = TRUE;
-	return SetDataBlob(pdtobj, cfRet, &blobValue, sizeof(blobValue));
-}
-
-HRESULT SetDropText(IDataObject* pdtobj, DROPIMAGETYPE dit, const wchar_t* msg, const wchar_t* insert)
-{
-	static const auto cfRet = static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_DROPDESCRIPTION));
-
-	DROPDESCRIPTION dd_prev{};
-
-	bool dd_prev_valid = (SUCCEEDED(GetDataObjectDataSimple(pdtobj, cfRet, dd_prev)));
-
-	// Only set the drop description if it has actually changed (otherwise things get a bit crazy near the edge of
-	// the screen).
-	if (!dd_prev_valid || dd_prev.type != dit
-		|| wcscmp(dd_prev.szInsert, insert)
-		|| wcscmp(dd_prev.szMessage, msg))
+	HRESULT SetDefaultImage(IDataObject* pdtobj)
 	{
-		DROPDESCRIPTION dd{};
-		dd.type = dit;
-		wcscpy_s(dd.szMessage, msg);
-		wcscpy_s(dd.szInsert, insert);
-		return SetDataBlob(pdtobj, cfRet, &dd, sizeof(dd));
+		static const auto cfRet = static_cast<CLIPFORMAT>(RegisterClipboardFormatW(L"UsingDefaultDragImage"));
+		const BOOL blobValue = TRUE;
+		return SetDataBlob(pdtobj, cfRet, &blobValue, sizeof(blobValue));
 	}
 
-	return S_OK;
-}
+	HRESULT SetDropText(IDataObject* pdtobj, DROPIMAGETYPE dit, const wchar_t* msg, const wchar_t* insert)
+	{
+		static const auto cfRet = static_cast<CLIPFORMAT>(RegisterClipboardFormatW(CFSTR_DROPDESCRIPTION));
 
-bool RenderDragImage(HWND hWnd, size_t itemCount, bool isThemed, bool showText, Gdiplus::Bitmap* pCustomImage, SHDRAGIMAGE& dragImage)
-{
-	const HTHEME m_dd_theme = (IsThemeActive() && IsAppThemed() ? OpenThemeData(hWnd, VSCLASS_DRAGDROP) : nullptr);
-	auto scope = wil::scope_exit([m_dd_theme] {
-		if (m_dd_theme)
+		DROPDESCRIPTION dd_prev{};
+
+		const auto hr = GetDataObjectDataSimple(pdtobj, cfRet, dd_prev);
+
+		// Only set the drop description if it has actually changed (otherwise things get a bit crazy near the edge of
+		// the screen).
+		if (FAILED(hr) || dd_prev.type != dit || wcscmp(dd_prev.szInsert, insert) || wcscmp(dd_prev.szMessage, msg))
 		{
-			CloseThemeData(m_dd_theme);
+			DROPDESCRIPTION dd{};
+			dd.type = dit;
+			wcscpy_s(dd.szMessage, msg);
+			wcscpy_s(dd.szInsert, insert);
+			return SetDataBlob(pdtobj, cfRet, &dd, sizeof(dd));
 		}
-	});
 
-	LOGFONT lf;
-	memset(&lf, 0, sizeof(LOGFONT));
-	SystemParametersInfo(SPI_GETICONTITLELOGFONT, 0, &lf, 0);
-
-	return uih::create_drag_image(hWnd,
-								isThemed,
-								m_dd_theme,
-								GetSysColor(COLOR_HIGHLIGHT),
-								GetSysColor(COLOR_HIGHLIGHTTEXT),
-								nullptr,
-								&lf,
-								(showText ? FormatDragText(itemCount).c_str() : nullptr),
-								pCustomImage,
-								&dragImage);
-}
-
-HRESULT GetDragWindow(IDataObject* pDataObj, HWND& p_wnd)
-{
-	static const auto cfRet = static_cast<CLIPFORMAT>(RegisterClipboardFormat(L"DragWindow"));
-	DWORD dw;
-	if (HRESULT hr = GetDataObjectDataSimple(pDataObj, cfRet, dw); FAILED(hr))
-	{
-		return hr;
+		return S_OK;
 	}
 
-	p_wnd = static_cast<HWND>(ULongToHandle(dw));
-	return S_OK;
-}
+	HRESULT GetDragWindow(IDataObject* pDataObj, HWND& p_wnd)
+	{
+		static const auto cfRet = static_cast<CLIPFORMAT>(RegisterClipboardFormatW(L"DragWindow"));
+		DWORD dw;
+		RETURN_IF_FAILED(GetDataObjectDataSimple(pDataObj, cfRet, dw));
 
-HRESULT GetIsShowingLayered(IDataObject* pDataObj, BOOL& p_out)
-{
-	static const auto cfRet = static_cast<CLIPFORMAT>(RegisterClipboardFormat(L"IsShowingLayered"));
-	return GetDataObjectDataSimple(pDataObj, cfRet, p_out);
-}
+		p_wnd = static_cast<HWND>(ULongToHandle(dw));
+		return S_OK;
+	}
 
-} // namespace smp::com::drag
+	HRESULT GetIsShowingLayered(IDataObject* pDataObj, BOOL& p_out)
+	{
+		static const auto cfRet = static_cast<CLIPFORMAT>(RegisterClipboardFormatW(L"IsShowingLayered"));
+		return GetDataObjectDataSimple(pDataObj, cfRet, p_out);
+	}
+
+	bool RenderDragImage(HWND hWnd, size_t itemCount, bool showText, Gdiplus::Bitmap* pCustomImage, SHDRAGIMAGE& dragImage)
+	{
+		wil::unique_htheme dd_theme; 
+		
+		if (IsThemeActive() && IsAppThemed())
+		{
+			dd_theme.reset(OpenThemeData(hWnd, VSCLASS_DRAGDROP));
+		}
+
+		LOGFONT lf;
+		memset(&lf, 0, sizeof(LOGFONT));
+		SystemParametersInfoW(SPI_GETICONTITLELOGFONT, 0, &lf, 0);
+
+		return uih::create_drag_image(
+			hWnd,
+			dd_theme.get(),
+			GetSysColor(COLOR_HIGHLIGHT),
+			GetSysColor(COLOR_HIGHLIGHTTEXT),
+			nullptr,
+			&lf,
+			showText ? FormatDragText(itemCount) : "",
+			pCustomImage,
+			&dragImage
+		);
+	}
+}

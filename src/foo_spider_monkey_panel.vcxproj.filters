@@ -619,9 +619,6 @@
     <ClInclude Include="com_objects\internal\drag_utils.h">
       <Filter>com_objects\internal</Filter>
     </ClInclude>
-    <ClInclude Include="com_objects\internal\handle.h">
-      <Filter>com_objects\internal</Filter>
-    </ClInclude>
     <ClInclude Include="com_objects\internal\drag_image.h">
       <Filter>com_objects\internal</Filter>
     </ClInclude>
