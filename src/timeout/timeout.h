@@ -3,48 +3,42 @@
 
 namespace mozjs
 {
-
-class JsAsyncTask;
-
+	class JsAsyncTask;
 }
 
 namespace smp
 {
+	class Timeout
+	{
+	public:
+		Timeout(uint32_t id, TimeDuration interval, bool isRepeated, std::shared_ptr<mozjs::JsAsyncTask> task);
+		~Timeout() = default;
 
-class Timeout;
+		void SetWhen(const TimeStamp& baseTime, const TimeDuration& delay);
+		void SetFiringId(uint32_t firingId);
+		void DisableRepeat();
+		void MarkAsStopped();
+		void SetRunningState(bool isRunning);
 
-class Timeout
-{
-public:
-	Timeout(uint32_t id, TimeDuration interval, bool isRepeated, std::shared_ptr<mozjs::JsAsyncTask> task);
-	~Timeout() = default;
+		[[nodiscard]] uint32_t Id() const;
+		[[nodiscard]] std::shared_ptr<mozjs::JsAsyncTask> Task() const;
+		[[nodiscard]] const TimeStamp& When() const;
+		[[nodiscard]] bool IsRunning() const;
+		[[nodiscard]] bool IsRepeated() const;
+		[[nodiscard]] TimeDuration Interval() const;
+		[[nodiscard]] uint32_t GetFiringId();
 
-	void SetWhen(const TimeStamp& baseTime, const TimeDuration& delay);
-	void SetFiringId(uint32_t firingId);
-	void DisableRepeat();
-	void MarkAsStopped();
-	void SetRunningState(bool isRunning);
+	private:
+		const uint32_t id_;
+		const TimeDuration interval_;
+		const std::shared_ptr<mozjs::JsAsyncTask> task_;
+		bool isRepeated_;
 
-	[[nodiscard]] uint32_t Id() const;
-	[[nodiscard]] std::shared_ptr<mozjs::JsAsyncTask> Task() const;
-	[[nodiscard]] const TimeStamp& When() const;
-	[[nodiscard]] bool IsRunning() const;
-	[[nodiscard]] bool IsRepeated() const;
-	[[nodiscard]] TimeDuration Interval() const;
-	[[nodiscard]] uint32_t GetFiringId();
+		TimeStamp executeAt_;
 
-private:
-	const uint32_t id_;
-	const TimeDuration interval_;
-	const std::shared_ptr<mozjs::JsAsyncTask> task_;
-	bool isRepeated_;
+		bool isRunning_ = false;
+		bool isStopped_ = false;
 
-	TimeStamp executeAt_;
-
-	bool isRunning_ = false;
-	bool isStopped_ = false;
-
-	uint32_t firingId_ = 0;
-};
-
-} // namespace smp
+		uint32_t firingId_ = 0;
+	};
+}

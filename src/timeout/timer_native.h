@@ -1,48 +1,40 @@
 #pragma once
-
 #include <timeout/time_types.h>
 #include <timeout/timer_interface_fwd.h>
 
 namespace smp
 {
+	class PanelTarget;
+	class TimerManager_Native;
 
-class PanelTarget;
-class TimerManager_Native;
+	class Timer_Native final : public ITimer, public std::enable_shared_from_this<Timer_Native>
+	{
+	public:
+		~Timer_Native() = default;
 
-/// @brief Timer information holder.
-///
-/// Each SMP panel should hold no more than one timer. There are no technical limitations for this though.
-class Timer_Native final
-	: public ITimer
-	, public std::enable_shared_from_this<Timer_Native>
-{
-	friend class TimerManager_Native;
+		void Start(TimerNotifyTask& task, const TimeStamp& when);
+		void Cancel(bool waitForDestruction);
 
-public:
-	~Timer_Native() = default;
+		void Fire(uint64_t generation);
 
-	void Start(TimerNotifyTask& task, const TimeStamp& when);
-	void Cancel(bool waitForDestruction);
+		[[nodiscard]] PanelTarget& Target() const;
+		[[nodiscard]] const TimeStamp& When() const;
+		[[nodiscard]] uint64_t Generation() const;
 
-	void Fire(uint64_t generation);
+	private:
+		Timer_Native(TimerManager_Native& pParent, std::shared_ptr<PanelTarget> pTarget);
 
-	[[nodiscard]] PanelTarget& Target() const;
-	[[nodiscard]] const TimeStamp& When() const;
-	[[nodiscard]] uint64_t Generation() const;
+		static VOID CALLBACK TimerProc(PVOID lpParameter, BOOLEAN TimerOrWaitFired);
 
-private:
-	Timer_Native(TimerManager_Native& pParent, std::shared_ptr<PanelTarget> pTarget);
+	private:
+		friend class TimerManager_Native;
 
-	static VOID CALLBACK TimerProc(PVOID lpParameter, BOOLEAN TimerOrWaitFired);
+		TimerManager_Native& pParent_;
+		std::shared_ptr<PanelTarget> pTarget_;
+		HANDLE hTimer_ = nullptr;
 
-private:
-	TimerManager_Native& pParent_;
-	std::shared_ptr<PanelTarget> pTarget_;
-	HANDLE hTimer_ = nullptr;
-
-	TimerNotifyTask* pTask_ = nullptr;
-	TimeStamp executeAt_{};
-	int64_t generation_ = 0;
-};
-
-} // namespace smp
+		TimerNotifyTask* pTask_ = nullptr;
+		TimeStamp executeAt_{};
+		int64_t generation_ = 0;
+	};
+}
