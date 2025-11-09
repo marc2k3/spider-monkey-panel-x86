@@ -13,6 +13,7 @@ requires at least `foobar2000` `2.0`.
 ## 1.6.2.25.11.09
 - Fix various main menu and context menu execution bugs.
 - Fix `fb.DoDragDrop` regression where album art was not automatically displayed.
+- THe `Thumbs` sample now reports last.fm server errors in the console.
 - Various other bug fixes.
 
 ## 1.6.2.25.10.29
