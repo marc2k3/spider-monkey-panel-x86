@@ -174,7 +174,6 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClCompile Include="js_objects\gdi_raw_bitmap.cpp" />
     <ClCompile Include="js_objects\gdi_font.cpp" />
     <ClCompile Include="js_objects\global_object.cpp" />
-    <ClCompile Include="js_objects\hacks.cpp" />
     <ClCompile Include="js_objects\internal\fb_properties.cpp" />
     <ClCompile Include="js_objects\internal\global_heap_manager.cpp" />
     <ClCompile Include="js_objects\main_menu_manager.cpp" />
@@ -319,7 +318,6 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClInclude Include="js_objects\fb_metadb_handle_list_iterator.h" />
     <ClInclude Include="js_objects\fb_playlist_recycler.h" />
     <ClInclude Include="js_objects\fb_window.h" />
-    <ClInclude Include="js_objects\hacks.h" />
     <ClInclude Include="js_objects\internal\fb_properties.h" />
     <ClInclude Include="js_objects\internal\global_heap_manager.h" />
     <ClInclude Include="js_objects\internal\prototype_ids.h" />

@@ -280,9 +280,6 @@
     <ClCompile Include="utils\guid_helpers.cpp">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\hacks.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
     <ClCompile Include="config\delayed_package_utils.cpp">
       <Filter>config</Filter>
     </ClCompile>
@@ -790,9 +787,6 @@
     </ClInclude>
     <ClInclude Include="utils\guid_helpers.h">
       <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\hacks.h">
-      <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="config\delayed_package_utils.h">
       <Filter>config</Filter>
