@@ -9,25 +9,23 @@
 
 namespace smp::com
 {
+	struct StorageObject
+	{
+		IDispatch* pDispatch = nullptr;
+		IUnknown* pUnknown = nullptr;
+		ITypeInfo* pTypeInfo = nullptr;
+		_variant_t variant;
+	};
 
-struct StorageObject
-{
-	IDispatch* pDispatch = nullptr;
-	IUnknown* pUnknown = nullptr;
-	ITypeInfo* pTypeInfo = nullptr;
-	_variant_t variant;
-};
+	/// @remark Should be called only from the main thread
+	[[nodiscard]] StorageObject* GetNewStoredObject();
 
-/// @remark Should be called only from the main thread
-[[nodiscard]] StorageObject* GetNewStoredObject();
+	/// @remark Should be called only from the main thread
+	void MarkStoredObjectAsToBeDeleted(StorageObject* pObject);
 
-/// @remark Should be called only from the main thread
-void MarkStoredObjectAsToBeDeleted(StorageObject* pObject);
+	/// @remark Should be called only from the main thread
+	void DeleteMarkedObjects();
 
-/// @remark Should be called only from the main thread
-void DeleteMarkedObjects();
-
-/// @remark Should be called only from the main thread
-void DeleteAllStoredObject();
-
-} // namespace smp::com
+	/// @remark Should be called only from the main thread
+	void DeleteAllStoredObject();
+}

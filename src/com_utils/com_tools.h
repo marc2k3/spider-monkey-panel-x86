@@ -1,36 +1,30 @@
 #pragma once
-#include <com_objects/com_interface.h>
-
-namespace smp::com
-{
+#include "com_interface_h.h"
 
 namespace internal
 {
+	class TypeInfoCacheHolder
+	{
+	public:
+		TypeInfoCacheHolder();
 
-class TypeInfoCacheHolder
-{
-public:
-	TypeInfoCacheHolder();
+		[[nodiscard]] bool Empty();
 
-	[[nodiscard]] bool Empty();
+		void InitFromTypelib(ITypeLib* p_typeLib, const GUID& guid);
 
-	void InitFromTypelib(ITypeLib* p_typeLib, const GUID& guid);
+		// "Expose" some ITypeInfo related methods here
+		HRESULT GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo);
+		HRESULT GetIDsOfNames(LPOLESTR* rgszNames, UINT cNames, MEMBERID* pMemId);
+		HRESULT Invoke(PVOID pvInstance, MEMBERID memid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr);
 
-	// "Expose" some ITypeInfo related methods here
-	HRESULT GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo);
-	HRESULT GetIDsOfNames(LPOLESTR* rgszNames, UINT cNames, MEMBERID* pMemId);
-	HRESULT Invoke(PVOID pvInstance, MEMBERID memid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr);
+	protected:
+		std::unordered_map<ULONG, DISPID> cache_;
+		ITypeInfoPtr typeInfo_;
+	};
+}
 
-protected:
-	std::unordered_map<ULONG, DISPID> cache_;
-	ITypeInfoPtr typeInfo_;
-};
+extern wil::com_ptr<ITypeLib> typelib_smp;
 
-} // namespace internal
-
-extern wil::com_ptr<ITypeLib> typelib;
-
-//-- IDispatch --
 template <class T>
 class IDispatchWithCachedTypes : public T
 {
@@ -71,26 +65,20 @@ public:
 protected:
 	IDispatchWithCachedTypes<T>()
 	{
-		if (g_typeInfoCacheHolder.Empty() && typelib)
+		if (g_typeInfoCacheHolder.Empty() && typelib_smp)
 		{
-			g_typeInfoCacheHolder.InitFromTypelib(typelib.get(), __uuidof(T));
+			g_typeInfoCacheHolder.InitFromTypelib(typelib_smp.get(), __uuidof(T));
 		}
 	}
 
 	virtual ~IDispatchWithCachedTypes<T>() = default;
 
-	virtual void FinalRelease()
-	{
-	}
+	virtual void FinalRelease() {}
 
 protected:
-	static smp::com::internal::TypeInfoCacheHolder g_typeInfoCacheHolder;
+	static inline internal::TypeInfoCacheHolder g_typeInfoCacheHolder;
 };
 
-template <class T>
-__declspec(selectany) smp::com::internal::TypeInfoCacheHolder IDispatchWithCachedTypes<T>::g_typeInfoCacheHolder;
-
-//-- IDispatch impl -- [T] [IDispatch] [IUnknown]
 template <class T>
 class IDispatchImpl3 : public IDispatchWithCachedTypes<T>
 {
@@ -105,19 +93,12 @@ private:
 	COM_QI_END()
 };
 
-template <typename T, bool ShouldAddRef = true>
+template <typename T>
 class ComPtrImpl : public T
 {
 public:
 	template <typename... Args>
-	ComPtrImpl(Args&&... args)
-		: T(std::forward<Args>(args)...)
-	{
-		if constexpr (ShouldAddRef)
-		{
-			++refCount_;
-		}
-	}
+	ComPtrImpl(Args&&... args) : T(std::forward<Args>(args)...) {}
 
 	STDMETHODIMP_(ULONG) AddRef()
 	{
@@ -139,7 +120,5 @@ private:
 	~ComPtrImpl() override = default;
 
 private:
-	std::atomic<ULONG> refCount_ = 0;
+	std::atomic<ULONG> refCount_ = 1;
 };
-
-} // namespace smp::com

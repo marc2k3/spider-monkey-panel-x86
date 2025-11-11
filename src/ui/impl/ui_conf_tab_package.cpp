@@ -456,7 +456,7 @@ void CConfigTabPackage::InitializeFilesListBox()
 		// !!! Important !!!
 
 		filesListBox_ = GetDlgItem(IDC_LIST_PACKAGE_FILES);
-		pFilesListBoxDrop_.Attach(new com::ComPtrImpl<com::FileDropTarget>(filesListBox_, *this));
+		pFilesListBoxDrop_.Attach(new ComPtrImpl<com::FileDropTarget>(filesListBox_, *this));
 
 		try
 		{

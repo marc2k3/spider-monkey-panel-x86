@@ -42,7 +42,7 @@ LRESULT CDialogPackageManager::OnInitDialog(HWND, LPARAM)
 	}
 
 	packagesListBox_ = GetDlgItem(IDC_LIST_PACKAGES);
-	pPackagesListBoxDrop_.Attach(new com::ComPtrImpl<com::FileDropTarget>(packagesListBox_, *this));
+	pPackagesListBoxDrop_.Attach(new ComPtrImpl<com::FileDropTarget>(packagesListBox_, *this));
 
 	try
 	{

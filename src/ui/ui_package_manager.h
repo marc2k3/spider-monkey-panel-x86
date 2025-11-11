@@ -1,6 +1,6 @@
 #pragma once
 
-#include <com_objects/file_drop_target.h>
+#include <com_utils/file_drop_target.h>
 #include <config/delayed_package_utils.h>
 #include <config/panel_config.h>
 #include <config/parsed_panel_config.h>

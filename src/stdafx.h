@@ -41,6 +41,7 @@
 // COM objects
 #include <ActivScp.h>
 #include <activdbg.h>
+#include <comutil.h>
 #include <MsHTML.h>
 #include <MsHtmHst.h>
 #include <ShlDisp.h>

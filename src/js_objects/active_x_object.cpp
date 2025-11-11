@@ -4,8 +4,8 @@
 
 #include "active_x_object.h"
 
-#include <com_objects/com_interface.h>
-#include <com_objects/com_tools.h>
+#include <com_utils/com_interface_h.h>
+#include <com_utils/com_tools.h>
 #include <com_utils/com_error_helpers.h>
 #include <convert/com.h>
 #include <convert/js_to_native.h>

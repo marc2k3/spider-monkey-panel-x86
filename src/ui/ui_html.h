@@ -1,6 +1,6 @@
 #pragma once
-#include <com_objects/com_tools.h>
-#include <com_objects/host_external.h>
+#include <com_utils/com_tools.h>
+#include <com_utils/host_external.h>
 #include <resources/resource.h>
 
 #include <ExDispid.h>

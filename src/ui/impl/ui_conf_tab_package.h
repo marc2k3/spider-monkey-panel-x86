@@ -1,5 +1,5 @@
 #pragma once
-#include <com_objects/file_drop_target.h>
+#include <com_utils/file_drop_target.h>
 #include <config/parsed_panel_config.h>
 #include <panel/user_message.h>
 #include <resources/resource.h>

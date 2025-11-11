@@ -5,7 +5,7 @@
 #include <2K3/AlbumArtStatic.hpp>
 #include <2K3/ContextMenuCommand.hpp>
 #include <2K3/MainMenuCommand.hpp>
-#include <com_objects/drop_source_impl.h>
+#include <com_utils/drop_source_impl.h>
 #include <events/event_dispatcher.h>
 #include <events/event_js_callback.h>
 #include <fb2k/mainmenu_dynamic.h>

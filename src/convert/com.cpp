@@ -1,10 +1,9 @@
 #include <stdafx.h>
-
 #include "com.h"
 
-#include <com_objects/com_interface.h>
-#include <com_objects/com_tools.h>
-#include <com_objects/dispatch_ptr.h>
+#include <com_utils/com_interface_h.h>
+#include <com_utils/com_tools.h>
+#include <com_utils/dispatch_ptr.h>
 #include <convert/js_to_native.h>
 #include <js_objects/active_x_object.h>
 #include <js_objects/global_object.h>
@@ -28,21 +27,14 @@ namespace
 using namespace mozjs;
 using namespace convert::com;
 
-class WrappedJs
-	: public com::IDispatchImpl3<IWrappedJs>
-	, public mozjs::IHeapUser
+class WrappedJs : public IDispatchImpl3<IWrappedJs>, public mozjs::IHeapUser
 {
 protected:
-	WrappedJs(JSContext* cx, JS::HandleFunction jsFunction)
-		: pJsCtx_(cx)
+	WrappedJs(JSContext* cx, JS::HandleFunction jsFunction) : pJsCtx_(cx)
 	{
-		assert(cx);
-
 		JS::RootedObject jsGlobal(cx, JS::CurrentGlobalOrNull(cx));
-		assert(jsGlobal);
 
 		pNativeGlobal_ = static_cast<mozjs::JsGlobalObject*>(JS_GetInstancePrivate(cx, jsGlobal, &mozjs::JsGlobalObject::JsClass, nullptr));
-		assert(pNativeGlobal_);
 
 		auto& heapMgr = pNativeGlobal_->GetHeapManager();
 
@@ -437,7 +429,7 @@ void JsToVariant(JSContext* cx, JS::HandleValue rval, VARIANTARG& arg)
 			JS::RootedFunction func(cx, JS_ValueToFunction(cx, rval));
 
 			arg.vt = VT_DISPATCH;
-			arg.pdispVal = new smp::com::ComPtrImpl<WrappedJs>(cx, func);
+			arg.pdispVal = new ComPtrImpl<WrappedJs>(cx, func);
 		}
 		else
 		{

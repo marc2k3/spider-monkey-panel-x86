@@ -71,6 +71,7 @@
     </Link>
     <Midl>
       <TypeLibraryName>$(ProjectDir)resources\$(ProjectName).tlb</TypeLibraryName>
+      <OutputDirectory>$(ProjectDir)com_utils</OutputDirectory>
     </Midl>
     <PostBuildEvent>
       <Command>set component_path=$(SolutionDir)..\component\
@@ -106,9 +107,15 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClCompile Include="callbacks\UISelectionCallback.cpp" />
     <ClCompile Include="component_defines.cpp" />
     <ClCompile Include="component_paths.cpp" />
-    <ClCompile Include="com_objects\file_drop_target.cpp" />
     <ClCompile Include="com_utils\com_destruction_handler.cpp" />
     <ClCompile Include="com_utils\com_error_helpers.cpp" />
+    <ClCompile Include="com_utils\com_tools.cpp" />
+    <ClCompile Include="com_utils\drag_image.cpp" />
+    <ClCompile Include="com_utils\drag_utils.cpp" />
+    <ClCompile Include="com_utils\drop_source_impl.cpp" />
+    <ClCompile Include="com_utils\drop_target_impl.cpp" />
+    <ClCompile Include="com_utils\file_drop_target.cpp" />
+    <ClCompile Include="com_utils\track_drop_target.cpp" />
     <ClCompile Include="config\delayed_package_utils.cpp" />
     <ClCompile Include="config\package_utils.cpp" />
     <ClCompile Include="config\panel_config.cpp" />
@@ -118,13 +125,6 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClCompile Include="fb2k\metadb_display_field_provider_impl.cpp" />
     <ClCompile Include="fb2k\track_property_provider_impl.cpp" />
     <ClCompile Include="initquit.cpp" />
-    <ClCompile Include="com_objects\com_tools.cpp" />
-    <ClCompile Include="com_objects\drop_source_impl.cpp" />
-    <ClCompile Include="com_objects\drop_target_impl.cpp" />
-    <ClCompile Include="com_objects\track_drop_target.cpp" />
-    <ClCompile Include="com_objects\host_external.cpp" />
-    <ClCompile Include="com_objects\internal\drag_image.cpp" />
-    <ClCompile Include="com_objects\internal\drag_utils.cpp" />
     <ClCompile Include="convert\com.cpp" />
     <ClCompile Include="convert\js_to_native.cpp" />
     <ClCompile Include="convert\native_to_js.cpp" />
@@ -266,18 +266,17 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClInclude Include="component_defines.h" />
     <ClInclude Include="component_guids.h" />
     <ClInclude Include="component_paths.h" />
-    <ClInclude Include="com_objects\com_tools.h" />
-    <ClInclude Include="com_objects\dispatch_ptr.h" />
-    <ClInclude Include="com_objects\drop_source_impl.h" />
-    <ClInclude Include="com_objects\drop_target_impl.h" />
-    <ClInclude Include="com_objects\file_drop_target.h" />
-    <ClInclude Include="com_objects\track_drop_target.h" />
-    <ClInclude Include="com_objects\host_external.h" />
-    <ClInclude Include="com_objects\internal\drag_image.h" />
-    <ClInclude Include="com_objects\internal\drag_utils.h" />
-    <ClInclude Include="com_objects\com_interface.h" />
     <ClInclude Include="com_utils\com_destruction_handler.h" />
     <ClInclude Include="com_utils\com_error_helpers.h" />
+    <ClInclude Include="com_utils\com_tools.h" />
+    <ClInclude Include="com_utils\dispatch_ptr.h" />
+    <ClInclude Include="com_utils\drag_image.h" />
+    <ClInclude Include="com_utils\drag_utils.h" />
+    <ClInclude Include="com_utils\drop_source_impl.h" />
+    <ClInclude Include="com_utils\drop_target_impl.h" />
+    <ClInclude Include="com_utils\file_drop_target.h" />
+    <ClInclude Include="com_utils\host_external.h" />
+    <ClInclude Include="com_utils\track_drop_target.h" />
     <ClInclude Include="config\delayed_package_utils.h" />
     <ClInclude Include="config\package_utils.h" />
     <ClInclude Include="config\panel_config.h" />
@@ -422,9 +421,6 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClInclude Include="utils\zip_utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="com_objects\com_interface.idl" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="resources\foo_spider_monkey_panel.rc">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
@@ -454,6 +450,9 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\scintilla_interface.api" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="com_utils\com_interface.idl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

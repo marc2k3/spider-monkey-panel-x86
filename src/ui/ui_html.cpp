@@ -2,7 +2,7 @@
 
 #include "ui_html.h"
 
-#include <com_objects/dispatch_ptr.h>
+#include <com_utils/dispatch_ptr.h>
 #include <convert/com.h>
 #include <convert/js_to_native.h>
 #include <js_utils/js_error_helper.h>
@@ -522,7 +522,7 @@ void CDialogHtml::ParseOptions(JS::HandleValue options)
 		_variant_t data;
 		convert::com::JsToVariant(pJsCtx_, jsValue, *data.GetAddress());
 
-		pExternal_.Attach(new com::ComPtrImpl<com::HostExternal>(data));
+		pExternal_.Attach(new ComPtrImpl<com::HostExternal>(data));
 	}
 }
 

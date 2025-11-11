@@ -1,5 +1,5 @@
 #pragma once
-#include <com_objects/com_tools.h>
+#include "com_tools.h"
 
 _COM_SMARTPTR_TYPEDEF(IDragSourceHelper, IID_IDragSourceHelper);
 

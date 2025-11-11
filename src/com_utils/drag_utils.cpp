@@ -1,7 +1,7 @@
 #include <stdafx.h>
 #include "drag_utils.h"
 
-#include <com_objects/internal/drag_image.h>
+#include <com_utils/drag_image.h>
 #include <utils/gdi_helpers.h>
 
 namespace

@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include <comdef.h>
-
 class CDispatchVariant;
 
 template <class Derived>

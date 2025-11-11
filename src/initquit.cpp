@@ -8,10 +8,7 @@
 #include <libPPUI/gdiplus_helpers.h>
 #include <Scintilla.h>
 
-namespace smp::com
-{
-	wil::com_ptr<ITypeLib> typelib;
-}
+wil::com_ptr<ITypeLib> typelib_smp;
 
 namespace
 {
@@ -37,7 +34,7 @@ namespace
 				std::ignore = wtl_module.Init(nullptr, ins);
 
 				const auto path = wil::GetModuleFileNameW(ins);
-				std::ignore = LoadTypeLibEx(path.get(), REGKIND_NONE, &smp::com::typelib);
+				std::ignore = LoadTypeLibEx(path.get(), REGKIND_NONE, &typelib_smp);
 			}
 		}
 	};
@@ -49,7 +46,7 @@ namespace
 		qwr::ThreadPool::GetInstance().Finalize();
 		Scintilla_ReleaseResources();
 		rich_edit_ctrl.reset();
-		smp::com::typelib.reset();
+		typelib_smp.reset();
 		wtl_module.Term();
 	}
 

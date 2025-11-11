@@ -1,8 +1,7 @@
 #include <stdafx.h>
-
 #include "js_panel_window.h"
 
-#include <com_objects/track_drop_target.h>
+#include <com_utils/track_drop_target.h>
 #include <com_utils/com_destruction_handler.h>
 #include <config/delayed_package_utils.h>
 #include <config/package_utils.h>
@@ -1695,7 +1694,7 @@ void js_panel_window::SetDragAndDropStatus(bool isEnabled)
 	{
 		if (!dropTargetHandler_)
 		{
-			dropTargetHandler_.Attach(new com::ComPtrImpl<com::TrackDropTarget>(*this));
+			dropTargetHandler_.Attach(new ComPtrImpl<com::TrackDropTarget>(*this));
 
 			HRESULT hr = dropTargetHandler_->RegisterDragDrop();
 			qwr::error::CheckHR(hr, "RegisterDragDrop");
