@@ -1592,7 +1592,7 @@ void js_panel_window::OnPaint(HDC dc, const CRect& updateRc)
 		{
 			CRect rc{ 0, 0, static_cast<int>(width_), static_cast<int>(height_) };
 			CBrush brush;
-			
+
 			if (isDark_)
 			{
 				brush.CreateSolidBrush(RGB(32, 32, 32));

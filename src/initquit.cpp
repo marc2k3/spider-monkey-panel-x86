@@ -29,7 +29,7 @@ namespace
 				const auto ins = core_api::get_my_instance();
 				Scintilla_RegisterClasses(ins);
 				PlaylistLock::before_ui_init();
-				
+
 				rich_edit_ctrl.reset(LoadLibraryW(CRichEditCtrl::GetLibraryName()));
 				std::ignore = wtl_module.Init(nullptr, ins);
 

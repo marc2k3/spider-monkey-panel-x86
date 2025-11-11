@@ -142,7 +142,7 @@ namespace mozjs::convert::to_native
 		{
 			return nullptr;
 		}
-	} // namespace internal
+	}
 
 	template <>
 	std::string ToValue(JSContext* cx, const JS::HandleString& jsString)
@@ -170,4 +170,4 @@ namespace mozjs::convert::to_native
 		const auto str = ToValue<std::string>(cx, jsString);
 		return str.c_str();
 	}
-} // namespace mozjs::convert::to_native
+}

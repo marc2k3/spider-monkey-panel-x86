@@ -25,7 +25,7 @@ namespace smp::config::binary
 			PanelSettings_InMemory payload;
 
 			reader->skip_object(sizeof(false), abort); // skip "delay load"
-			
+
 			panelSettings.id = [&] {
 				GUID guid;
 				reader->read_object_t(guid, abort);

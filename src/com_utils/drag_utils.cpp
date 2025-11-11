@@ -105,8 +105,8 @@ namespace smp::com::drag
 
 	bool RenderDragImage(HWND hWnd, size_t itemCount, bool showText, Gdiplus::Bitmap* pCustomImage, SHDRAGIMAGE& dragImage)
 	{
-		wil::unique_htheme dd_theme; 
-		
+		wil::unique_htheme dd_theme;
+
 		if (IsThemeActive() && IsAppThemed())
 		{
 			dd_theme.reset(OpenThemeData(hWnd, VSCLASS_DRAGDROP));

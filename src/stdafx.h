@@ -51,7 +51,7 @@
 // Generates wrappers for COM listed above
 #include <ComDef.h>
 
-#include <atlstr.h> 
+#include <atlstr.h>
 #include <atlapp.h>
 #include <atlcom.h>
 #include <atlcrack.h>
@@ -66,7 +66,7 @@
 // 4251: dll interface warning
 #define SMP_MJS_SUPPRESS_WARNINGS_PUSH \
 	__pragma(warning(push))        \
-	__pragma(warning(disable : 4251)) 
+	__pragma(warning(disable : 4251))
 
 #define SMP_MJS_SUPPRESS_WARNINGS_POP \
 	__pragma(warning(pop))
@@ -104,7 +104,7 @@ using JSON = nlohmann::json;
 #include <foobar2000/helpers/file_list_helper.h>
 #include <libPPUI/pp-COM-macros.h>
 #include <pfc/string-conv-lite.h>
-#pragma warning(pop) 
+#pragma warning(pop)
 
 // Columns UI SDK
 #pragma warning(push, 0)

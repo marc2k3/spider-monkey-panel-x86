@@ -436,7 +436,7 @@ JSObject* Fb::GetAudioChunk(double requested_length, double offset)
 	{
 		return JsFbAudioChunk::CreateJs(m_ctx, chunk);
 	}
-	
+
 	return nullptr;
 }
 
@@ -1052,7 +1052,7 @@ Fb::DoDragDropOptions Fb::ParseDoDragDropOptions(JS::HandleValue options)
 	DoDragDropOptions parsedOptions;
 	parsedOptions.show_album_art = GetOptionalProperty<bool>(m_ctx, jsOptions, "show_album_art").value_or(true);
 	parsedOptions.show_text = GetOptionalProperty<bool>(m_ctx, jsOptions, "show_text").value_or(true);
-		
+
 	if (parsedOptions.show_album_art)
 	{
 		auto jsImage = GetOptionalProperty<JsGdiBitmap*>(m_ctx, jsOptions, "custom_image").value_or(nullptr);

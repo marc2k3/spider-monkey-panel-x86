@@ -25,7 +25,7 @@ void DownloadFileAsync::run() noexcept
 		auto response = request->run(m_url.c_str(), aborter);
 
 		// throws exception if size is unknown
-		std::ignore = response->get_size_ex(aborter); 
+		std::ignore = response->get_size_ex(aborter);
 
 		pfc::array_t<uint8_t> arr;
 		response->read_till_eof(arr, aborter);

@@ -68,8 +68,7 @@ public:
 const ActiveXObjectProxyHandler ActiveXObjectProxyHandler::singleton;
 
 /*
-bool 
-ActiveXObjectProxyHandler::has(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, bool* bp) const
+bool ActiveXObjectProxyHandler::has(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, bool* bp) const
 {
 	if (!JSID_IS_STRING(id))
 	{
@@ -92,7 +91,7 @@ ActiveXObjectProxyHandler::has(JSContext* cx, JS::HandleObject proxy, JS::Handle
 		}
 		return false;
 	}
-	
+
 	*bp = pNativeTarget->Has(*retVal);
 	return true;
 }
@@ -221,9 +220,9 @@ bool ActiveXObjectProxyHandler::ownPropertyKeys(JSContext* cx, JS::HandleObject 
 		if (!JS_CharsToId(cx, jsString, &jsId) || !props.append(jsId))
 		{// report in JS_CharsToId
 			return false;
-		}        
+		}
 	}
-	
+
 	return true;
 }
 */

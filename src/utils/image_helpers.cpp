@@ -39,7 +39,7 @@ namespace
 
 		const auto hr = source->CopyPixels(nullptr, bmpdata.Stride, bmpdata.Stride * bmpdata.Height, static_cast<uint8_t*>(bmpdata.Scan0));
 		bitmap->UnlockBits(&bmpdata);
-		
+
 		if FAILED(hr)
 			return nullptr;
 

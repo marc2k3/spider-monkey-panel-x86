@@ -133,7 +133,7 @@ namespace smp::com
 
 		dropped_files_data_impl droppedData;
 		const auto hr = ole_interaction::get()->parse_dataobject(pDataObject.GetInterfacePtr(), droppedData);
-	
+
 		if SUCCEEDED(hr)
 		{
 			const auto g = playlist_manager_v5::get()->playlist_get_guid(dragParams.playlistIdx);

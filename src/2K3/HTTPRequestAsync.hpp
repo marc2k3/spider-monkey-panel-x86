@@ -16,7 +16,7 @@ public:
 
 private:
 	static bool is_supported_content_type(std::string_view content_type) noexcept;
-	
+
 	cpr::Response get_response() noexcept;
 	void add_headers() noexcept;
 

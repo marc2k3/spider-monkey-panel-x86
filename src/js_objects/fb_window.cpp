@@ -185,7 +185,7 @@ float JsFbWindow::get_SystemCpuUsage()
 		+ uint64_t(newUserTime.dwLowDateTime - userTime.dwLowDateTime);
 	uint64_t usageTime = totalTime
 		- uint64_t(newIdleTime.dwLowDateTime - idleTime.dwLowDateTime);
-		
+
 	return totalTime ? ((usageTime * 100) / totalTime) : 0.0f;*/
 	return 0.0f;
 }

@@ -591,7 +591,6 @@ void JsFbMetadbHandleList::UpdateFileInfoFromJSON(const std::string& str)
 	{
 		qwr::QwrException::ExpectTrue(j.size() == count, "Invalid JSON info: mismatched with handle count");
 		writer.from_json_array(j);
-		
 	}
 	else if (j.is_object())
 	{

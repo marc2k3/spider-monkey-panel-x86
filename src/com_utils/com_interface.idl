@@ -12,7 +12,7 @@ library foo_spider_monkey_panel
 		dual,
 		pointer_default(unique),
 		uuid(0A72A7F4-024C-4DAB-92BE-5F6853294E44)
-	] 
+	]
 	interface IWrappedJs : IDispatch {
 		[id(0)] HRESULT ExecuteValue([optional] VARIANT arg1, [optional] VARIANT arg2, [optional] VARIANT arg3, [optional] VARIANT arg4, [optional] VARIANT arg5, [optional] VARIANT arg6, [optional] VARIANT arg7, [out,retval] VARIANT *result);
 	};
@@ -22,7 +22,7 @@ library foo_spider_monkey_panel
 		dual,
 		pointer_default(unique),
 		uuid(98D9779A-4398-47D3-8CA4-B4C8BDE60526)
-	] 
+	]
 	interface IHostExternal : IDispatch {
 		[propget] HRESULT dialogArguments([out,retval] VARIANT *pData);
 	};

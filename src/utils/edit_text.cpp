@@ -80,7 +80,7 @@ namespace
 		modal::ConditionalModalScope scope(hParent, isPanelScript);
 
 		auto dlg = smp::ui::CEditor("Temporary file", text, [&]
-			{  
+			{
 				if (isPanelScript)
 					NotifyParentPanel(hParent);
 			});

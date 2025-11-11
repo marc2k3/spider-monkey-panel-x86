@@ -585,7 +585,7 @@ bool Plman::MovePlaylist(uint32_t from, uint32_t to)
 		pfc::create_move_items_permutation(sort_order.get_ptr(), count, pfc::bit_array_one(from), static_cast<int>(to - from));
 		return m_api->reorder(sort_order.get_ptr(), count);
 	}
-	
+
 	return false;
 }
 

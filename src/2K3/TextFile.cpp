@@ -46,7 +46,7 @@ bool TextFile::write(std::string_view content, bool write_bom) noexcept
 		const auto tmp = fmt::format("{}{}", UTF_8_BOM, content);
 		return f.write(tmp.data(), tmp.length()).good();
 	}
-		
+
 	return f.write(content.data(), content.length()).good();
 }
 
