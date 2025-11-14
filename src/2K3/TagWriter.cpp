@@ -3,8 +3,6 @@
 #include "FileInfoFilter.hpp"
 #include "String.hpp"
 
-#include <foobar2000/SDK/file_info_filter_impl.h>
-
 TagWriter::TagWriter(metadb_handle_list_cref handles) : m_handles(handles) {}
 
 void TagWriter::from_json_array(JSON& arr) noexcept

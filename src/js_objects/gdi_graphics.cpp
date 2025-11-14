@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "gdi_graphics.h"
 
 #include <js_engine/js_to_native_invoker.h>
@@ -12,8 +11,6 @@
 #include <utils/colour_helpers.h>
 #include <utils/gdi_error_helpers.h>
 #include <utils/text_helpers.h>
-
-#include <qwr/winapi_error_helpers.h>
 
 using namespace smp;
 

@@ -1,6 +1,5 @@
 #include <stdafx.h>
 #include "winapi_error_helpers.h"
-#include <qwr/string_helpers.h>
 
 namespace
 {

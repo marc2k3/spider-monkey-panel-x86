@@ -3,7 +3,6 @@
 
 #include <com_utils/drag_image.h>
 #include <com_utils/drag_utils.h>
-#include <qwr/winapi_error_helpers.h>
 
 _COM_SMARTPTR_TYPEDEF(IDragSourceHelper2, IID_IDragSourceHelper2);
 

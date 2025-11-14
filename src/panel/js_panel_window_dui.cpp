@@ -2,8 +2,6 @@
 #include <panel/js_panel_window.h>
 #include <utils/colour_helpers.h>
 
-#include <foobar2000/helpers/atl-misc.h>
-
 namespace smp::panel
 {
 	class js_panel_window_dui : public js_panel_window, public ui_element_instance, public CWindowImpl<js_panel_window_dui>

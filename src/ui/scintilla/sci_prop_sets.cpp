@@ -1,9 +1,7 @@
 #include <stdafx.h>
-
 #include "sci_prop_sets.h"
 
 #include <2K3/TextFile.hpp>
-#include <qwr/string_helpers.h>
 
 namespace
 {

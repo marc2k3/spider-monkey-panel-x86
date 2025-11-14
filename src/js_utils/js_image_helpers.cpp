@@ -1,4 +1,5 @@
 #include <stdafx.h>
+#include "js_image_helpers.h"
 
 #include <2K3/FileHelper.hpp>
 #include <convert/native_to_js.h>
@@ -10,10 +11,8 @@
 #include <js_utils/js_async_task.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
-#include <utils/gdi_helpers.h>
-
-#include <qwr/string_helpers.h>
 #include <qwr/thread_pool.h>
+#include <utils/gdi_helpers.h>
 
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/Promise.h>

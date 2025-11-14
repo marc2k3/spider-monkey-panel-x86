@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "ui_html.h"
 
 #include <com_utils/dispatch_ptr.h>
@@ -7,9 +6,7 @@
 #include <convert/js_to_native.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_property_helper.h>
-
 #include <qwr/hook_handler.h>
-#include <qwr/winapi_error_helpers.h>
 
 namespace smp::ui
 {

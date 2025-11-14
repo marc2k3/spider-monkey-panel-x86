@@ -12,10 +12,8 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <js_utils/js_property_helper.h>
-#include <utils/gdi_helpers.h>
-
-#include <qwr/string_helpers.h>
 #include <qwr/thread_pool.h>
+#include <utils/gdi_helpers.h>
 
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/Promise.h>

@@ -1,6 +1,5 @@
 #include <stdafx.h>
 #include "hook_handler.h"
-#include <qwr/winapi_error_helpers.h>
 
 namespace qwr
 {

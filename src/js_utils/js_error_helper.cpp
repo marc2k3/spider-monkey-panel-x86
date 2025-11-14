@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "js_error_helper.h"
 
 #include <convert/js_to_native.h>
@@ -7,8 +6,6 @@
 #include <js_objects/global_object.h>
 #include <js_utils/cached_utf8_paths_hack.h>
 #include <js_utils/js_property_helper.h>
-
-#include <qwr/string_helpers.h>
 
 using namespace smp;
 

@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "gdi.h"
 
 #include <2K3/FileHelper.hpp>
@@ -13,8 +12,6 @@
 #include <js_utils/js_object_helper.h>
 #include <utils/gdi_error_helpers.h>
 #include <utils/gdi_helpers.h>
-
-#include <qwr/winapi_error_helpers.h>
 
 using namespace smp;
 

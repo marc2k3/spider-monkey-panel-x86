@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "utils.h"
 
 #include <2K3/AlbumArtStatic.hpp>
@@ -24,7 +23,6 @@
 #include <utils/edit_text.h>
 #include <utils/gdi_error_helpers.h>
 
-#include <qwr/winapi_error_helpers.h>
 
 using namespace smp;
 

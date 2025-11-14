@@ -1,14 +1,10 @@
 #include <stdafx.h>
-
 #include "ui_conf_tab_properties.h"
-
-#include <panel/js_panel_window.h>
-#include <ui/ui_conf.h>
 
 #include <2K3/FileDialog.hpp>
 #include <2K3/TextFile.hpp>
-#include <qwr/error_popup.h>
-#include <qwr/type_traits.h>
+#include <panel/js_panel_window.h>
+#include <ui/ui_conf.h>
 
 namespace fs = std::filesystem;
 

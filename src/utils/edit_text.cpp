@@ -1,13 +1,11 @@
 #include <stdafx.h>
 #include "edit_text.h"
 
+#include <2K3/FileHelper.hpp>
+#include <2K3/TextFile.hpp>
 #include <panel/modal_blocking_scope.h>
 #include <ui/ui_edit_in_progress.h>
 #include <ui/ui_editor.h>
-
-#include <2K3/FileHelper.hpp>
-#include <2K3/TextFile.hpp>
-#include <qwr/winapi_error_helpers.h>
 
 namespace
 {

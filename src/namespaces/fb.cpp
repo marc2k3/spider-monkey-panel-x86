@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "fb.h"
 
 #include <2K3/AlbumArtStatic.hpp>
@@ -28,8 +27,6 @@
 #include <panel/modal_blocking_scope.h>
 #include <panel/user_message.h>
 #include <utils/menu_helpers.h>
-
-#include <qwr/string_helpers.h>
 
 using namespace smp;
 

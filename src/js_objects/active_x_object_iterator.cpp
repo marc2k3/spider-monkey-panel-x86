@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "active_x_object_iterator.h"
 
 #include <com_utils/dispatch_ptr.h>
@@ -9,8 +8,6 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <js_utils/js_property_helper.h>
-
-#include <qwr/winapi_error_helpers.h>
 
 namespace
 {

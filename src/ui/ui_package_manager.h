@@ -4,9 +4,8 @@
 #include <config/delayed_package_utils.h>
 #include <config/panel_config.h>
 #include <config/parsed_panel_config.h>
-#include <resources/resource.h>
-
 #include <qwr/ui_ddx.h>
+#include <resources/resource.h>
 
 namespace smp::ui
 {

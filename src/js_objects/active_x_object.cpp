@@ -1,7 +1,4 @@
-/// Code based on from wrap_com.cpp from JSDB by Shanti Rao (see http://jsdb.org)
-
 #include <stdafx.h>
-
 #include "active_x_object.h"
 
 #include <com_utils/com_interface_h.h>
@@ -16,9 +13,6 @@
 #include <js_objects/internal/global_heap_manager.h>
 #include <js_utils/js_object_helper.h>
 #include <js_utils/js_prototype_helpers.h>
-
-#include <qwr/string_helpers.h>
-#include <qwr/winapi_error_helpers.h>
 
 // TODO: cleanup the code
 

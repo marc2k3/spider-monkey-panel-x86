@@ -1,13 +1,10 @@
 #include <stdafx.h>
-
 #include "js_gc.h"
 
 #include <fb2k/advanced_config.h>
 #include <js_engine/js_container.h>
 #include <js_engine/js_realm_inner.h>
 #include <js_utils/js_error_helper.h>
-
-#include <qwr/winapi_error_helpers.h>
 
 namespace
 {

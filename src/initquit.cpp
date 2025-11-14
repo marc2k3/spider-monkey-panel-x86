@@ -5,7 +5,6 @@
 #include <js_engine/js_engine.h>
 #include <qwr/thread_pool.h>
 
-#include <libPPUI/gdiplus_helpers.h>
 #include <Scintilla.h>
 
 wil::com_ptr<ITypeLib> typelib_smp;

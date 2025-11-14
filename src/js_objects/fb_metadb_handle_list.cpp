@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "fb_metadb_handle_list.h"
 
 #include <2K3/Attach.hpp>
@@ -12,8 +11,6 @@
 #include <js_objects/fb_title_format.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
-
-#include <qwr/string_helpers.h>
 
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/Conversions.h>

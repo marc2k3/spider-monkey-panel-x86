@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "fb_title_format.h"
 
 #include <js_engine/js_to_native_invoker.h>
@@ -7,8 +6,6 @@
 #include <js_objects/fb_metadb_handle_list.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
-
-#include <qwr/string_helpers.h>
 
 using namespace smp;
 

@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "ui_sci_find_replace.h"
 
 #include <qwr/hook_handler.h>

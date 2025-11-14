@@ -1,14 +1,12 @@
 #include <stdafx.h>
 #include "ui_sci_editor.h"
 
+#include <2K3/String.hpp>
+#include <2K3/TextFile.hpp>
 #include <ui/scintilla/sci_prop_sets.h>
 #include <ui/scintilla/ui_sci_goto.h>
 #include <utils/colour_helpers.h>
 #include <utils/logging.h>
-
-#include <2K3/String.hpp>
-#include <2K3/TextFile.hpp>
-#include <qwr/string_helpers.h>
 
 using namespace smp::ui::sci;
 

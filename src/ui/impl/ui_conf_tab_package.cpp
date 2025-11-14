@@ -1,16 +1,13 @@
 #include <stdafx.h>
 #include "ui_conf_tab_package.h"
 
+#include <2K3/DirectoryIterator.hpp>
+#include <2K3/FileDialog.hpp>
+#include <2K3/TextFile.hpp>
 #include <config/package_utils.h>
 #include <ui/ui_conf.h>
 #include <ui/ui_input_box.h>
 #include <utils/edit_text.h>
-
-#include <2K3/DirectoryIterator.hpp>
-#include <2K3/FileDialog.hpp>
-#include <2K3/TextFile.hpp>
-#include <qwr/error_popup.h>
-#include <qwr/winapi_error_helpers.h>
 
 namespace fs = std::filesystem;
 

@@ -1,8 +1,5 @@
 #pragma once
-
 #include <js_objects/internal/prototype_ids.h>
-
-#include <qwr/string_helpers.h>
 
 namespace mozjs
 {

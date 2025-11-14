@@ -12,9 +12,6 @@
 #include <js_utils/js_object_helper.h>
 #include <panel/user_message.h>
 
-#include <qwr/error_popup.h>
-#include <qwr/winapi_error_helpers.h>
-
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/Date.h>
 SMP_MJS_SUPPRESS_WARNINGS_POP

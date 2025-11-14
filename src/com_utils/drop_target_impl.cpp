@@ -2,7 +2,6 @@
 #include "drop_target_impl.h"
 
 #include <utils/logging.h>
-#include <qwr/winapi_error_helpers.h>
 
 _COM_SMARTPTR_TYPEDEF(IDropTargetHelper, IID_IDropTargetHelper);
 

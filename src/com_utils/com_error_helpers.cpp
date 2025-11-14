@@ -1,9 +1,6 @@
 #include <stdafx.h>
 #include "com_error_helpers.h"
 
-#include <qwr/string_helpers.h>
-#include <qwr/winapi_error_helpers.h>
-
 namespace smp::com
 {
 	void ReportActiveXError(HRESULT hresult, EXCEPINFO& exception, UINT& argerr)

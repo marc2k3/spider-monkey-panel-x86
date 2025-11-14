@@ -1,13 +1,10 @@
 #include <stdafx.h>
-
 #include "theme_manager.h"
 
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/gdi_graphics.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
-
-#include <qwr/winapi_error_helpers.h>
 
 using namespace smp;
 

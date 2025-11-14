@@ -100,9 +100,14 @@ using JSON = nlohmann::json;
 
 // foobar2000 SDK
 #pragma warning(push, 0)
-#include <foobar2000/SDK/foobar2000.h>
-#include <foobar2000/helpers/file_list_helper.h>
+#include <SDK/foobar2000.h>
+#include <SDK/file_info_filter_impl.h>
+#include <helpers/atl-misc.h>
+#include <helpers/file_list_helper.h>
+#include <libPPUI/CListControlOwnerData.h>
+#include <libPPUI/gdiplus_helpers.h>
 #include <libPPUI/pp-COM-macros.h>
+#include <libPPUI/win32_utility.h>
 #include <pfc/string-conv-lite.h>
 #pragma warning(pop)
 
@@ -111,12 +116,15 @@ using JSON = nlohmann::json;
 #include <columns_ui-sdk/ui_extension.h>
 #pragma warning(pop)
 
-// fb2k_utils
+#include <qwr/error_popup.h>
+#include <qwr/string_helpers.h>
 #include <qwr/unicode.h>
+#include <qwr/type_traits.h>
+#include <qwr/winapi_error_helpers.h>
 #include <qwr/qwr_exception.h>
 
-#include <utils/js_exception.h>
+#include <2K3/String.hpp>
 #include <component_defines.h>
 #include <component_guids.h>
 #include <component_paths.h>
-#include <2K3/String.hpp>
+#include <utils/js_exception.h>

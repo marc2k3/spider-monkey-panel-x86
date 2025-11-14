@@ -1,8 +1,6 @@
 #pragma once
 #include <resources/resource.h>
 
-#include <libPPUI/CListControlOwnerData.h>
-
 namespace smp::ui
 {
 

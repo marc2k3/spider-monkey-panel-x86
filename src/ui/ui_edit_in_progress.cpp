@@ -1,8 +1,5 @@
 #include <stdafx.h>
-
 #include "ui_edit_in_progress.h"
-
-#include <qwr/winapi_error_helpers.h>
 
 namespace
 {

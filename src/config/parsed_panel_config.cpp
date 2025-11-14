@@ -1,10 +1,7 @@
 #include <stdafx.h>
-
 #include "parsed_panel_config.h"
 
 #include <config/package_utils.h>
-
-#include <qwr/type_traits.h>
 
 namespace fs = std::filesystem;
 

@@ -1,6 +1,5 @@
 #pragma once
 #include <js_utils/js_object_helper.h>
-#include <qwr/type_traits.h>
 
 namespace mozjs::convert::to_native
 {

@@ -1,15 +1,10 @@
 #include <stdafx.h>
-
 #include "ui_conf_tab_script_source.h"
 
+#include <2K3/FileDialog.hpp>
 #include <panel/edit_script.h>
 #include <ui/ui_conf.h>
 #include <ui/ui_package_manager.h>
-
-#include <2K3/FileDialog.hpp>
-#include <qwr/error_popup.h>
-#include <qwr/type_traits.h>
-#include <qwr/winapi_error_helpers.h>
 
 namespace
 {

@@ -1,11 +1,8 @@
 #include <stdafx.h>
-
 #include "ui_sci_goto.h"
 
-#include <ui/scintilla/ui_sci_editor.h>
-
 #include <qwr/hook_handler.h>
-#include <qwr/string_helpers.h>
+#include <ui/scintilla/ui_sci_editor.h>
 
 namespace
 {

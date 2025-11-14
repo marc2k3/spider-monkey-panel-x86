@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "plman.h"
 
 #include <2K3/CustomSort.hpp>
@@ -14,8 +13,6 @@
 #include <js_utils/js_object_helper.h>
 #include <js_utils/js_property_helper.h>
 #include <utils/location_processor.h>
-
-#include <qwr/string_helpers.h>
 
 using namespace smp;
 

@@ -1,19 +1,11 @@
 #pragma once
-
-namespace smp::config
-{
-
-struct ParsedPanelSettings;
-
-}
+#include <config/parsed_panel_config.h>
 
 namespace smp::panel
 {
+	/// @throw qwr::QwrException
+	void EditScript(HWND hParent, config::ParsedPanelSettings& settings);
 
-/// @throw qwr::QwrException
-void EditScript(HWND hParent, config::ParsedPanelSettings& settings);
-
-/// @throw qwr::QwrException
-void EditPackageScript(HWND hParent, const std::filesystem::path& script, const config::ParsedPanelSettings& settings);
-
-} // namespace smp::panel
+	/// @throw qwr::QwrException
+	void EditPackageScript(HWND hParent, const std::filesystem::path& script, const config::ParsedPanelSettings& settings);
+}

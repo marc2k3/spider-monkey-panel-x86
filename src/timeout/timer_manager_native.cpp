@@ -6,7 +6,6 @@
 #include <panel/js_panel_window.h>
 #include <timeout/timer_native.h>
 #include <utils/logging.h>
-#include <qwr/winapi_error_helpers.h>
 
 namespace smp
 {

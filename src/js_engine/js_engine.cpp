@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "js_engine.h"
 
 #include <com_utils/com_destruction_handler.h>
@@ -16,8 +15,6 @@
 #include <timeout/timer_interface.h>
 
 #include <js/Initialization.h>
-#include <qwr/error_popup.h>
-#include <qwr/string_helpers.h>
 
 using namespace smp;
 

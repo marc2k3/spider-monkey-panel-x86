@@ -6,7 +6,6 @@
 #include <config/panel_config_json.h>
 #include <resources/resource.h>
 #include <utils/guid_helpers.h>
-#include <qwr/string_helpers.h>
 
 namespace smp::config
 {

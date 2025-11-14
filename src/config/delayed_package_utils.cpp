@@ -1,13 +1,10 @@
 #include <stdafx.h>
-
 #include "delayed_package_utils.h"
-
-#include <config/package_utils.h>
-#include <resources/resource.h>
 
 #include <2K3/String.hpp>
 #include <2K3/TextFile.hpp>
-#include <qwr/error_popup.h>
+#include <config/package_utils.h>
+#include <resources/resource.h>
 
 namespace fs = std::filesystem;
 

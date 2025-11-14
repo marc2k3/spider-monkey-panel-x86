@@ -1,13 +1,10 @@
 #include <stdafx.h>
-
 #include "menu_object.h"
 
 #include <js_engine/js_to_native_invoker.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <panel/modal_blocking_scope.h>
-
-#include <qwr/winapi_error_helpers.h>
 
 using namespace smp;
 

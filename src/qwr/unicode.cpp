@@ -1,6 +1,4 @@
 #include <stdafx.h>
-#include <pfc/string-conv-lite.h>
-
 #include "unicode.h"
 
 namespace qwr

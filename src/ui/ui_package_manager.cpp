@@ -1,14 +1,10 @@
 #include <stdafx.h>
-
 #include "ui_package_manager.h"
 
+#include <2K3/FileDialog.hpp>
 #include <config/package_utils.h>
 #include <ui/ui_input_box.h>
 #include <utils/zip_utils.h>
-
-#include <2K3/FileDialog.hpp>
-#include <qwr/error_popup.h>
-#include <qwr/winapi_error_helpers.h>
 
 namespace fs = std::filesystem;
 

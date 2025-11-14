@@ -97,9 +97,6 @@
     <ClCompile Include="convert\js_to_native.cpp">
       <Filter>convert</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\fb_window.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
     <ClCompile Include="js_objects\enumerator.cpp">
       <Filter>js_objects</Filter>
     </ClCompile>
@@ -570,9 +567,6 @@
     </ClInclude>
     <ClInclude Include="convert\js_to_native.h">
       <Filter>convert</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_window.h">
-      <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="js_objects\enumerator.h">
       <Filter>js_objects</Filter>
