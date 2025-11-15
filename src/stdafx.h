@@ -101,6 +101,7 @@ using JSON = nlohmann::json;
 // foobar2000 SDK
 #pragma warning(push, 0)
 #include <SDK/foobar2000.h>
+#include <SDK/coreDarkMode.h>
 #include <SDK/file_info_filter_impl.h>
 #include <helpers/atl-misc.h>
 #include <helpers/file_list_helper.h>
