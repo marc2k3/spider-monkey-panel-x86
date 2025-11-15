@@ -340,7 +340,7 @@ function _help(x, y, flags) {
 	case idx == 0:
 		break;
 	case idx == 1:
-		window.ShowConfigure();
+		window.ShowConfigureV2();
 		break;
 	default:
 		_run(ha_links[idx - 100][1]);

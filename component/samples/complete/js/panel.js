@@ -135,7 +135,7 @@ function _panel(custom_background = false) {
 			this.item_focus_change();
 			break;
 		case idx == 120:
-			window.ShowConfigure();
+			window.ShowConfigureV2();
 			break;
 		case idx > 999:
 			if (object) {

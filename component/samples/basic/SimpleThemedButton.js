@@ -16,7 +16,7 @@ const buttons = {
         fb.ShowConsole();
     }),
     Configure: new SimpleButton(5, 40, 80, 26, 'Configure', function () {
-        window.ShowConfigure();
+        window.ShowConfigureV2();
     })
 };
 

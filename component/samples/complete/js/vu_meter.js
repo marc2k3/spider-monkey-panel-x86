@@ -276,7 +276,7 @@ function _vu_meter(x, y, w, h) {
 			window.Repaint();
 			break;
 		case 50:
-			window.ShowConfigure();
+			window.ShowConfigureV2();
 			break;
 		}
 

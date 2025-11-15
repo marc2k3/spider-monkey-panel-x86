@@ -137,7 +137,7 @@ function on_mouse_rbtn_up(x, y) {
 		window.Repaint();
 		break;
 	case 10010:
-		window.ShowConfigure();
+		window.ShowConfigureV2();
 		break;
 	default:
 		c.ExecuteByID(idx - 1);
