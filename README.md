@@ -10,6 +10,11 @@ requires at least `foobar2000` `2.0`.
 
 # Changelog
 
+## 1.6.2.25.11.15
+- Tooltips are now dark mode aware.
+- Update `utils.InputBox` to support dark mode.
+- Update samples to use `window.ShowConfigureV2()`.
+
 ## 1.6.2.25.11.09
 - Fix various main menu and context menu execution bugs.
 - Fix `fb.DoDragDrop` regression where album art was not automatically displayed.
