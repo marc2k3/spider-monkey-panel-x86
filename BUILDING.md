@@ -18,7 +18,7 @@ cd vcpkg
 ./vcpkg integrate install
 ```
 
-Now browse inside the `foo_spider_monkey_panel` folder and open `src/foo_spider_monkey_panel.sln` in
+Now browse inside the `foo_spider_monkey_panel` folder and open `workspace/foo_spider_monkey_panel.slnx` in
 `Visual Studio 2026` and it should build.
 
 When building succeeds, check the `component` folder as the compiled `dll` is copied there.
