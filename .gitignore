@@ -1,7 +1,7 @@
 Release FB2K/
 Debug FB2K/
-src/release-win32-v143/
-src/release-win32-v145/
+release-win32-v143/
+release-win32-v145/
 vcpkg_installed/
 component/*.dll
 
