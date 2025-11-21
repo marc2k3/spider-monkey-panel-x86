@@ -1,6 +1,6 @@
 // Convert Point size to Pixel size (Useful in gdi.Font() and such)
 function Point2Pixel(pt, dpi) {
-	return (pt * dpi / 72);
+	return Math.round(pt * dpi / 72);
 }
 
 function RGBA(r, g, b, a) {
