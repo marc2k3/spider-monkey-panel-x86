@@ -8,6 +8,8 @@ Docs: https://theqwertiest.github.io/foo_spider_monkey_panel/
 Because new methods from the `foobar2000` `SDK` are being used, this component
 requires at least `foobar2000` `2.0`.
 
+Many included samples require the installation of [FontAwesome](https://github.com/FortAwesome/Font-Awesome/raw/refs/heads/4.x/fonts/fontawesome-webfont.ttf)
+
 # Changelog
 
 ## 1.6.2.25.11.15
