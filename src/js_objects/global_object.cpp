@@ -28,10 +28,6 @@
 #include <panel/js_panel_window.h>
 #include <utils/logging.h>
 
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <js/CompilationAndEvaluation.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
-
 namespace fs = std::filesystem;
 using namespace mozjs;
 using namespace smp;

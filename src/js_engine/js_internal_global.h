@@ -1,5 +1,4 @@
 #pragma once
-#include <js/GCHashTable.h>
 
 struct JSContext;
 

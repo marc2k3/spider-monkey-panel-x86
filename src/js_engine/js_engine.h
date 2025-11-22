@@ -1,11 +1,6 @@
 #pragma once
-
 #include <js_engine/js_gc.h>
 #include <js_engine/js_monitor.h>
-
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <js/Promise.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
 
 struct JSContext;
 

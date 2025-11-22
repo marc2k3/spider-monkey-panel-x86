@@ -352,6 +352,7 @@ copy /Y "%mozjs_dir%nspr4.dll" "%component_path%"</Command>
     <ClInclude Include="js_utils\js_prototype_helpers.h" />
     <ClInclude Include="js_utils\scope_helper.h" />
     <ClInclude Include="js_utils\serialized_value.h" />
+    <ClInclude Include="mozjs.hpp" />
     <ClInclude Include="namespaces\console.h" />
     <ClInclude Include="namespaces\fb.h" />
     <ClInclude Include="namespaces\gdi.h" />

@@ -14,10 +14,6 @@
 #include <qwr/thread_pool.h>
 #include <utils/gdi_helpers.h>
 
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <js/Promise.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
-
 using namespace smp;
 using namespace mozjs;
 

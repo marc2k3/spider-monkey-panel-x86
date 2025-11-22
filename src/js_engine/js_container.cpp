@@ -13,12 +13,6 @@
 #include <js_utils/scope_helper.h>
 #include <panel/js_panel_window.h>
 
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <js/CompilationAndEvaluation.h>
-#include <js/SourceText.h>
-#include <js/Wrapper.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
-
 using namespace smp;
 
 namespace mozjs

@@ -1,5 +1,4 @@
 #pragma once
-#include <js/Array.h>
 
 namespace mozjs::convert::to_js
 {

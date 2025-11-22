@@ -12,10 +12,6 @@
 #include <js_utils/js_object_helper.h>
 #include <panel/user_message.h>
 
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <js/Date.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
-
 using namespace smp;
 
 namespace

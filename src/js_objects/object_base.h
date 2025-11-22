@@ -2,10 +2,6 @@
 #include <js_engine/js_realm_inner.h>
 #include <js_utils/js_prototype_helpers.h>
 
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <js/proxy.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
-
 class JSObject;
 struct JSContext;
 struct JSClass;

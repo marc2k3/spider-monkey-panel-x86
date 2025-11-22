@@ -14,8 +14,6 @@
 #include <panel/user_message.h>
 #include <timeout/timer_interface.h>
 
-#include <js/Initialization.h>
-
 using namespace smp;
 
 namespace

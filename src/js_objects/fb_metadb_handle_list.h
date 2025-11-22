@@ -1,10 +1,6 @@
 #pragma once
 #include <js_objects/object_base.h>
 
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <js/Proxy.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
-
 namespace mozjs
 {
 	class JsFbMetadbHandle;

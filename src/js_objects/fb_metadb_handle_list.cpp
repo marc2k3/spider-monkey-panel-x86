@@ -12,12 +12,6 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <js/Conversions.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
-
-#include <ppl.h>
-
 using namespace smp;
 
 namespace

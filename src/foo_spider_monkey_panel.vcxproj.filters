@@ -968,6 +968,7 @@
     <ClInclude Include="com_utils\track_drop_target.h">
       <Filter>com_utils</Filter>
     </ClInclude>
+    <ClInclude Include="mozjs.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="js_engine">

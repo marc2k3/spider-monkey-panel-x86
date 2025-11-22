@@ -2,10 +2,6 @@
 #include <com_utils/com_destruction_handler.h>
 #include <js_objects/object_base.h>
 
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <js/Proxy.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
-
 namespace mozjs
 {
 	/// @details Takes ownership, calls Release() at the end

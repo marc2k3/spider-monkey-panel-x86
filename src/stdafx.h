@@ -30,6 +30,8 @@
 #include <variant>
 #include <vector>
 
+#include <ppl.h>
+
 #include <WinSock2.h>
 #include <Windows.h>
 #include <windowsx.h>
@@ -63,19 +65,8 @@
 #include <atltypes.h>
 #include <atlwin.h>
 
-// 4251: dll interface warning
-#define SMP_MJS_SUPPRESS_WARNINGS_PUSH \
-	__pragma(warning(push))        \
-	__pragma(warning(disable : 4251))
-
-#define SMP_MJS_SUPPRESS_WARNINGS_POP \
-	__pragma(warning(pop))
-
 // Mozilla SpiderMonkey
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <jsapi.h>
-#include <jsfriendapi.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
+#include "mozjs.hpp"
 
 // fmt
 #define FMT_HEADER_ONLY

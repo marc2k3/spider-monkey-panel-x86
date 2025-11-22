@@ -2,10 +2,6 @@
 #include <convert/js_to_native.h>
 #include <convert/native_to_js.h>
 
-class JSFreeOp;
-struct JSContext;
-class JSObject;
-
 namespace mozjs
 {
 

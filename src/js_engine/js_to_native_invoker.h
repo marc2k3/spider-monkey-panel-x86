@@ -5,10 +5,6 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <js/Wrapper.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
-
 namespace mozjs::internal
 {
 

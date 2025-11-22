@@ -1,16 +1,9 @@
 #include <stdafx.h>
-
 #include "js_internal_global.h"
 
+#include <2K3/TextFile.hpp>
 #include <js_engine/js_realm_inner.h>
 #include <js_utils/cached_utf8_paths_hack.h>
-
-#include <2K3/TextFile.hpp>
-
-SMP_MJS_SUPPRESS_WARNINGS_PUSH
-#include <js/CompilationAndEvaluation.h>
-#include <js/SourceText.h>
-SMP_MJS_SUPPRESS_WARNINGS_POP
 
 using namespace smp;
 
