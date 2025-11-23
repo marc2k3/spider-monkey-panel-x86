@@ -2,8 +2,6 @@
 #include <js_engine/js_gc.h>
 #include <js_engine/js_monitor.h>
 
-struct JSContext;
-
 namespace smp
 {
 

@@ -1,7 +1,5 @@
 #pragma once
 
-struct JSContext;
-
 namespace mozjs
 {
 

@@ -2,15 +2,6 @@
 #include <js_engine/js_realm_inner.h>
 #include <js_utils/js_prototype_helpers.h>
 
-class JSObject;
-struct JSContext;
-struct JSClass;
-
-namespace js
-{
-	class ProxyOptions;
-}
-
 namespace mozjs
 {
 	/*

@@ -1,8 +1,5 @@
 #pragma once
-
 #include <js_utils/js_error_helper.h>
-
-struct JSContext;
 
 namespace mozjs
 {
