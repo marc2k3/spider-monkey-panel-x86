@@ -44,7 +44,7 @@ namespace smp::config::binary
 		}
 		catch (const pfc::exception& e)
 		{
-			throw qwr::QwrException(e.what());
+			throw QwrException(e.what());
 		}
 	}
 
@@ -99,7 +99,7 @@ namespace smp::config::binary
 		}
 		catch (const pfc::exception& e)
 		{
-			throw qwr::QwrException(e.what());
+			throw QwrException(e.what());
 		}
 	}
 }

@@ -15,19 +15,19 @@ namespace
 	{
 		try
 		{
-			qwr::QwrException::ExpectTrue(fs::exists(packageDir),
+			QwrException::ExpectTrue(fs::exists(packageDir),
 										"Can't find the required package: `{}`",
 										packageDir.u8string());
 
 			const auto packageJsonFile = packageDir / "package.json";
-			qwr::QwrException::ExpectTrue(fs::exists(packageJsonFile), "Corrupted package: can't find `package.json`");
+			QwrException::ExpectTrue(fs::exists(packageJsonFile), "Corrupted package: can't find `package.json`");
 
 			parsedSettings.scriptPath = (packageDir / config::GetRelativePathToMainFile());
 			parsedSettings.isSample = (packageDir.parent_path() == path::Packages_Sample());
 
 			const auto str = TextFile(packageJsonFile.native()).read();
 			const auto jsonMain = JSON::parse(str);
-			qwr::QwrException::ExpectTrue(jsonMain.is_object(), "Corrupted `package.json`: not a JSON object");
+			QwrException::ExpectTrue(jsonMain.is_object(), "Corrupted `package.json`: not a JSON object");
 
 			parsedSettings.packageId = jsonMain.at("id").get<std::string>();
 			parsedSettings.scriptName = jsonMain.at("name").get<std::string>();
@@ -39,11 +39,11 @@ namespace
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 		catch (const JSON::exception& e)
 		{
-			throw qwr::QwrException("Corrupted `package.json`: {}", e.what());
+			throw QwrException("Corrupted `package.json`: {}", e.what());
 		}
 	}
 
@@ -52,14 +52,14 @@ namespace
 		namespace fs = std::filesystem;
 
 		assert(parsedSettings.scriptPath);
-		qwr::QwrException::ExpectTrue(!parsedSettings.scriptPath->empty(), "Corrupted settings: `scriptPath` is empty");
+		QwrException::ExpectTrue(!parsedSettings.scriptPath->empty(), "Corrupted settings: `scriptPath` is empty");
 
 		try
 		{
 			auto jsonMain = JSON::object();
 
 			assert(parsedSettings.packageId);
-			qwr::QwrException::ExpectTrue(!parsedSettings.packageId->empty(), "Corrupted settings: `id` is empty");
+			QwrException::ExpectTrue(!parsedSettings.packageId->empty(), "Corrupted settings: `id` is empty");
 
 			jsonMain.push_back({ "id", *parsedSettings.packageId });
 			jsonMain.push_back({ "name", parsedSettings.scriptName });
@@ -97,11 +97,11 @@ namespace
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 		catch (const JSON::exception& e)
 		{
-			throw qwr::QwrException("Corrupted settings: {}", e.what());
+			throw QwrException("Corrupted settings: {}", e.what());
 		}
 	}
 }
@@ -135,7 +135,7 @@ namespace smp::config
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 
 		return settings;
@@ -157,7 +157,7 @@ namespace smp::config
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 
 		return std::nullopt;

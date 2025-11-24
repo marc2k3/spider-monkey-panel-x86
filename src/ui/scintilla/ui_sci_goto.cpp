@@ -28,7 +28,7 @@ LRESULT CDialogGoto::OnInitDialog(HWND, LPARAM)
 {
 	uSetWindowText(GetDlgItem(IDC_EDIT_LINENUMBER), std::to_string(curLineNumber_).c_str());
 
-	hookId_ = qwr::HookHandler::GetInstance().RegisterHook(
+	hookId_ = QwrHookHandler::GetInstance().RegisterHook(
 		[hParent = m_hWnd](int code, WPARAM wParam, LPARAM lParam) {
 			GetMsgProc(code, wParam, lParam, hParent);
 		});
@@ -40,7 +40,7 @@ void CDialogGoto::OnDestroy()
 {
 	if (hookId_)
 	{
-		qwr::HookHandler::GetInstance().UnregisterHook(hookId_);
+		QwrHookHandler::GetInstance().UnregisterHook(hookId_);
 		hookId_ = 0;
 	}
 }
@@ -50,7 +50,7 @@ LRESULT CDialogGoto::OnCloseCmd(WORD, WORD wID, HWND)
 	if (wID == IDOK)
 	{
 		const auto text = pfc::getWindowText(GetDlgItem(IDC_EDIT_LINENUMBER));
-		const auto numRet = qwr::string::GetNumber<uint32_t>(text.get_ptr());
+		const auto numRet = qwr::GetNumber<uint32_t>(text.get_ptr());
 		if (numRet)
 		{
 			::SendMessage(hParent_, CScintillaGotoImpl::GetGotoMsg(), (WPARAM)GotoMsg::PerformGoto, (LPARAM)*numRet);

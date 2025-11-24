@@ -17,7 +17,7 @@ namespace
 			}
 		}();
 
-		throw qwr::QwrException(
+		throw QwrException(
 			"WinAPI error:\n"
 			" {} failed with error ({:#x}):\n"
 			"  {}",
@@ -28,7 +28,7 @@ namespace
 	}
 }
 
-namespace qwr::error
+namespace qwr
 {
 #pragma warning(push)
 #pragma warning(disable : 28196) // The expression does not evaluate to true
@@ -62,5 +62,4 @@ namespace qwr::error
 		CheckHR(HRESULT_FROM_WIN32(winErrorCode), functionName);
 	}
 #pragma warning(pop)
-
 }

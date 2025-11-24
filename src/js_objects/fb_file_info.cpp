@@ -83,7 +83,7 @@ JsFbFileInfo::JsFbFileInfo(JSContext* cx, metadb_info_container::ptr containerIn
 std::unique_ptr<mozjs::JsFbFileInfo>
 JsFbFileInfo::CreateNative(JSContext* cx, metadb_info_container::ptr containerInfo)
 {
-	qwr::QwrException::ExpectTrue(containerInfo.is_valid(), "Internal error: metadb_info_container object is null");
+	QwrException::ExpectTrue(containerInfo.is_valid(), "Internal error: metadb_info_container object is null");
 
 	return std::unique_ptr<JsFbFileInfo>(new JsFbFileInfo(cx, containerInfo));
 }
@@ -100,14 +100,14 @@ int32_t JsFbFileInfo::InfoFind(const std::string& name)
 
 std::string JsFbFileInfo::InfoName(uint32_t index)
 {
-	qwr::QwrException::ExpectTrue(index < fileInfo_.info_get_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(index < fileInfo_.info_get_count(), "Index is out of bounds");
 
 	return fileInfo_.info_enum_name(index);
 }
 
 std::string JsFbFileInfo::InfoValue(uint32_t index)
 {
-	qwr::QwrException::ExpectTrue(index < fileInfo_.info_get_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(index < fileInfo_.info_get_count(), "Index is out of bounds");
 
 	return fileInfo_.info_enum_value(index);
 }
@@ -120,22 +120,22 @@ int32_t JsFbFileInfo::MetaFind(const std::string& name)
 
 std::string JsFbFileInfo::MetaName(uint32_t index)
 {
-	qwr::QwrException::ExpectTrue(index < fileInfo_.meta_get_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(index < fileInfo_.meta_get_count(), "Index is out of bounds");
 
 	return fileInfo_.meta_enum_name(index);
 }
 
 std::string JsFbFileInfo::MetaValue(uint32_t infoIndex, uint32_t valueIndex)
 {
-	qwr::QwrException::ExpectTrue(infoIndex < fileInfo_.meta_get_count(), "Index is out of bounds");
-	qwr::QwrException::ExpectTrue(valueIndex < fileInfo_.meta_enum_value_count(infoIndex), "Index is out of bounds");
+	QwrException::ExpectTrue(infoIndex < fileInfo_.meta_get_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(valueIndex < fileInfo_.meta_enum_value_count(infoIndex), "Index is out of bounds");
 
 	return fileInfo_.meta_enum_value(infoIndex, valueIndex);
 }
 
 uint32_t JsFbFileInfo::MetaValueCount(uint32_t index)
 {
-	qwr::QwrException::ExpectTrue(index < fileInfo_.meta_get_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(index < fileInfo_.meta_get_count(), "Index is out of bounds");
 
 	return fileInfo_.meta_enum_value_count(index);
 }

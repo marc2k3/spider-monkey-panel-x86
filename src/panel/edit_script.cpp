@@ -30,7 +30,7 @@ namespace smp::panel
 				}
 
 				const auto filePath = *settings.scriptPath;
-				qwr::QwrException::ExpectTrue(fs::exists(filePath), "Sample script is missing: {}", filePath.u8string());
+				QwrException::ExpectTrue(fs::exists(filePath), "Sample script is missing: {}", filePath.u8string());
 
 				smp::EditTextFile(hParent, filePath, true, true);
 				break;
@@ -38,7 +38,7 @@ namespace smp::panel
 			case config::ScriptSourceType::File:
 			{
 				const auto filePath = *settings.scriptPath;
-				qwr::QwrException::ExpectTrue(fs::exists(filePath), "Script is missing: {}", filePath.u8string());
+				QwrException::ExpectTrue(fs::exists(filePath), "Script is missing: {}", filePath.u8string());
 
 				smp::EditTextFile(hParent, filePath, true, true);
 				break;
@@ -57,7 +57,7 @@ namespace smp::panel
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 	}
 
@@ -82,12 +82,12 @@ namespace smp::panel
 				}
 			}
 
-			qwr::QwrException::ExpectTrue(fs::exists(script), "Script is missing: {}", script.u8string());
+			QwrException::ExpectTrue(fs::exists(script), "Script is missing: {}", script.u8string());
 			smp::EditTextFile(hParent, script, true, true);
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 	}
 }

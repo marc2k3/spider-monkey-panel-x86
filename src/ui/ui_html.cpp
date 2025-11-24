@@ -34,22 +34,22 @@ LRESULT CDialogHtml::OnInitDialog(HWND, LPARAM)
 
 		IObjectWithSitePtr pOWS = nullptr;
 		HRESULT hr = wndIE.QueryHost(IID_IObjectWithSite, reinterpret_cast<void**>(&pOWS));
-		qwr::error::CheckHR(hr, "QueryHost");
+		qwr::CheckHR(hr, "QueryHost");
 
 		hr = pOWS->SetSite(static_cast<IServiceProvider*>(this));
-		qwr::error::CheckHR(hr, "SetSite");
+		qwr::CheckHR(hr, "SetSite");
 
 		IWebBrowserPtr pBrowser;
 		hr = wndIE.QueryControl(&pBrowser);
-		qwr::error::CheckHR(hr, "QueryControl");
+		qwr::CheckHR(hr, "QueryControl");
 
 		_variant_t v;
 		hr = pBrowser->Navigate(_bstr_t(L"about:blank"), &v, &v, &v, &v); ///< Document object is only available after Navigate
-		qwr::error::CheckHR(hr, "Navigate");
+		qwr::CheckHR(hr, "Navigate");
 
 		IDispatchPtr pDocDispatch;
 		hr = pBrowser->get_Document(&pDocDispatch);
-		qwr::error::CheckHR(hr, "get_Document");
+		qwr::CheckHR(hr, "get_Document");
 
 		IHTMLDocument2Ptr pDocument = pDocDispatch;
 
@@ -58,14 +58,14 @@ LRESULT CDialogHtml::OnInitDialog(HWND, LPARAM)
 			IOleObjectPtr pOleObject(pDocument);
 			IOleClientSitePtr pClientSite;
 			hr = pOleObject->GetClientSite(&pClientSite);
-			qwr::error::CheckHR(hr, "GetClientSite");
+			qwr::CheckHR(hr, "GetClientSite");
 
 			pDefaultUiHandler_ = pClientSite;
 
 			// Set the new custom IDocHostUIHandler
 			ICustomDocPtr pCustomDoc(pDocument);
 			hr = pCustomDoc->SetUIHandler(this);
-			qwr::error::CheckHR(hr, "SetUIHandler");
+			qwr::CheckHR(hr, "SetUIHandler");
 		}
 
 		{
@@ -75,12 +75,12 @@ LRESULT CDialogHtml::OnInitDialog(HWND, LPARAM)
 		if (static_cast<std::wstring_view>(htmlCodeOrPath_).starts_with(L"file://"))
 		{
 			hr = pBrowser->Navigate(_bstr_t(htmlCodeOrPath_.c_str()), &v, &v, &v, &v);
-			qwr::error::CheckHR(hr, "Navigate");
+			qwr::CheckHR(hr, "Navigate");
 		}
 		else
 		{
 			hr = pDocument->put_designMode(_bstr_t(L"on"));
-			qwr::error::CheckHR(hr, "put_designMode");
+			qwr::CheckHR(hr, "put_designMode");
 
 			SAFEARRAY* pSaStrings = SafeArrayCreateVector(VT_VARIANT, 0, 1);
 			auto autoPsa = wil::scope_exit([pSaStrings]() {
@@ -89,22 +89,22 @@ LRESULT CDialogHtml::OnInitDialog(HWND, LPARAM)
 
 			VARIANT* pSaVar = nullptr;
 			hr = SafeArrayAccessData(pSaStrings, reinterpret_cast<void**>(&pSaVar));
-			qwr::error::CheckHR(hr, "SafeArrayAccessData");
+			qwr::CheckHR(hr, "SafeArrayAccessData");
 
 			_bstr_t bstr(htmlCodeOrPath_.c_str());
 			pSaVar->vt = VT_BSTR;
 			pSaVar->bstrVal = bstr.Detach();
 			hr = SafeArrayUnaccessData(pSaStrings);
-			qwr::error::CheckHR(hr, "SafeArrayUnaccessData");
+			qwr::CheckHR(hr, "SafeArrayUnaccessData");
 
 			hr = pDocument->write(pSaStrings);
-			qwr::error::CheckHR(hr, "write");
+			qwr::CheckHR(hr, "write");
 
 			hr = pDocument->put_designMode(_bstr_t(L"off"));
-			qwr::error::CheckHR(hr, "put_designMode");
+			qwr::CheckHR(hr, "put_designMode");
 
 			hr = pDocument->close();
-			qwr::error::CheckHR(hr, "close");
+			qwr::CheckHR(hr, "close");
 		}
 
 		wndIE.SetFocus();
@@ -115,7 +115,7 @@ LRESULT CDialogHtml::OnInitDialog(HWND, LPARAM)
 		return -1;
 	}
 
-	hookId_ = qwr::HookHandler::GetInstance().RegisterHook(
+	hookId_ = QwrHookHandler::GetInstance().RegisterHook(
 		[hIE, pThis = this](int code, WPARAM wParam, LPARAM lParam) {
 			GetMsgProc(code, wParam, lParam, hIE, pThis);
 		});
@@ -128,7 +128,7 @@ LRESULT CDialogHtml::OnDestroyDialog()
 {
 	if (hookId_)
 	{
-		qwr::HookHandler::GetInstance().UnregisterHook(hookId_);
+		QwrHookHandler::GetInstance().UnregisterHook(hookId_);
 		hookId_ = 0;
 	}
 
@@ -487,7 +487,7 @@ void CDialogHtml::ParseOptions(JS::HandleValue options)
 
 	if (!options.isObject())
 	{
-		throw qwr::QwrException("options argument is not an object");
+		throw QwrException("options argument is not an object");
 	}
 
 	JS::RootedObject jsObject(pJsCtx_, &options.toObject());

@@ -49,7 +49,7 @@ private:
 	bool Initialize() noexcept;
 	void Finalize() noexcept;
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void StartHeartbeatThread() noexcept;
 	void StopHeartbeatThread() noexcept;
 

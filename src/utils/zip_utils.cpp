@@ -11,7 +11,7 @@ namespace
 		if (!mzBool)
 		{
 			const auto introMessage = fmt::format(fmt::runtime(introMessageFmt), std::forward<Args>(introMessageFmtArgs)...);
-			throw qwr::QwrException("{}{} failed with error {:#x}: {}", introMessage, functionName, static_cast<int>(mzZip.m_last_error), mz_zip_get_error_string(mzZip.m_last_error));
+			throw QwrException("{}{} failed with error {:#x}: {}", introMessage, functionName, static_cast<int>(mzZip.m_last_error), mz_zip_get_error_string(mzZip.m_last_error));
 		}
 	}
 }
@@ -24,13 +24,13 @@ namespace smp
 		{
 			if (fs::exists(zipFile_))
 			{
-				qwr::QwrException::ExpectTrue(fs::is_regular_file(zipFile_), "Can't create zip file: non-deletable item with the same name already exists");
+				QwrException::ExpectTrue(fs::is_regular_file(zipFile_), "Can't create zip file: non-deletable item with the same name already exists");
 				fs::remove(zipFile_);
 			}
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 
 		const auto zRet = mz_zip_writer_init_file(pZip_.get(), zipFile_.u8string().c_str(), 0);
@@ -91,7 +91,7 @@ namespace smp
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 	}
 
@@ -108,12 +108,12 @@ namespace smp
 	{
 		try
 		{
-			qwr::QwrException::ExpectTrue(fs::exists(zipFile), "File does not exist");
-			qwr::QwrException::ExpectTrue(fs::is_regular_file(zipFile), "File is not a zip archive");
+			QwrException::ExpectTrue(fs::exists(zipFile), "File does not exist");
+			QwrException::ExpectTrue(fs::is_regular_file(zipFile), "File is not a zip archive");
 
 			if (fs::exists(dstFolder))
 			{
-				qwr::QwrException::ExpectTrue(fs::is_directory(dstFolder), "Destination is not a folder");
+				QwrException::ExpectTrue(fs::is_directory(dstFolder), "Destination is not a folder");
 			}
 			else
 			{
@@ -160,7 +160,7 @@ namespace smp
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 	}
 }

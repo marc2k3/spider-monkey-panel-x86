@@ -207,15 +207,15 @@ void Plman::PrepareForGc()
 
 void Plman::AddItemToPlaybackQueue(JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	m_api->queue_add_item(handle->GetHandle());
 }
 
 void Plman::AddLocations(uint32_t playlistIndex, JS::HandleValue locations, bool select)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "playlistIndex is invalid");
-	qwr::QwrException::ExpectTrue(
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "playlistIndex is invalid");
+	QwrException::ExpectTrue(
 		!WI_IsFlagSet(m_api->playlist_lock_get_filter_mask(playlistIndex), playlist_lock::filter_add),
 		"a playlist lock prevents adding new items to the specified playlistIndex"
 	);
@@ -250,7 +250,7 @@ void Plman::AddLocationsWithOpt(size_t optArgCount, uint32_t playlistIndex, JS::
 	case 1:
 		return AddLocations(playlistIndex, locations);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -281,7 +281,7 @@ uint32_t Plman::CreateAutoPlaylist(uint32_t playlistIndex, const std::string& na
 	catch (const pfc::exception& e)
 	{
 		m_api->remove_playlist(upos);
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 }
 
@@ -296,7 +296,7 @@ uint32_t Plman::CreateAutoPlaylistWithOpt(size_t optArgCount, uint32_t playlistI
 	case 2:
 		return CreateAutoPlaylist(playlistIndex, name, query);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -314,7 +314,7 @@ uint32_t Plman::CreatePlaylist(uint32_t playlistIndex, const std::string& name)
 
 uint32_t Plman::DuplicatePlaylist(uint32_t from, const std::string& name)
 {
-	qwr::QwrException::ExpectTrue(from < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(from < m_api->get_playlist_count(), "Index is out of bounds");
 
 	pfc::string8 new_name(name.c_str());
 
@@ -340,7 +340,7 @@ uint32_t Plman::DuplicatePlaylistWithOpt(size_t optArgCount, uint32_t from, cons
 	case 1:
 		return DuplicatePlaylist(from);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -374,7 +374,7 @@ uint32_t Plman::FindOrCreatePlaylist(const std::string& name, bool unlocked)
 
 int32_t Plman::FindPlaybackQueueItemIndex(JsFbMetadbHandle* handle, uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	t_playback_queue_item item;
 	item.m_handle = handle->GetHandle();
@@ -398,7 +398,7 @@ void Plman::FlushPlaybackQueue()
 
 std::string Plman::GetGUID(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	const auto guid = m_api->playlist_get_guid(playlistIndex);
 	return pfc::print_guid(guid).get_ptr();
@@ -453,7 +453,7 @@ JSObject* Plman::GetPlaylistItems(uint32_t playlistIndex)
 
 std::optional<pfc::string8> Plman::GetPlaylistLockName(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	pfc::string8 lockName;
 	if (m_api->playlist_lock_query_name(playlistIndex, lockName))
@@ -464,7 +464,7 @@ std::optional<pfc::string8> Plman::GetPlaylistLockName(uint32_t playlistIndex)
 
 JS::Value Plman::GetPlaylistLockedActions(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	Strings actions;
 	const auto lockMask = m_api->playlist_lock_get_filter_mask(playlistIndex);
@@ -500,7 +500,7 @@ JSObject* Plman::GetPlaylistSelectedItems(uint32_t playlistIndex)
 
 void Plman::InsertPlaylistItems(uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	pfc::bit_array_val selection(select);
 	m_api->playlist_insert_items(playlistIndex, base, handles->GetHandleList(), selection);
@@ -515,13 +515,13 @@ void Plman::InsertPlaylistItemsWithOpt(size_t optArgCount, uint32_t playlistInde
 	case 1:
 		return InsertPlaylistItems(playlistIndex, base, handles);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 void Plman::InsertPlaylistItemsFilter(uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	m_api->playlist_insert_items_filter(playlistIndex, base, handles->GetHandleList(), select);
 }
@@ -535,13 +535,13 @@ void Plman::InsertPlaylistItemsFilterWithOpt(size_t optArgCount, uint32_t playli
 	case 1:
 		return InsertPlaylistItemsFilter(playlistIndex, base, handles);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 bool Plman::IsAutoPlaylist(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	return autoplaylist_manager::get()->is_client_present(playlistIndex);
 }
@@ -553,21 +553,21 @@ bool Plman::IsPlaylistItemSelected(uint32_t playlistIndex, uint32_t playlistItem
 
 bool Plman::IsPlaylistLocked(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	return m_api->playlist_lock_is_present(playlistIndex);
 }
 
 bool Plman::IsRedoAvailable(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	return m_api->playlist_is_redo_available(playlistIndex);
 }
 
 bool Plman::IsUndoAvailable(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	return m_api->playlist_is_undo_available(playlistIndex);
 }
@@ -598,7 +598,7 @@ uint32_t Plman::PlaylistItemCount(uint32_t playlistIndex)
 
 void Plman::Redo(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(IsRedoAvailable(playlistIndex), "Redo is not available");
+	QwrException::ExpectTrue(IsRedoAvailable(playlistIndex), "Redo is not available");
 
 	m_api->playlist_redo_restore(playlistIndex);
 }
@@ -634,7 +634,7 @@ void Plman::RemovePlaylistSelectionWithOpt(size_t optArgCount, uint32_t playlist
 	case 1:
 		return RemovePlaylistSelection(playlistIndex);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -660,19 +660,19 @@ void Plman::SetPlaylistFocusItem(uint32_t playlistIndex, uint32_t playlistItemIn
 
 void Plman::SetPlaylistFocusItemByHandle(uint32_t playlistIndex, JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	m_api->playlist_set_focus_by_handle(playlistIndex, handle->GetHandle());
 }
 
 void Plman::SetPlaylistLockedActions(uint32_t playlistIndex, JS::HandleValue lockedActions)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
-	qwr::QwrException::ExpectTrue(lockedActions.isObjectOrNull(), "`lockedActions` argument is not an object nor null");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(lockedActions.isObjectOrNull(), "`lockedActions` argument is not an object nor null");
 
 	const auto is_my_lock = PlaylistLock::is_my_lock(playlistIndex);
 	const auto other_lock = m_api->playlist_lock_is_present(playlistIndex) && !is_my_lock;
-	qwr::QwrException::ExpectTrue(!other_lock, "This lock is owned by a different component");
+	QwrException::ExpectTrue(!other_lock, "This lock is owned by a different component");
 
 	uint32_t newLockMask{};
 
@@ -683,7 +683,7 @@ void Plman::SetPlaylistLockedActions(uint32_t playlistIndex, JS::HandleValue loc
 		for (const auto& action: lockedActionsVec)
 		{
 			const auto it = s_actionToMask.find(action);
-			qwr::QwrException::ExpectTrue(it != s_actionToMask.end(), "Unknown action name: {}", action);
+			QwrException::ExpectTrue(it != s_actionToMask.end(), "Unknown action name: {}", action);
 			newLockMask |= it->second;
 		}
 	}
@@ -707,7 +707,7 @@ void Plman::SetPlaylistLockedActionsWithOpt(size_t optArgCount, uint32_t playlis
 	case 1:
 		return SetPlaylistLockedActions(playlistIndex);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -731,7 +731,7 @@ void Plman::SetPlaylistSelectionSingle(uint32_t playlistIndex, uint32_t playlist
 
 bool Plman::ShowAutoPlaylistUI(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	auto api = autoplaylist_manager::get();
 	if (!api->is_client_present(playlistIndex))
@@ -759,7 +759,7 @@ bool Plman::SortByFormatWithOpt(size_t optArgCount, uint32_t playlistIndex, cons
 	case 1:
 		return SortByFormat(playlistIndex, pattern);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -786,7 +786,7 @@ bool Plman::SortByFormatV2WithOpt(size_t optArgCount, uint32_t playlistIndex, co
 	case 1:
 		return SortByFormatV2(playlistIndex, pattern);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -820,20 +820,20 @@ void Plman::SortPlaylistsByNameWithOpt(size_t optArgCount, int8_t direction)
 	case 1:
 		return SortPlaylistsByName();
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 void Plman::Undo(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(IsUndoAvailable(playlistIndex), "Undo is not available");
+	QwrException::ExpectTrue(IsUndoAvailable(playlistIndex), "Undo is not available");
 
 	m_api->playlist_undo_restore(playlistIndex);
 }
 
 void Plman::UndoBackup(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	m_api->playlist_undo_backup(playlistIndex);
 }
@@ -872,21 +872,21 @@ JSObject* Plman::get_PlaylistRecycler()
 
 void Plman::put_ActivePlaylist(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	m_api->set_active_playlist(playlistIndex);
 }
 
 void Plman::put_PlaybackOrder(uint32_t order)
 {
-	qwr::QwrException::ExpectTrue(order < m_api->playback_order_get_count(), "Unknown playback order id: {}", order);
+	QwrException::ExpectTrue(order < m_api->playback_order_get_count(), "Unknown playback order id: {}", order);
 
 	m_api->playback_order_set_active(order);
 }
 
 void Plman::put_PlayingPlaylist(uint32_t playlistIndex)
 {
-	qwr::QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(playlistIndex < m_api->get_playlist_count(), "Index is out of bounds");
 
 	m_api->set_playing_playlist(playlistIndex);
 }

@@ -69,12 +69,12 @@ namespace smp::config
 			case SettingsType::Json:
 				return smp::config::json::LoadSettings(reader, abort);
 			default:
-				throw qwr::QwrException("Unexpected panel settings format: {}", ver);
+				throw QwrException("Unexpected panel settings format: {}", ver);
 			}
 		}
 		catch (const pfc::exception& e)
 		{
-			throw qwr::QwrException(e.what());
+			throw QwrException(e.what());
 		}
 	}
 

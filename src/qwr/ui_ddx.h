@@ -1,6 +1,6 @@
 #pragma once
 
-namespace qwr::ui
+namespace qwr
 {
 	class IUiDdx
 	{

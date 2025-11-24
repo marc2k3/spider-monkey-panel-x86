@@ -85,7 +85,7 @@ size_t Gdi::GetInternalSize()
 JSObject* Gdi::CreateImage(uint32_t w, uint32_t h)
 {
 	std::unique_ptr<Gdiplus::Bitmap> img(new Gdiplus::Bitmap(w, h, PixelFormat32bppPARGB));
-	qwr::error::CheckGdiPlusObject(img);
+	qwr::CheckGdiPlusObject(img);
 
 	return JsGdiBitmap::CreateJs(m_ctx, std::move(img));
 }
@@ -104,7 +104,7 @@ JSObject* Gdi::FontWithOpt(size_t optArgCount, const std::wstring& fontName, uin
 	case 1:
 		return Font(fontName, pxSize);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -120,7 +120,7 @@ JSObject* Gdi::Image(const std::wstring& path)
 std::uint32_t Gdi::LoadImageAsync(uint32_t /*window_id*/, const std::wstring& path)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	static uint32_t s_task_id{};
 
@@ -132,7 +132,7 @@ std::uint32_t Gdi::LoadImageAsync(uint32_t /*window_id*/, const std::wstring& pa
 JSObject* Gdi::LoadImageAsyncV2(uint32_t /*window_id*/, const std::wstring& path)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	return mozjs::image::GetImagePromise(m_ctx, wnd, path);
 }

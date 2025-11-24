@@ -88,8 +88,8 @@ JsGdiFont::~JsGdiFont()
 std::unique_ptr<JsGdiFont>
 JsGdiFont::CreateNative(JSContext* cx, std::unique_ptr<Gdiplus::Font> pGdiFont, HFONT hFont, bool isManaged)
 {
-	qwr::QwrException::ExpectTrue(!!pGdiFont, "Internal error: Gdiplus::Font object is null");
-	qwr::QwrException::ExpectTrue(hFont, "Internal error: HFONT object is null");
+	QwrException::ExpectTrue(!!pGdiFont, "Internal error: Gdiplus::Font object is null");
+	QwrException::ExpectTrue(hFont, "Internal error: HFONT object is null");
 
 	return std::unique_ptr<JsGdiFont>(new JsGdiFont(cx, std::move(pGdiFont), hFont, isManaged));
 }
@@ -112,7 +112,7 @@ HFONT JsGdiFont::GetHFont() const
 JSObject* JsGdiFont::Constructor(JSContext* cx, const std::wstring& fontName, uint32_t pxSize, uint32_t style)
 {
 	auto pGdiFont = std::make_unique<Gdiplus::Font>(fontName.c_str(), static_cast<Gdiplus::REAL>(pxSize), style, Gdiplus::UnitPixel);
-	qwr::error::CheckGdiPlusObject(pGdiFont);
+	qwr::CheckGdiPlusObject(pGdiFont);
 
 	// Generate HFONT
 	// The benefit of replacing Gdiplus::Font::GetLogFontW is that you can get it work with CCF/OpenType fonts.
@@ -131,7 +131,7 @@ JSObject* JsGdiFont::Constructor(JSContext* cx, const std::wstring& fontName, ui
 		DEFAULT_QUALITY,
 		DEFAULT_PITCH | FF_DONTCARE,
 		fontName.c_str());
-	qwr::error::CheckWinApi(!!hFont, "CreateFont");
+	qwr::CheckWinApi(!!hFont, "CreateFont");
 	auto autoFont = wil::scope_exit([hFont]() {
 		DeleteObject(hFont);
 	});
@@ -152,7 +152,7 @@ JSObject* JsGdiFont::ConstructorWithOpt(JSContext* cx, size_t optArgCount, const
 	case 1:
 		return Constructor(cx, fontName, pxSize);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -169,10 +169,10 @@ std::wstring JsGdiFont::get_Name() const
 	Gdiplus::FontFamily fontFamily;
 	std::array<wchar_t, LF_FACESIZE> name{};
 	auto status = pGdi_->GetFamily(&fontFamily);
-	qwr::error::CheckGdi(status, "GetFamily");
+	qwr::CheckGdi(status, "GetFamily");
 
 	status = fontFamily.GetFamilyName(name.data(), LANG_NEUTRAL);
-	qwr::error::CheckGdi(status, "GetFamilyName");
+	qwr::CheckGdi(status, "GetFamilyName");
 
 	return std::wstring(name.data());
 }

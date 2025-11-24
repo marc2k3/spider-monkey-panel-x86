@@ -15,7 +15,7 @@ namespace mozjs::convert::to_native
 		T ToSimpleValue(JSContext* cx, const JS::HandleObject& jsObject)
 		{
 			auto pNative = mozjs::GetInnerInstancePrivate<std::remove_pointer_t<T>>(cx, jsObject);
-			qwr::QwrException::ExpectTrue(pNative, "Object is not of valid type");
+			QwrException::ExpectTrue(pNative, "Object is not of valid type");
 
 			return pNative;
 		}
@@ -91,7 +91,7 @@ namespace mozjs::convert::to_native
 		std::vector<T> ToVector(JSContext* cx, JS::HandleValue jsValue)
 		{
 			JS::RootedObject jsObject(cx, jsValue.toObjectOrNull());
-			qwr::QwrException::ExpectTrue(jsObject, "Value is not a JS object");
+			QwrException::ExpectTrue(jsObject, "Value is not a JS object");
 
 			return ToVector<T>(cx, jsObject);
 		}
@@ -101,7 +101,7 @@ namespace mozjs::convert::to_native
 		{
 			bool is{};
 			if (!JS::IsArrayObject(cx, jsObject, &is) || !is)
-				throw qwr::QwrException("Not a valid JS array");
+				throw QwrException("Not a valid JS array");
 	
 			uint32_t arraySize{};
 			if (!JS::GetArrayLength(cx, jsObject, &arraySize) || arraySize == 0)
@@ -111,11 +111,11 @@ namespace mozjs::convert::to_native
 			for (const auto i : ranges::views::indices(arraySize))
 			{
 				const bool ok = JS_GetElement(cx, jsObject, i, &arrayElement);
-				qwr::QwrException::ExpectTrue(ok, "Internal error: JS_GetElement failed");
+				QwrException::ExpectTrue(ok, "Internal error: JS_GetElement failed");
 
 				if constexpr (std::is_same_v<T, std::string>)
 				{
-					qwr::QwrException::ExpectTrue(arrayElement.isString(), "arrayElement is not a string");
+					QwrException::ExpectTrue(arrayElement.isString(), "arrayElement is not a string");
 				}
 
 				workerFunc(ToValue<T>(cx, arrayElement));
@@ -138,7 +138,7 @@ namespace mozjs::convert::to_native
 		{
 			if (!jsValue.isObjectOrNull())
 			{
-				throw qwr::QwrException("Value is not a JS object");
+				throw QwrException("Value is not a JS object");
 			}
 
 			if (jsValue.isNull())
@@ -188,6 +188,6 @@ namespace mozjs::convert::to_native
 			}
 		}
 
-		throw qwr::QwrException("Not a valid JS array");
+		throw QwrException("Not a valid JS array");
 	}
 }

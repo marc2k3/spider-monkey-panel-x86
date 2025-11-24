@@ -137,9 +137,10 @@ JSObject* GetImagePromise(JSContext* cx, HWND hWnd, const std::wstring& imagePat
 	JS::RootedObject jsObject(cx, JS::NewPromiseObject(cx, nullptr));
 	JsException::ExpectTrue(jsObject);
 
-	qwr::ThreadPool::GetInstance().AddTask([task = std::make_shared<ImageFetchTask>(cx, jsObject, hWnd, imagePath)] {
-		std::invoke(*task);
-	});
+	QwrThreadPool::GetInstance().AddTask([task = std::make_shared<ImageFetchTask>(cx, jsObject, hWnd, imagePath)]
+		{
+			std::invoke(*task);
+		});
 
 	return jsObject;
 }

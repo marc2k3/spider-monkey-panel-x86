@@ -123,13 +123,13 @@ pfc::string8 JsFbTitleFormat::EvalWithOpt(size_t optArgCount, bool force)
 	case 1:
 		return Eval();
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 pfc::string8 JsFbTitleFormat::EvalWithMetadb(JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	pfc::string8 text;
 	handle->GetHandle()->format_title(nullptr, text, titleFormatObject_, nullptr);
@@ -138,7 +138,7 @@ pfc::string8 JsFbTitleFormat::EvalWithMetadb(JsFbMetadbHandle* handle)
 
 JS::Value JsFbTitleFormat::EvalWithMetadbs(JsFbMetadbHandleList* handles)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	const auto& native = handles->GetHandleList();
 	const auto count = native.get_count();

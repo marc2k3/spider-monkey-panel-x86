@@ -11,7 +11,7 @@ namespace smp::com
 	IDropSourceImpl::IDropSourceImpl(HWND hWnd, IDataObject* pDataObject, size_t itemCount, bool showText, Gdiplus::Bitmap* pUserImage) : pDataObject_(pDataObject)
 	{
 		HRESULT hr = pDragSourceHelper_.CreateInstance(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
-		qwr::error::CheckHR(hr, "CreateInstance");
+		qwr::CheckHR(hr, "CreateInstance");
 
 		if (IDragSourceHelper2Ptr pDragSourceHelper2 = pDragSourceHelper_; pDragSourceHelper2)
 		{

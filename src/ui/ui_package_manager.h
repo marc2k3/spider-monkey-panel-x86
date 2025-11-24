@@ -81,7 +81,7 @@ private:
 private:
 	std::string focusedPackageId_;
 	int focusedPackageIdx_ = -1;
-	std::array<std::unique_ptr<qwr::ui::IUiDdx>, 1> ddx_;
+	std::array<std::unique_ptr<qwr::IUiDdx>, 1> ddx_;
 
 	std::vector<PackageData> packages_;
 	CListBox packagesListBox_;

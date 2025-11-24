@@ -166,7 +166,7 @@ JSObject* GetAlbumArtPromise(JSContext* cx, HWND hWnd, const metadb_handle_ptr& 
 	JS::RootedObject jsObject(cx, JS::NewPromiseObject(cx, nullptr));
 	JsException::ExpectTrue(jsObject);
 
-	qwr::ThreadPool::GetInstance().AddTask([task = std::make_shared<AlbumArtV2FetchTask>(cx, jsObject, hWnd, handle, art_id, want_stub, only_embed)]
+	QwrThreadPool::GetInstance().AddTask([task = std::make_shared<AlbumArtV2FetchTask>(cx, jsObject, hWnd, handle, art_id, want_stub, only_embed)]
 		{
 			std::invoke(*task);
 		});

@@ -42,7 +42,7 @@ namespace
 	{
 		mozjs::JsEngine::GetInstance().PrepareForExit();
 		smp::EventDispatcher::Get().NotifyAllAboutExit();
-		qwr::ThreadPool::GetInstance().Finalize();
+		QwrThreadPool::GetInstance().Finalize();
 		Scintilla_ReleaseResources();
 		rich_edit_ctrl.reset();
 		typelib_smp.reset();

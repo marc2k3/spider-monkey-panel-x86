@@ -140,7 +140,7 @@ void JsGc::UpdateGcConfig()
 	MEMORYSTATUSEX statex = { 0 };
 	statex.dwLength = sizeof(statex);
 	BOOL bRet = GlobalMemoryStatusEx(&statex);
-	qwr::error::CheckWinApi(!!bRet, "GlobalMemoryStatusEx");
+	qwr::CheckWinApi(!!bRet, "GlobalMemoryStatusEx");
 
 	if (!smp_advconf::gc_max_heap.get())
 	{ // detect settings automatically

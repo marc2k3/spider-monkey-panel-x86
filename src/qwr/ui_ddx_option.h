@@ -2,7 +2,7 @@
 #include <qwr/ui_ddx.h>
 #include <qwr/ui_option.h>
 
-namespace qwr::ui
+namespace qwr
 {
 	class IUiDdxOption
 	{

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace qwr::error
+namespace qwr
 {
 	_Post_satisfies_(SUCCEEDED(hr)) void CheckHR(HRESULT hr, std::string_view functionName);
 

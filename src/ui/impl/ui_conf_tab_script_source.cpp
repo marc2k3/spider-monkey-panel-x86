@@ -12,7 +12,7 @@ namespace
 using namespace smp;
 using namespace smp::ui;
 
-/// @throw qwr::QwrException
+/// @throw QwrException
 std::vector<CConfigTabScriptSource::SampleComboBoxElem> GetSampleFileData()
 {
 	namespace fs = std::filesystem;
@@ -38,7 +38,7 @@ std::vector<CConfigTabScriptSource::SampleComboBoxElem> GetSampleFileData()
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		throw qwr::QwrException(e);
+		throw QwrException(e);
 	}
 }
 
@@ -61,10 +61,10 @@ CConfigTabScriptSource::CConfigTabScriptSource(CDialogConf& parent, config::Pars
 	: parent_(parent)
 	, settings_(settings)
 	, ddx_({
-		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(path_, IDC_TEXTEDIT_SRC_PATH),
-		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(packageName_, IDC_TEXTEDIT_SRC_PACKAGE),
-		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_ComboBox>(sampleIdx_, IDC_COMBO_SRC_SAMPLE),
-		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_RadioRange>(
+		qwr::CreateUiDdx<qwr::UiDdx_TextEdit>(path_, IDC_TEXTEDIT_SRC_PATH),
+		qwr::CreateUiDdx<qwr::UiDdx_TextEdit>(packageName_, IDC_TEXTEDIT_SRC_PACKAGE),
+		qwr::CreateUiDdx<qwr::UiDdx_ComboBox>(sampleIdx_, IDC_COMBO_SRC_SAMPLE),
+		qwr::CreateUiDdx<qwr::UiDdx_RadioRange>(
 			sourceTypeId_,
 			std::initializer_list<int>{
 				IDC_RADIO_SRC_SAMPLE,
@@ -81,7 +81,7 @@ CConfigTabScriptSource::CConfigTabScriptSource(CDialogConf& parent, config::Pars
 		{
 			sampleData_ = GetSampleFileData();
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 		}
@@ -219,7 +219,7 @@ void CConfigTabScriptSource::OnScriptSrcChange(UINT /*uNotifyCode*/, int nID, CW
 
 			return;
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 		}
@@ -338,7 +338,7 @@ void CConfigTabScriptSource::OnEditScript(UINT /*uNotifyCode*/, int /*nID*/, CWi
 		{
 			panel::EditScript(*this, settings_);
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 		}
@@ -379,7 +379,7 @@ void CConfigTabScriptSource::OnEditScriptWith(UINT uNotifyCode, int nID, CWindow
 				const auto wpath = qwr::ToWide(native);
 
 				std::error_code ec;
-				qwr::QwrException::ExpectTrue(fs::is_regular_file(wpath, ec), "Invalid path");
+				QwrException::ExpectTrue(fs::is_regular_file(wpath, ec), "Invalid path");
 				fb2k::configStore::get()->setConfigString("smp.editor.path", native);
 			};
 

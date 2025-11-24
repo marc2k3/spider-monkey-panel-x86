@@ -30,7 +30,7 @@ SerializedJsValue SerializeJsValue(JSContext* cx, JS::HandleValue jsValue)
 	}
 	else
 	{
-		throw qwr::QwrException("Unsupported value type");
+		throw QwrException("Unsupported value type");
 	}
 
 	return serializedValue;

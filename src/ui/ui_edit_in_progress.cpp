@@ -171,8 +171,8 @@ void CEditInProgress::EditorHandler()
 		ShExecInfo.nShow = SW_SHOW;
 
 		BOOL bRet = ShellExecuteEx(&ShExecInfo);
-		qwr::error::CheckWinApi(bRet, "ShellExecuteEx");
-		qwr::QwrException::ExpectTrue(!!ShExecInfo.hProcess, "Failed to get editor handle");
+		qwr::CheckWinApi(bRet, "ShellExecuteEx");
+		QwrException::ExpectTrue(!!ShExecInfo.hProcess, "Failed to get editor handle");
 
 		WaitForInputIdle(ShExecInfo.hProcess, INFINITE);
 

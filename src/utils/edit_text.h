@@ -2,9 +2,9 @@
 
 namespace smp
 {
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void EditTextFile(HWND hParent, const std::filesystem::path& file, bool isPanelScript, bool isModal);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void EditText(HWND hParent, std::string& text, bool isPanelScript);
 }

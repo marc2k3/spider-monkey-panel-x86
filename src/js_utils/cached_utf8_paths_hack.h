@@ -8,7 +8,7 @@ namespace mozjs::hack
 using Map = std::unordered_map<std::string, std::string>;
 
 /// @brief This is a hack, don't use it unless it's REALLY necessary
-/// @throw qwr::QwrException
+/// @throw QwrException
 /// @throw smp::JsException
 [[nodiscard]] std::string CacheUtf8Path(std::string_view path);
 

@@ -67,7 +67,7 @@ namespace mozjs
 
 		// Creates object T.
 		// Must always return a valid object.
-		// Throw smp::JsException or qwr::QwrException on error.
+		// Throw smp::JsException or QwrException on error.
 		static std::unique_ptr<T> CreateNative(JSContext* cx, Args... args);
 
 		// Returns the size of properties of T, that can't be calculated by sizeof(T).
@@ -82,7 +82,7 @@ namespace mozjs
 
 		// Finalizes the JS object that contains T.
 		// Called before JS object is wrapped in proxy (if `HasProxy` is true).
-		// Throw smp::JsException or qwr::QwrException on error.
+		// Throw smp::JsException or QwrException on error.
 		static void PostCreate(JSContext* cx, JS::HandleObject self);
 	*/
 

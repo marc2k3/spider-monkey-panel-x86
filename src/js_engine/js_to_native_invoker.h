@@ -203,13 +203,13 @@ void InvokeNativeCallback_Member(JSContext* cx,
 	JS::CallArgs jsArgs = JS::CallArgsFromVp(argc, vp);
 	if (jsArgs.length() < (maxArgCount - OptArgCount))
 	{
-		throw qwr::QwrException("Invalid number of arguments");
+		throw QwrException("Invalid number of arguments");
 	}
 
 	BaseClass* baseClass = InvokeNativeCallback_GetThisObject<BaseClass>(cx, jsArgs.thisv());
 	if (!baseClass)
 	{
-		throw qwr::QwrException("Invalid `this` context");
+		throw QwrException("Invalid `this` context");
 	}
 
 	JS::RootedValueVector handleValueVector(cx);
@@ -262,7 +262,7 @@ void InvokeNativeCallback_Static(JSContext* cx,
 	JS::CallArgs jsArgs = JS::CallArgsFromVp(argc, vp);
 	if (jsArgs.length() < (maxArgCount - OptArgCount))
 	{
-		throw qwr::QwrException("Invalid number of arguments");
+		throw QwrException("Invalid number of arguments");
 	}
 
 	JS::RootedValueVector handleValueVector(cx);

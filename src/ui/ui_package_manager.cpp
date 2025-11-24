@@ -13,7 +13,7 @@ namespace smp::ui
 
 CDialogPackageManager::CDialogPackageManager(const std::string& currentPackageId)
 	: focusedPackageId_(currentPackageId)
-	, ddx_({ qwr::ui::CreateUiDdx<qwr::ui::UiDdx_ListBox>(focusedPackageIdx_, IDC_LIST_PACKAGES) })
+	, ddx_({ qwr::CreateUiDdx<qwr::UiDdx_ListBox>(focusedPackageIdx_, IDC_LIST_PACKAGES) })
 {
 }
 
@@ -43,9 +43,9 @@ LRESULT CDialogPackageManager::OnInitDialog(HWND, LPARAM)
 	try
 	{
 		HRESULT hr = pPackagesListBoxDrop_->RegisterDragDrop();
-		qwr::error::CheckHR(hr, "RegisterDragDrop");
+		qwr::CheckHR(hr, "RegisterDragDrop");
 	}
-	catch (qwr::QwrException& e)
+	catch (QwrException& e)
 	{
 		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 	}
@@ -130,7 +130,7 @@ void CDialogPackageManager::OnNewPackage(UINT /*uNotifyCode*/, int /*nID*/, CWin
 		UpdateListBoxFromData();
 		DoFullDdxToUi();
 	}
-	catch (const qwr::QwrException& e)
+	catch (const QwrException& e)
 	{
 		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 	}
@@ -190,7 +190,7 @@ void CDialogPackageManager::OnDeletePackage(UINT /*uNotifyCode*/, int /*nID*/, C
 	{
 		qwr::ReportFSErrorWithPopup(e);
 	}
-	catch (const qwr::QwrException& e)
+	catch (const QwrException& e)
 	{
 		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 	}
@@ -241,7 +241,7 @@ void CDialogPackageManager::OnExportPackage(UINT /*uNotifyCode*/, int /*nID*/, C
 			{
 				qwr::ReportFSErrorWithPopup(e);
 			}
-			catch (const qwr::QwrException& e)
+			catch (const QwrException& e)
 			{
 				qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 			}
@@ -268,14 +268,14 @@ void CDialogPackageManager::OnOpenFolder(UINT /*uNotifyCode*/, int /*nID*/, CWin
 
 		if ((int)hInstance < 32)
 		{ // As per WinAPI
-			qwr::error::CheckWin32((int)hInstance, "ShellExecute");
+			qwr::CheckWin32((int)hInstance, "ShellExecute");
 		}
 	}
 	catch (const fs::filesystem_error& e)
 	{
 		qwr::ReportFSErrorWithPopup(e);
 	}
-	catch (const qwr::QwrException& e)
+	catch (const QwrException& e)
 	{
 		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 	}
@@ -398,12 +398,12 @@ void CDialogPackageManager::LoadPackages()
 			try
 			{
 				const auto packagePathOpt = config::FindPackage(packageId);
-				qwr::QwrException::ExpectTrue(packagePathOpt.has_value(), "Could not find package with id: {}", packageId);
+				QwrException::ExpectTrue(packagePathOpt.has_value(), "Could not find package with id: {}", packageId);
 
 				const auto settings = config::GetPackageSettingsFromPath(*packagePathOpt);
 				parsedPackages.emplace_back(GeneratePackageData(settings));
 			}
-			catch (const qwr::QwrException& e)
+			catch (const QwrException& e)
 			{
 				PackageData packageData{
 					qwr::ToWide(fmt::format("{} (ERROR)", packageId)),
@@ -640,7 +640,7 @@ bool CDialogPackageManager::ImportPackage(const std::filesystem::path& path)
 	{
 		qwr::ReportFSErrorWithPopup(e);
 	}
-	catch (const qwr::QwrException& e)
+	catch (const QwrException& e)
 	{
 		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 	}
@@ -687,7 +687,7 @@ bool CDialogPackageManager::ConfirmPackageOverwrite(const std::filesystem::path&
 			}
 		}
 	}
-	catch (const qwr::QwrException&)
+	catch (const QwrException&)
 	{
 		// old package might be broken and unparseable,
 		// but we still need to confirm

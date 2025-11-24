@@ -83,8 +83,8 @@ size_t JsContextMenuManager::GetInternalSize()
 
 void JsContextMenuManager::BuildMenu(JsMenuObject* menuObject, int32_t base_id, int32_t max_id)
 {
-	qwr::QwrException::ExpectTrue(contextMenu_.is_valid(), "Context menu is not initialized");
-	qwr::QwrException::ExpectTrue(menuObject, "menuObject argument is null");
+	QwrException::ExpectTrue(contextMenu_.is_valid(), "Context menu is not initialized");
+	QwrException::ExpectTrue(menuObject, "menuObject argument is null");
 
 	contextMenu_->win32_build_menu(menuObject->HMenu(), contextMenu_->get_root(), base_id, max_id);
 }
@@ -98,20 +98,20 @@ void JsContextMenuManager::BuildMenuWithOpt(size_t optArgCount, JsMenuObject* me
 	case 1:
 		return BuildMenu(menuObject, base_id);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 bool JsContextMenuManager::ExecuteByID(uint32_t id)
 {
-	qwr::QwrException::ExpectTrue(contextMenu_.is_valid(), "Context menu is not initialized");
+	QwrException::ExpectTrue(contextMenu_.is_valid(), "Context menu is not initialized");
 
 	return contextMenu_->execute_by_id(id);
 }
 
 void JsContextMenuManager::InitContext(JsFbMetadbHandleList* handles)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	contextmenu_manager::g_create(contextMenu_);
 	contextMenu_->init_context(handles->GetHandleList(), contextmenu_manager::flag_show_shortcuts);

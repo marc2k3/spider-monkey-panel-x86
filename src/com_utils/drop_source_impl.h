@@ -8,7 +8,7 @@ namespace smp::com
 	class IDropSourceImpl : public IDropSource
 	{
 	public:
-		/// @throw qwr::QwrException
+		/// @throw QwrException
 		IDropSourceImpl(HWND hWnd, IDataObject* pDataObject, size_t itemCount, bool showText, Gdiplus::Bitmap* pUserImage);
 		virtual ~IDropSourceImpl();
 

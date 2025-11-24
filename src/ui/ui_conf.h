@@ -119,7 +119,7 @@ private:
 	bool hasChanged_ = false;
 	bool isCleanSlate_ = false;
 
-	std::unique_ptr<qwr::ui::IUiDdx> panelNameDdx_;
+	std::unique_ptr<qwr::IUiDdx> panelNameDdx_;
 
 	const CDialogConf::Tab startingTabId_;
 	CTabCtrl cTabs_;

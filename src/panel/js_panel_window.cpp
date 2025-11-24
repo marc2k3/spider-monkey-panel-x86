@@ -109,7 +109,7 @@ namespace smp::panel
 			{
 				return config::PanelSettings::Load(reader, size, abort);
 			}
-			catch (const qwr::QwrException& e)
+			catch (const QwrException& e)
 			{
 				qwr::ReportErrorWithPopup(
 					SMP_UNDERSCORE_NAME,
@@ -142,7 +142,7 @@ namespace smp::panel
 		{
 			settings_ = config::ParsedPanelSettings::Parse(settings);
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			Fail(e.what());
 			return false;
@@ -166,7 +166,7 @@ namespace smp::panel
 			settings.Save(writer, abort);
 			return true;
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 			return false;
@@ -180,7 +180,7 @@ namespace smp::panel
 			settings_ = config::ParsedPanelSettings::Reparse(settings_);
 			return true;
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			Fail(e.what());
 			return false;
@@ -1053,7 +1053,7 @@ namespace smp::panel
 			{
 				panel::EditScript(wnd_, settings_);
 			}
-			catch (const qwr::QwrException& e)
+			catch (const QwrException& e)
 			{
 				qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 			}
@@ -1139,7 +1139,7 @@ namespace smp::panel
 		{
 			qwr::ReportFSErrorWithPopup(e);
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 		}
@@ -1192,7 +1192,7 @@ namespace smp::panel
 				ReloadScript();
 			}
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 		}
@@ -1341,7 +1341,7 @@ namespace smp::panel
 		{
 			SetDragAndDropStatus(settings_.enableDragDrop);
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			smp::utils::LogWarning(e.what());
 		}
@@ -1428,7 +1428,7 @@ namespace smp::panel
 		{
 			SetDragAndDropStatus(false);
 		}
-		catch (const qwr::QwrException&)
+		catch (const QwrException&)
 		{
 		}
 	}
@@ -1664,7 +1664,7 @@ namespace smp::panel
 				dropTargetHandler_.Attach(new ComPtrImpl<com::TrackDropTarget>(*this));
 
 				HRESULT hr = dropTargetHandler_->RegisterDragDrop();
-				qwr::error::CheckHR(hr, "RegisterDragDrop");
+				qwr::CheckHR(hr, "RegisterDragDrop");
 			}
 		}
 		else

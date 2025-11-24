@@ -94,10 +94,10 @@ wil::unique_hbitmap JsGdiRawBitmap::CreateHBitmapFromGdiPlusBitmap(Gdiplus::Bitm
 
 std::unique_ptr<JsGdiRawBitmap> JsGdiRawBitmap::CreateNative(JSContext* cx, Gdiplus::Bitmap* pBmp)
 {
-	qwr::QwrException::ExpectTrue(pBmp, "Internal error: Gdiplus::Bitmap is null");
+	QwrException::ExpectTrue(pBmp, "Internal error: Gdiplus::Bitmap is null");
 
 	auto hBitmap = CreateHBitmapFromGdiPlusBitmap(*pBmp);
-	qwr::QwrException::ExpectTrue(hBitmap.get(), "Internal error: failed to get HBITMAP from Gdiplus::Bitmap");
+	QwrException::ExpectTrue(hBitmap.get(), "Internal error: failed to get HBITMAP from Gdiplus::Bitmap");
 
 	return std::unique_ptr<JsGdiRawBitmap>(new JsGdiRawBitmap(cx, std::move(hBitmap), pBmp->GetWidth(), pBmp->GetHeight()));
 }

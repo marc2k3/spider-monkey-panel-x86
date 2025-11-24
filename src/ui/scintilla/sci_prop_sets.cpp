@@ -122,14 +122,14 @@ void ScintillaPropsCfg::import_from_file(fb2k::stringRef path)
 
 	ScintillaPropValues data_map;
 
-	for (const auto& line: qwr::string::SplitByLines(text))
+	for (const auto& line: qwr::SplitByLines(text))
 	{
 		if (line.length() < 3 || line[0] == '#')
 		{ // skip comments and lines that are too short
 			continue;
 		}
 
-		const auto parts = qwr::string::Split(line, '=');
+		const auto parts = qwr::Split(line, '=');
 		if (parts.size() != 2 || parts[0].empty())
 		{
 			continue;

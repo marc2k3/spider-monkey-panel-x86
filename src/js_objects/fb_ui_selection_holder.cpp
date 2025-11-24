@@ -91,10 +91,10 @@ void JsFbUiSelectionHolder::SetPlaylistTracking()
 
 void JsFbUiSelectionHolder::SetSelection(JsFbMetadbHandleList* handles, uint8_t type)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	const auto holderGuidOpt = GetSelectionHolderGuidFromType(type);
-	qwr::QwrException::ExpectTrue(holderGuidOpt.has_value(), "Unknown selection holder type: {}", type);
+	QwrException::ExpectTrue(holderGuidOpt.has_value(), "Unknown selection holder type: {}", type);
 
 	holder_->set_selection_ex(handles->GetHandleList(), *holderGuidOpt);
 }
@@ -110,7 +110,7 @@ void JsFbUiSelectionHolder::SetSelectionWithOpt(size_t optArgCount, JsFbMetadbHa
 		SetSelection(handles);
 		break;
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 

@@ -184,7 +184,7 @@ LRESULT CConfigTabProperties::OnImportBnClicked(WORD, WORD, HWND)
 				properties_ = smp::config::PanelProperties::FromJson(str);
 				UpdateUiFromData();
 			}
-			catch (const qwr::QwrException& e)
+			catch (const QwrException& e)
 			{
 				qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 			}

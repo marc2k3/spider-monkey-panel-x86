@@ -355,16 +355,16 @@ namespace mozjs
 		case 3:
 			return CreateTooltip();
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
 	void Window::DefinePanel(const std::string& name, JS::HandleValue options)
 	{
-		qwr::QwrException::ExpectTrue(
+		QwrException::ExpectTrue(
 			m_parent.GetSettings().GetSourceType() != config::ScriptSourceType::Package,
 			"`DefinePanel` can't be used to change package script information - use `Configure` instead");
-		qwr::QwrException::ExpectTrue(!m_isScriptDefined, "DefinePanel/DefineScript can't be called twice");
+		QwrException::ExpectTrue(!m_isScriptDefined, "DefinePanel/DefineScript can't be called twice");
 
 		const auto parsedOptions = ParseDefineScriptOptions(options);
 
@@ -385,7 +385,7 @@ namespace mozjs
 		case 1:
 			return DefinePanel(name);
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
@@ -396,10 +396,10 @@ namespace mozjs
 			return;
 		}
 
-		qwr::QwrException::ExpectTrue(
+		QwrException::ExpectTrue(
 			m_parent.GetSettings().GetSourceType() != config::ScriptSourceType::Package,
 			"`DefineScript` can't be used to change package script information - use `Configure` instead");
-		qwr::QwrException::ExpectTrue(!m_isScriptDefined, "DefineScript can't be called twice");
+		QwrException::ExpectTrue(!m_isScriptDefined, "DefineScript can't be called twice");
 
 		const auto parsedOptions = ParseDefineScriptOptions(options);
 
@@ -419,7 +419,7 @@ namespace mozjs
 		case 1:
 			return DefineScript(name);
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
@@ -440,15 +440,15 @@ namespace mozjs
 			return 0;
 		}
 
-		qwr::QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::CUI, "Can be called only in CUI");
-		qwr::QwrException::ExpectTrue(type <= cui::colours::colour_active_item_frame, "Invalid colour type specified");
+		QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::CUI, "Can be called only in CUI");
+		QwrException::ExpectTrue(type <= cui::colours::colour_active_item_frame, "Invalid colour type specified");
 
 		GUID guid{};
 
 		if (!guidstr.empty())
 		{
 			HRESULT hr = CLSIDFromString(guidstr.c_str(), &guid);
-			qwr::error::CheckHR(hr, "CLSIDFromString");
+			qwr::CheckHR(hr, "CLSIDFromString");
 		}
 
 		return m_parent.GetColour(guid, type);
@@ -463,7 +463,7 @@ namespace mozjs
 		case 1:
 			return GetColourCUI(type);
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
@@ -482,8 +482,8 @@ namespace mozjs
 			return 0;
 		}
 
-		qwr::QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::DUI, "Can be called only in DUI");
-		qwr::QwrException::ExpectTrue(type < guids.size(), "Invalid colour type specified");
+		QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::DUI, "Can be called only in DUI");
+		QwrException::ExpectTrue(type < guids.size(), "Invalid colour type specified");
 
 		return m_parent.GetColour(*guids[type]);
 	}
@@ -495,15 +495,15 @@ namespace mozjs
 			return nullptr;
 		}
 
-		qwr::QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::CUI, "Can be called only in CUI");
-		qwr::QwrException::ExpectTrue(type <= cui::fonts::font_type_labels, "Invalid font type specified");
+		QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::CUI, "Can be called only in CUI");
+		QwrException::ExpectTrue(type <= cui::fonts::font_type_labels, "Invalid font type specified");
 
 		GUID guid{};
 
 		if (!guidstr.empty())
 		{
 			HRESULT hr = CLSIDFromString(guidstr.c_str(), &guid);
-			qwr::error::CheckHR(hr, "CLSIDFromString");
+			qwr::CheckHR(hr, "CLSIDFromString");
 		}
 
 		auto hFont = wil::unique_hfont(m_parent.GetFont(guid, type));
@@ -526,7 +526,7 @@ namespace mozjs
 		case 1:
 			return GetFontCUI(type);
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
@@ -547,8 +547,8 @@ namespace mozjs
 			return nullptr;
 		}
 
-		qwr::QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::DUI, "Can be called only in DUI");
-		qwr::QwrException::ExpectTrue(type < guids.size(), "Invalid font type specified");
+		QwrException::ExpectTrue(m_parent.GetPanelType() == panel::PanelType::DUI, "Can be called only in DUI");
+		QwrException::ExpectTrue(type < guids.size(), "Invalid font type specified");
 
 		auto hFont = m_parent.GetFont(*guids[type]);
 		std::unique_ptr<Gdiplus::Font> pGdiFont(new Gdiplus::Font(m_parent.GetHDC(), hFont));
@@ -580,7 +580,7 @@ namespace mozjs
 		case 1:
 			return GetProperty(name);
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
@@ -623,7 +623,7 @@ namespace mozjs
 		case 1:
 			return Repaint();
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
@@ -646,7 +646,7 @@ namespace mozjs
 		case 1:
 			return RepaintRect(x, y, w, h);
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
@@ -667,8 +667,8 @@ namespace mozjs
 			return 0;
 		}
 
-		qwr::QwrException::ExpectTrue(func.isObject() && JS_ObjectIsFunction(&func.toObject()), "`func` argument is not a JS function");
-		qwr::QwrException::ExpectTrue(delay > 0, "`delay` must be non-zero");
+		QwrException::ExpectTrue(func.isObject() && JS_ObjectIsFunction(&func.toObject()), "`func` argument is not a JS function");
+		QwrException::ExpectTrue(delay > 0, "`delay` must be non-zero");
 
 		JS::RootedFunction jsFunction(m_ctx, JS_ValueToFunction(m_ctx, func));
 		JS::RootedValue jsFuncValue(m_ctx, JS::ObjectValue(*JS_GetFunctionObject(jsFunction)));
@@ -689,7 +689,7 @@ namespace mozjs
 		case 1:
 			return SetInterval(func, delay);
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
@@ -712,7 +712,7 @@ namespace mozjs
 		case 1:
 			return SetProperty(name);
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
@@ -723,7 +723,7 @@ namespace mozjs
 			return 0;
 		}
 
-		qwr::QwrException::ExpectTrue(func.isObject() && JS_ObjectIsFunction(&func.toObject()), "func argument is not a JS function");
+		QwrException::ExpectTrue(func.isObject() && JS_ObjectIsFunction(&func.toObject()), "func argument is not a JS function");
 
 		JS::RootedFunction jsFunction(m_ctx, JS_ValueToFunction(m_ctx, func));
 		JS::RootedValue jsFuncValue(m_ctx, JS::ObjectValue(*JS_GetFunctionObject(jsFunction)));
@@ -744,7 +744,7 @@ namespace mozjs
 		case 1:
 			return SetTimeout(func, delay);
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
@@ -1045,7 +1045,7 @@ namespace mozjs
 		DefineScriptOptions parsedOptions;
 		if (!options.isNullOrUndefined())
 		{
-			qwr::QwrException::ExpectTrue(options.isObject(), "options argument is not an object");
+			QwrException::ExpectTrue(options.isObject(), "options argument is not an object");
 			JS::RootedObject jsOptions(m_ctx, &options.toObject());
 
 			parsedOptions.author = GetOptionalProperty<std::string>(m_ctx, jsOptions, "author").value_or("");
@@ -1065,7 +1065,7 @@ namespace mozjs
 					throw JsException();
 				}
 
-				qwr::QwrException::ExpectTrue(jsFeaturesValue.isObject(), "`features` is not an object");
+				QwrException::ExpectTrue(jsFeaturesValue.isObject(), "`features` is not an object");
 
 				JS::RootedObject jsFeatures(m_ctx, &jsFeaturesValue.toObject());
 				parsedOptions.features.dragAndDrop = GetOptionalProperty<bool>(m_ctx, jsFeatures, "drag_n_drop").value_or(false);

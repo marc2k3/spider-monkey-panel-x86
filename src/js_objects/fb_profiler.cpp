@@ -96,7 +96,7 @@ JSObject* JsFbProfiler::ConstructorWithOpt(JSContext* cx, size_t optArgCount, co
 	case 1:
 		return Constructor(cx);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -133,7 +133,7 @@ void JsFbProfiler::PrintWithOpt(size_t optArgCount, const std::string& additiona
 	case 2:
 		return Print();
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 

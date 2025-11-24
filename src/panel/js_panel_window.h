@@ -78,7 +78,7 @@ namespace smp::panel
 
 		void SetSettings_ScriptInfo(const std::string& scriptName, const std::string& scriptAuthor, const std::string& scriptVersion);
 		void SetSettings_PanelName(const std::string& panelName);
-		/// @throw qwr::QwrException
+		/// @throw QwrException
 		void SetSettings_DragAndDropStatus(bool isEnabled);
 		void SetSettings_CaptureFocusStatus(bool isEnabled);
 
@@ -106,7 +106,7 @@ namespace smp::panel
 		void DeleteDrawContext();
 
 		void SetCaptureMouseState(bool shouldCapture);
-		/// @throw qwr::QwrException
+		/// @throw QwrException
 		void SetDragAndDropStatus(bool isEnabled);
 
 	public: // event handling

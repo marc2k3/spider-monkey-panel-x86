@@ -31,7 +31,7 @@ void DownloadFileAsync::run() noexcept
 		response->read_till_eof(arr, aborter);
 
 		success = FileHelper(m_path).write(arr.get_ptr(), arr.get_size());
-		qwr::QwrException::ExpectTrue(success, L"Error saving downloaded file to: {}", m_path);
+		QwrException::ExpectTrue(success, L"Error saving downloaded file to: {}", m_path);
 	}
 	catch (const std::exception& e)
 	{

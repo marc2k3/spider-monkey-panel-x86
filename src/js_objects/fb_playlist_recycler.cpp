@@ -85,7 +85,7 @@ JSObject* JsFbPlaylistRecycler::GetContent(uint32_t index)
 	auto api = playlist_manager_v3::get();
 
 	const t_size count = api->recycler_get_count();
-	qwr::QwrException::ExpectTrue(index < count, "Index is out of bounds");
+	QwrException::ExpectTrue(index < count, "Index is out of bounds");
 
 	metadb_handle_list handles;
 	playlist_manager_v3::get()->recycler_get_content(index, handles);
@@ -98,7 +98,7 @@ pfc::string8 JsFbPlaylistRecycler::GetName(uint32_t index)
 	auto api = playlist_manager_v3::get();
 
 	const t_size count = api->recycler_get_count();
-	qwr::QwrException::ExpectTrue(index < count, "Index is out of bounds");
+	QwrException::ExpectTrue(index < count, "Index is out of bounds");
 
 	pfc::string8 name;
 	playlist_manager_v3::get()->recycler_get_name(index, name);
@@ -120,7 +120,7 @@ void JsFbPlaylistRecycler::Restore(uint32_t index)
 	auto api = playlist_manager_v3::get();
 
 	const t_size count = api->recycler_get_count();
-	qwr::QwrException::ExpectTrue(index < count, "Index is out of bounds");
+	QwrException::ExpectTrue(index < count, "Index is out of bounds");
 
 	api->recycler_restore(index);
 }

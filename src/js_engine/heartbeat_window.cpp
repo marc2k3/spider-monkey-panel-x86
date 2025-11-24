@@ -26,10 +26,10 @@ std::unique_ptr<HeartbeatWindow> HeartbeatWindow::Create()
 	wx.lpszClassName = class_name;
 
 	ATOM atom = RegisterClassEx(&wx);
-	qwr::error::CheckWinApi(!!atom, "RegisterClassEx");
+	qwr::CheckWinApi(!!atom, "RegisterClassEx");
 
 	HWND hWnd = CreateWindowEx(0, MAKEINTATOM(atom), nullptr, 0, 0, 0, 0, 0, HWND_MESSAGE, nullptr, nullptr, nullptr);
-	qwr::error::CheckWinApi(hWnd, "CreateWindowEx");
+	qwr::CheckWinApi(hWnd, "CreateWindowEx");
 
 	return std::unique_ptr<HeartbeatWindow>(new HeartbeatWindow(hWnd));
 }

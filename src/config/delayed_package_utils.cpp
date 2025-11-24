@@ -50,7 +50,7 @@ namespace
 	}
 
 	/// @throw std::filesystem::filesystem_error
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void CheckPackageBackups()
 	{
 		const auto dir = path::TempFolder_PackageBackups();
@@ -74,7 +74,7 @@ namespace
 
 		if (!backups.empty())
 		{ // in case user still haven't restored his package
-			throw qwr::QwrException(
+			throw QwrException(
 				"The following backups still exist:\n"
 				"{}\n\n"
 				"If you have completed package recovery process, remove them and restart foobar2000 to continue delayed package processing.",
@@ -85,7 +85,7 @@ namespace
 	}
 
 	/// @throw std::filesystem::filesystem_error
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void UpdatePackages()
 	{
 		const auto packagesToProcessDir = path::TempFolder_PackagesToInstall();
@@ -236,7 +236,7 @@ namespace smp::config
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 	}
 
@@ -251,7 +251,7 @@ namespace smp::config
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 	}
 
@@ -268,7 +268,7 @@ namespace smp::config
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 	}
 
@@ -284,7 +284,7 @@ namespace smp::config
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 	}
 
@@ -300,7 +300,7 @@ namespace smp::config
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 	}
 

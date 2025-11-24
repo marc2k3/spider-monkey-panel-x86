@@ -73,7 +73,7 @@ std::unique_ptr<JsActiveXObject_Iterator>
 JsActiveXObject_Iterator::CreateNative(JSContext* cx, JsActiveXObject& activeXObject)
 {
 	const auto pUnknown = (activeXObject.pStorage_->pUnknown ? activeXObject.pStorage_->pUnknown : activeXObject.pStorage_->pDispatch);
-	qwr::QwrException::ExpectTrue(pUnknown, "Object is not iterable");
+	QwrException::ExpectTrue(pUnknown, "Object is not iterable");
 
 	CDispatchPtr pCollection(pUnknown);
 	auto pEnum = [&] {
@@ -83,7 +83,7 @@ JsActiveXObject_Iterator::CreateNative(JSContext* cx, JsActiveXObject& activeXOb
 		}
 		catch (const _com_error&)
 		{
-			throw qwr::QwrException("Object is not iterable");
+			throw QwrException("Object is not iterable");
 		}
 	}();
 
@@ -155,7 +155,7 @@ void JsActiveXObject_Iterator::LoadCurrentElement()
 	}
 	else
 	{
-		qwr::error::CheckHR(hr, "Next");
+		qwr::CheckHR(hr, "Next");
 		isAtEnd_ = false;
 	}
 }

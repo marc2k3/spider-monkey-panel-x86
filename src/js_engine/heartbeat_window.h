@@ -10,7 +10,7 @@ public:
 	HeartbeatWindow(HeartbeatWindow&) = delete;
 	HeartbeatWindow& operator=(HeartbeatWindow&) = delete;
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	static [[nodiscard]] std::unique_ptr<HeartbeatWindow> Create();
 
 	[[nodiscard]] HWND GetHwnd() const;

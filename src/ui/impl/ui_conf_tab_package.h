@@ -128,7 +128,7 @@ namespace smp::ui
 		std::filesystem::path focusedFile_;
 		int focusedFileIdx_ = 0;
 
-		std::array<std::unique_ptr<qwr::ui::IUiDdx>, 7> ddx_;
+		std::array<std::unique_ptr<qwr::IUiDdx>, 7> ddx_;
 
 		WStrings files_;
 		CListBox filesListBox_;

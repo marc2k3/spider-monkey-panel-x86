@@ -67,7 +67,7 @@ namespace
 
 		if ((int)hInstance < 32)
 		{
-			qwr::error::CheckWin32((int)hInstance, "ShellExecute");
+			qwr::CheckWin32((int)hInstance, "ShellExecute");
 		}
 
 		return true;
@@ -95,7 +95,7 @@ namespace
 				tmpFilePath.resize(MAX_PATH - 14); // max allowed size of path in GetTempFileName
 
 				DWORD dwRet = GetTempPathW(tmpFilePath.size(), tmpFilePath.data());
-				qwr::error::CheckWinApi(dwRet && dwRet <= tmpFilePath.size(), "GetTempPath");
+				qwr::CheckWinApi(dwRet && dwRet <= tmpFilePath.size(), "GetTempPath");
 
 				std::wstring filename;
 				filename.resize(MAX_PATH);
@@ -107,7 +107,7 @@ namespace
 					filename.data()
 				);
 
-				qwr::error::CheckWinApi(uRet, "GetTempFileName");
+				qwr::CheckWinApi(uRet, "GetTempFileName");
 				filename.resize(wcslen(filename.c_str()));
 				return fs::path(tmpFilePath) / filename;
 			}();

@@ -259,7 +259,7 @@ uint32_t Fb::AddLocationsAsync(JS::HandleValue locations)
 	static constexpr uint32_t s_flags = playlist_incoming_item_filter_v2::op_flag_no_filter | playlist_incoming_item_filter_v2::op_flag_delay_ui;
 
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	pfc::string_list_impl location_list;
 	convert::to_native::ProcessArray<std::string>(
@@ -313,7 +313,7 @@ void Fb::ClearPlaylist()
 
 bool Fb::CopyHandleListToClipboard(JsFbMetadbHandleList* handles)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	pfc::com_ptr_t<IDataObject> pDO = ole_interaction::get()->create_dataobject(handles->GetHandleList());
 	return SUCCEEDED(OleSetClipboard(pDO.get_ptr()));
@@ -348,15 +348,15 @@ JSObject* Fb::CreateProfilerWithOpt(size_t optArgCount, const std::string& name)
 	case 1:
 		return CreateProfiler();
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 uint32_t Fb::DoDragDrop(uint32_t, JsFbMetadbHandleList* handles, uint32_t okEffects, JS::HandleValue options)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	const metadb_handle_list& handleList = handles->GetHandleList();
 	const size_t handleCount = handleList.get_count();
@@ -415,7 +415,7 @@ uint32_t Fb::DoDragDropWithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetadbHand
 	case 1:
 		return DoDragDrop(hWnd, handles, okEffects);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -443,14 +443,14 @@ JSObject* Fb::GetAudioChunkWithOpt(size_t optArgCount, double requested_length, 
 	{
 	case 0: return GetAudioChunk(requested_length, offset);
 	case 1: return GetAudioChunk(requested_length);
-	default: throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+	default: throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 JSObject* Fb::GetClipboardContents(uint32_t)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	auto api = ole_interaction::get();
 	pfc::com_ptr_t<IDataObject> pDO;
@@ -483,7 +483,7 @@ JSObject* Fb::GetClipboardContentsWithOpt(size_t optArgCount, uint32_t hWnd)
 	case 1:
 		return GetClipboardContents();
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -534,7 +534,7 @@ JSObject* Fb::GetFocusItemWithOpt(size_t optArgCount, bool force)
 	case 1:
 		return GetFocusItem();
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -548,7 +548,7 @@ JSObject* Fb::GetLibraryItems()
 
 pfc::string8 Fb::GetLibraryRelativePath(JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	pfc::string8 temp;
 	library_manager::get()->get_relative_path(handle->GetHandle(), temp);
@@ -591,7 +591,7 @@ std::string Fb::GetOutputDevices()
 
 JSObject* Fb::GetQueryItems(JsFbMetadbHandleList* handles, const std::string& query)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	const metadb_handle_list& handles_ptr = handles->GetHandleList();
 	metadb_handle_list dst_list(handles_ptr);
@@ -607,7 +607,7 @@ JSObject* Fb::GetQueryItems(JsFbMetadbHandleList* handles, const std::string& qu
 	}
 	catch (const pfc::exception& e)
 	{
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 
 	pfc::array_t<bool> mask;
@@ -648,7 +648,7 @@ JSObject* Fb::GetSelectionsWithOpt(size_t optArgCount, uint32_t flags)
 	case 1:
 		return GetSelections();
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -673,7 +673,7 @@ bool Fb::IsMainMenuCommandChecked(const std::string& command)
 
 bool Fb::IsMetadbInMediaLibrary(JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	return library_manager::get()->is_item_in_library(handle->GetHandle());
 }
@@ -716,7 +716,7 @@ void Fb::Random()
 void Fb::RegisterMainMenuCommand(uint32_t id, const std::string& name, const std::optional<std::string>& description)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	DynamicMainMenuManager::Get().RegisterCommand(wnd, id, name, description);
 }
@@ -730,7 +730,7 @@ void Fb::RegisterMainMenuCommandWithOpt(size_t optArgCount, uint32_t id, const s
 	case 1:
 		return RegisterMainMenuCommand(id, name);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -758,20 +758,20 @@ bool Fb::RunContextCommandWithOpt(size_t optArgCount, const std::string& command
 	case 1:
 		return RunContextCommand(command);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 bool Fb::RunContextCommandWithMetadb(const std::string& command, JS::HandleValue handle, uint32_t flags)
 {
-	qwr::QwrException::ExpectTrue(handle.isObject(), "handle argument is invalid");
+	QwrException::ExpectTrue(handle.isObject(), "handle argument is invalid");
 
 	JS::RootedObject jsObject(m_ctx, &handle.toObject());
 	metadb_handle_list handle_list;
 
 	auto* jsHandle = GetInnerInstancePrivate<JsFbMetadbHandle>(m_ctx, jsObject);
 	auto* jsHandleList = GetInnerInstancePrivate<JsFbMetadbHandleList>(m_ctx, jsObject);
-	qwr::QwrException::ExpectTrue(jsHandle || jsHandleList, "handle argument is invalid");
+	QwrException::ExpectTrue(jsHandle || jsHandleList, "handle argument is invalid");
 
 	if (jsHandleList)
 	{
@@ -794,7 +794,7 @@ bool Fb::RunContextCommandWithMetadbWithOpt(size_t optArgCount, const std::strin
 	case 1:
 		return RunContextCommandWithMetadb(command, handle);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -813,7 +813,7 @@ void Fb::SetDSPPreset(uint32_t idx)
 	auto api = dsp_config_manager_v2::get();
 	t_size count = api->get_preset_count();
 
-	qwr::QwrException::ExpectTrue(idx < count, "Index is out of bounds");
+	QwrException::ExpectTrue(idx < count, "Index is out of bounds");
 
 	api->select_preset(idx);
 }
@@ -861,7 +861,7 @@ void Fb::ShowPopupMessageWithOpt(size_t optArgCount, const std::string& msg, con
 	case 1:
 		return ShowPopupMessage(msg);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -883,7 +883,7 @@ JSObject* Fb::TitleFormat(const std::string& expression)
 void Fb::UnregisterMainMenuCommand(uint32_t id)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	DynamicMainMenuManager::Get().UnregisterCommand(wnd, id);
 }
@@ -1017,7 +1017,7 @@ void Fb::put_ReplaygainMode(uint32_t p)
 		&standard_commands::guid_main_rg_byorder
 	};
 
-	qwr::QwrException::ExpectTrue(p < guids.size(), "Invalid replay gain mode: {}", p);
+	QwrException::ExpectTrue(p < guids.size(), "Invalid replay gain mode: {}", p);
 
 	standard_commands::run_main(*guids[p]);
 	playback_control_v3::get()->restart();
@@ -1043,7 +1043,7 @@ Fb::DoDragDropOptions Fb::ParseDoDragDropOptions(JS::HandleValue options)
 	if (options.isNullOrUndefined())
 		return {};
 
-	qwr::QwrException::ExpectTrue(options.isObject(), "options argument is not an object");
+	QwrException::ExpectTrue(options.isObject(), "options argument is not an object");
 	auto jsOptions = JS::RootedObject(m_ctx, &options.toObject());
 
 	DoDragDropOptions parsedOptions;

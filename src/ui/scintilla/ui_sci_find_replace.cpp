@@ -75,7 +75,7 @@ LRESULT CCustomFindReplaceDlg::OnInitDialog(UINT, WPARAM, LPARAM, BOOL& bHandled
 	uButton_SetCheck(m_hWnd, IDC_CHECK_WRAPAROUND, wrapAroundSearch_);
 	UpdateRegExpHacksState();
 
-	hookId_ = qwr::HookHandler::GetInstance().RegisterHook(
+	hookId_ = QwrHookHandler::GetInstance().RegisterHook(
 		[hParent = m_hWnd](int code, WPARAM wParam, LPARAM lParam) {
 			GetMsgProc(code, wParam, lParam, hParent);
 		});
@@ -88,7 +88,7 @@ LRESULT CCustomFindReplaceDlg::OnDestroy(UINT, WPARAM, LPARAM, BOOL& bHandled)
 	bHandled = FALSE; ///< don't suppress base class methods
 	if (hookId_)
 	{
-		qwr::HookHandler::GetInstance().UnregisterHook(hookId_);
+		QwrHookHandler::GetInstance().UnregisterHook(hookId_);
 		hookId_ = 0;
 	}
 	return 0;

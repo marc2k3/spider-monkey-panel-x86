@@ -32,13 +32,13 @@ void Parse_Sample(const config::PanelSettings_Sample& settings, config::ParsedPa
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		throw qwr::QwrException(e);
+		throw QwrException(e);
 	}
 }
 
 void Parse_Package(const config::PanelSettings_Package& settings, config::ParsedPanelSettings& parsedSettings)
 {
-	qwr::QwrException::ExpectTrue(!settings.id.empty(), "Corrupted settings (package): `id` is empty");
+	QwrException::ExpectTrue(!settings.id.empty(), "Corrupted settings (package): `id` is empty");
 
 	try
 	{
@@ -47,7 +47,7 @@ void Parse_Package(const config::PanelSettings_Package& settings, config::Parsed
 			return (str.empty() ? "<empty>" : str);
 		};
 
-		qwr::QwrException::ExpectTrue(
+		QwrException::ExpectTrue(
 			packageDirRet.has_value(),
 			"Can't find the required package: `{} ({} by {})`",
 			settings.id,
@@ -56,15 +56,15 @@ void Parse_Package(const config::PanelSettings_Package& settings, config::Parsed
 		);
 
 		config::FillPackageSettingsFromPath(*packageDirRet, parsedSettings);
-		qwr::QwrException::ExpectTrue(settings.id == parsedSettings.packageId, "Corrupted package: `id` is mismatched with parent folder");
+		QwrException::ExpectTrue(settings.id == parsedSettings.packageId, "Corrupted package: `id` is mismatched with parent folder");
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		throw qwr::QwrException(e);
+		throw QwrException(e);
 	}
 	catch (const JSON::exception& e)
 	{
-		throw qwr::QwrException("Corrupted `package.json`: {}", e.what());
+		throw QwrException("Corrupted `package.json`: {}", e.what());
 	}
 }
 
@@ -79,7 +79,7 @@ void Reparse_Package(config::ParsedPanelSettings& parsedSettings)
 		const auto valueOrEmpty = [](const std::string& str) -> std::string {
 			return (str.empty() ? "<empty>" : str);
 		};
-		qwr::QwrException::ExpectTrue(
+		QwrException::ExpectTrue(
 			packageDirRet.has_value(),
 			"Can't find the required package: `{} ({} by {})`",
 			packageId,
@@ -88,15 +88,15 @@ void Reparse_Package(config::ParsedPanelSettings& parsedSettings)
 		);
 
 		config::FillPackageSettingsFromPath(*packageDirRet, parsedSettings);
-		qwr::QwrException::ExpectTrue(packageId == parsedSettings.packageId, "Corrupted package: `id` is mismatched with parent folder");
+		QwrException::ExpectTrue(packageId == parsedSettings.packageId, "Corrupted package: `id` is mismatched with parent folder");
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		throw qwr::QwrException(e);
+		throw QwrException(e);
 	}
 	catch (const JSON::exception& e)
 	{
-		throw qwr::QwrException("Corrupted `package.json`: {}", e.what());
+		throw QwrException("Corrupted `package.json`: {}", e.what());
 	}
 }
 

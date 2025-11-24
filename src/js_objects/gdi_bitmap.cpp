@@ -105,15 +105,15 @@ std::unique_ptr<Gdiplus::Bitmap> CreateDownsizedImage(Gdiplus::Bitmap& srcImg, u
 	}();
 
 	auto pBitmap = std::make_unique<Gdiplus::Bitmap>(imgWidth, imgHeight, PixelFormat32bppPARGB);
-	qwr::error::CheckGdiPlusObject(pBitmap);
+	qwr::CheckGdiPlusObject(pBitmap);
 
 	auto gr = Gdiplus::Graphics(pBitmap.get());
 
 	auto status = gr.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBilinear);
-	qwr::error::CheckGdi(status, "SetInterpolationMode");
+	qwr::CheckGdi(status, "SetInterpolationMode");
 
 	status = gr.DrawImage(&srcImg, 0, 0, imgWidth, imgHeight); // scale image down
-	qwr::error::CheckGdi(status, "DrawImage");
+	qwr::CheckGdi(status, "DrawImage");
 
 	return pBitmap;
 }
@@ -138,7 +138,7 @@ JsGdiBitmap::JsGdiBitmap(JSContext* cx, std::unique_ptr<Gdiplus::Bitmap> gdiBitm
 std::unique_ptr<JsGdiBitmap>
 JsGdiBitmap::CreateNative(JSContext* cx, std::unique_ptr<Gdiplus::Bitmap> gdiBitmap)
 {
-	qwr::QwrException::ExpectTrue(!!gdiBitmap, "Internal error: Gdiplus::Bitmap object is null");
+	QwrException::ExpectTrue(!!gdiBitmap, "Internal error: Gdiplus::Bitmap object is null");
 
 	return std::unique_ptr<JsGdiBitmap>(new JsGdiBitmap(cx, std::move(gdiBitmap)));
 }
@@ -159,12 +159,12 @@ Gdiplus::Bitmap* JsGdiBitmap::GdiBitmap() const
 
 JSObject* JsGdiBitmap::Constructor(JSContext* cx, JsGdiBitmap* other)
 {
-	qwr::QwrException::ExpectTrue(other, "Invalid argument type");
+	QwrException::ExpectTrue(other, "Invalid argument type");
 
 	auto pGdi = other->GdiBitmap();
 
 	std::unique_ptr<Gdiplus::Bitmap> img(pGdi->Clone(0, 0, pGdi->GetWidth(), pGdi->GetHeight(), PixelFormat32bppPARGB));
-	qwr::error::CheckGdiPlusObject(img, pGdi);
+	qwr::CheckGdiPlusObject(img, pGdi);
 
 	return JsGdiBitmap::CreateJs(cx, std::move(img));
 }
@@ -185,7 +185,7 @@ JSObject* JsGdiBitmap::ApplyAlpha(uint8_t alpha)
 	const UINT height = pGdi_->GetHeight();
 
 	std::unique_ptr<Gdiplus::Bitmap> out(new Gdiplus::Bitmap(width, height, PixelFormat32bppPARGB));
-	qwr::error::CheckGdiPlusObject(out);
+	qwr::CheckGdiPlusObject(out);
 
 	Gdiplus::ColorMatrix cm{};
 	cm.m[0][0] = cm.m[1][1] = cm.m[2][2] = cm.m[4][4] = 1.0;
@@ -193,7 +193,7 @@ JSObject* JsGdiBitmap::ApplyAlpha(uint8_t alpha)
 
 	Gdiplus::ImageAttributes ia;
 	auto status = ia.SetColorMatrix(&cm);
-	qwr::error::CheckGdi(status, "SetColorMatrix");
+	qwr::CheckGdi(status, "SetColorMatrix");
 
 	Gdiplus::Graphics g(out.get());
 	status = g.DrawImage(
@@ -207,18 +207,18 @@ JSObject* JsGdiBitmap::ApplyAlpha(uint8_t alpha)
 		&ia
 	);
 
-	qwr::error::CheckGdi(status, "DrawImage");
+	qwr::CheckGdi(status, "DrawImage");
 
 	return JsGdiBitmap::CreateJs(pJsCtx_, std::move(out));
 }
 
 void JsGdiBitmap::ApplyMask(JsGdiBitmap* mask)
 {
-	qwr::QwrException::ExpectTrue(mask, "mask argument is null");
+	QwrException::ExpectTrue(mask, "mask argument is null");
 
 	Gdiplus::Bitmap* pBitmapMask = mask->GdiBitmap();
 
-	qwr::QwrException::ExpectTrue(
+	QwrException::ExpectTrue(
 		pBitmapMask->GetHeight() == pGdi_->GetHeight() && pBitmapMask->GetWidth() == pGdi_->GetWidth(),
 		"Mismatched dimensions"
 	);
@@ -227,7 +227,7 @@ void JsGdiBitmap::ApplyMask(JsGdiBitmap* mask)
 
 	Gdiplus::BitmapData maskBmpData = { 0 };
 	auto status = pBitmapMask->LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &maskBmpData);
-	qwr::error::CheckGdi(status, "mask::LockBits");
+	qwr::CheckGdi(status, "mask::LockBits");
 
 	auto autoMaskBits = wil::scope_exit([pBitmapMask, &maskBmpData] {
 		pBitmapMask->UnlockBits(&maskBmpData);
@@ -235,7 +235,7 @@ void JsGdiBitmap::ApplyMask(JsGdiBitmap* mask)
 
 	Gdiplus::BitmapData dstBmpData = { 0 };
 	status = pGdi_->LockBits(&rect, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeWrite, PixelFormat32bppARGB, &dstBmpData);
-	qwr::error::CheckGdi(status, "dst::LockBits");
+	qwr::CheckGdi(status, "dst::LockBits");
 
 	auto autoDstBits = wil::scope_exit([&pGdi = pGdi_, &dstBmpData] {
 		pGdi->UnlockBits(&dstBmpData);
@@ -261,7 +261,7 @@ void JsGdiBitmap::ApplyMask(JsGdiBitmap* mask)
 JSObject* JsGdiBitmap::Clone(float x, float y, float w, float h)
 {
 	std::unique_ptr<Gdiplus::Bitmap> img(pGdi_->Clone(x, y, w, h, PixelFormat32bppPARGB));
-	qwr::error::CheckGdiPlusObject(img, pGdi_.get());
+	qwr::CheckGdiPlusObject(img, pGdi_.get());
 
 	return JsGdiBitmap::CreateJs(pJsCtx_, std::move(img));
 }
@@ -281,7 +281,7 @@ JS::Value JsGdiBitmap::GetColourScheme(uint32_t count)
 	Gdiplus::BitmapData bmpdata{};
 
 	const auto status = pBitmap->LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bmpdata);
-	qwr::error::CheckGdi(status, "LockBits");
+	qwr::CheckGdi(status, "LockBits");
 
 	std::map<uint32_t, uint32_t> color_counters;
 	const auto colourRange = ranges::make_subrange(
@@ -343,7 +343,7 @@ std::string JsGdiBitmap::GetColourSchemeJSON(uint32_t count)
 	Gdiplus::BitmapData bmpdata{};
 
 	const auto status = pBitmap->LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bmpdata);
-	qwr::error::CheckGdi(status, "LockBits");
+	qwr::CheckGdi(status, "LockBits");
 
 	std::map<uint32_t, uint32_t> colour_counters;
 	const auto colourRange = ranges::make_subrange(
@@ -420,12 +420,12 @@ std::string JsGdiBitmap::GetColourSchemeJSON(uint32_t count)
 JSObject* JsGdiBitmap::GetGraphics()
 {
 	std::unique_ptr<Gdiplus::Graphics> g(new Gdiplus::Graphics(pGdi_.get()));
-	qwr::error::CheckGdiPlusObject(g);
+	qwr::CheckGdiPlusObject(g);
 
 	JS::RootedObject jsObject(pJsCtx_, JsGdiGraphics::CreateJs(pJsCtx_));
 
 	auto* pNativeObject = GetInnerInstancePrivate<JsGdiGraphics>(pJsCtx_, jsObject);
-	qwr::QwrException::ExpectTrue(pNativeObject, "Internal error: failed to get JsGdiGraphics object");
+	QwrException::ExpectTrue(pNativeObject, "Internal error: failed to get JsGdiGraphics object");
 
 	pNativeObject->SetGraphicsObject(g.release());
 
@@ -438,7 +438,7 @@ JSObject* JsGdiBitmap::InvertColours()
 	const UINT height = pGdi_->GetHeight();
 
 	std::unique_ptr<Gdiplus::Bitmap> out(new Gdiplus::Bitmap(width, height, PixelFormat32bppPARGB));
-	qwr::error::CheckGdiPlusObject(out);
+	qwr::CheckGdiPlusObject(out);
 
 	Gdiplus::ColorMatrix cm{};
 	cm.m[0][0] = cm.m[1][1] = cm.m[2][2] = -1.f;
@@ -446,7 +446,7 @@ JSObject* JsGdiBitmap::InvertColours()
 
 	Gdiplus::ImageAttributes ia;
 	auto status = ia.SetColorMatrix(&cm);
-	qwr::error::CheckGdi(status, "SetColorMatrix");
+	qwr::CheckGdi(status, "SetColorMatrix");
 
 	auto g = Gdiplus::Graphics(out.get());
 
@@ -461,7 +461,7 @@ JSObject* JsGdiBitmap::InvertColours()
 		&ia
 	);
 
-	qwr::error::CheckGdi(status, "DrawImage");
+	qwr::CheckGdi(status, "DrawImage");
 
 	return JsGdiBitmap::CreateJs(pJsCtx_, std::move(out));
 }
@@ -481,14 +481,14 @@ void JsGdiBitmap::ReleaseGraphics(JsGdiGraphics* graphics)
 JSObject* JsGdiBitmap::Resize(uint32_t w, uint32_t h, uint32_t interpolationMode)
 {
 	std::unique_ptr<Gdiplus::Bitmap> bitmap(new Gdiplus::Bitmap(w, h, PixelFormat32bppPARGB));
-	qwr::error::CheckGdiPlusObject(bitmap);
+	qwr::CheckGdiPlusObject(bitmap);
 
 	Gdiplus::Graphics g(bitmap.get());
 	auto status = g.SetInterpolationMode(static_cast<Gdiplus::InterpolationMode>(interpolationMode));
-	qwr::error::CheckGdi(status, "SetInterpolationMode");
+	qwr::CheckGdi(status, "SetInterpolationMode");
 
 	status = g.DrawImage(pGdi_.get(), 0, 0, w, h);
-	qwr::error::CheckGdi(status, "DrawImage");
+	qwr::CheckGdi(status, "DrawImage");
 
 	return JsGdiBitmap::CreateJs(pJsCtx_, std::move(bitmap));
 }
@@ -502,14 +502,14 @@ JSObject* JsGdiBitmap::ResizeWithOpt(size_t optArgCount, uint32_t w, uint32_t h,
 	case 1:
 		return Resize(w, h);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 void JsGdiBitmap::RotateFlip(uint32_t mode)
 {
 	const auto status = pGdi_->RotateFlip(static_cast<Gdiplus::RotateFlipType>(mode));
-	qwr::error::CheckGdi(status, "RotateFlip");
+	qwr::CheckGdi(status, "RotateFlip");
 }
 
 bool JsGdiBitmap::SaveAs(const std::wstring& path, const std::wstring& format)
@@ -560,7 +560,7 @@ bool JsGdiBitmap::SaveAsWithOpt(size_t optArgCount, const std::wstring& path, co
 	case 1:
 		return SaveAs(path);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 

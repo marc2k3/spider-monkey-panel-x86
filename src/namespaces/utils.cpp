@@ -189,7 +189,7 @@ bool Utils::CheckComponentWithOpt(size_t optArgCount, const std::string& name, b
 	case 1:
 		return CheckComponent(name);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -201,18 +201,18 @@ bool Utils::CheckFont(const std::wstring& name) const
 
 	int recv{};
 	const auto status = font_collection.GetFamilies(count, font_families.data(), &recv);
-	qwr::error::CheckGdi(status, "GetFamilies");
-	qwr::QwrException::ExpectTrue(recv == count, "Internal error: GetFamilies numSought != numFound");
+	qwr::CheckGdi(status, "GetFamilies");
+	QwrException::ExpectTrue(recv == count, "Internal error: GetFamilies numSought != numFound");
 
 	std::array<wchar_t, LF_FACESIZE> family_name_eng{};
 	std::array<wchar_t, LF_FACESIZE> family_name_loc{};
 
 	const auto it = ranges::find_if(font_families, [&family_name_eng, &family_name_loc, &name](const auto& fontFamily) {
 		auto status = fontFamily.GetFamilyName(family_name_eng.data(), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US));
-		qwr::error::CheckGdi(status, "GetFamilyName");
+		qwr::CheckGdi(status, "GetFamilyName");
 
 		status = fontFamily.GetFamilyName(family_name_loc.data());
-		qwr::error::CheckGdi(status, "GetFamilyName");
+		qwr::CheckGdi(status, "GetFamilyName");
 
 		return (!_wcsicmp(name.c_str(), family_name_loc.data()) || !_wcsicmp(name.c_str(), family_name_eng.data()));
 	});
@@ -224,7 +224,7 @@ uint32_t Utils::ColourPicker(uint32_t, uint32_t default_colour)
 {
 	static std::array<COLORREF, 16> colours{};
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	auto colour = smp::colour::ArgbToColorref(default_colour);
 	uChooseColor(&colour, wnd, colours.data());
@@ -239,7 +239,7 @@ uint32_t Utils::DetectCharset(const std::wstring& path) const
 void Utils::DownloadFileAsync(const std::string& url, const std::wstring& path)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	auto task = fb2k::service_new<::DownloadFileAsync>(wnd, url, path);
 	fb2k::cpuThreadPool::get()->runSingle(task);
@@ -248,7 +248,7 @@ void Utils::DownloadFileAsync(const std::string& url, const std::wstring& path)
 void Utils::EditTextFile(const std::wstring& path)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	if (!modal_dialog_scope::can_create())
 	{
@@ -298,7 +298,7 @@ JS::Value Utils::FileTest(const std::wstring& path, const std::wstring& mode)
 	}
 	else
 	{
-		throw qwr::QwrException("Invalid value of mode argument: '{}'", qwr::ToU8(mode));
+		throw QwrException("Invalid value of mode argument: '{}'", qwr::ToU8(mode));
 	}
 }
 
@@ -315,9 +315,9 @@ std::string Utils::FormatFileSize(uint64_t p) const
 void Utils::GetAlbumArtAsync(uint32_t, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
-	qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
 
 	auto task = fb2k::service_new<::GetAlbumArtAsync>(wnd, handle->GetHandle(), art_id, need_stub, only_embed);
 	fb2k::cpuThreadPool::get()->runSingle(task);
@@ -338,16 +338,16 @@ void Utils::GetAlbumArtAsyncWithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetad
 	case 4:
 		return GetAlbumArtAsync(hWnd, handle);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 JSObject* Utils::GetAlbumArtAsyncV2(uint32_t /*window_id*/, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
-	qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
 
 	return mozjs::art::GetAlbumArtPromise(m_ctx, wnd, handle->GetHandle(), art_id, need_stub, only_embed);
 }
@@ -367,13 +367,13 @@ JSObject* Utils::GetAlbumArtAsyncV2WithOpt(size_t optArgCount, uint32_t hWnd, Js
 	case 4:
 		return GetAlbumArtAsyncV2(hWnd, handle);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 JSObject* Utils::GetAlbumArtEmbedded(const std::string& rawpath, uint32_t art_id)
 {
-	qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
+	QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
 
 	auto data = AlbumArtStatic::get_embedded(rawpath, art_id);
 	auto bitmap = AlbumArtStatic::to_bitmap(data);
@@ -392,14 +392,14 @@ JSObject* Utils::GetAlbumArtEmbeddedWithOpt(size_t optArgCount, const std::strin
 	case 1:
 		return GetAlbumArtEmbedded(rawpath);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 JSObject* Utils::GetAlbumArtV2(JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
-	qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
+	QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
 
 	std::string dummy_path;
 	auto data = AlbumArtStatic::get(handle->GetHandle(), art_id, need_stub, false, dummy_path);
@@ -421,7 +421,7 @@ JSObject* Utils::GetAlbumArtV2WithOpt(size_t optArgCount, JsFbMetadbHandle* hand
 	case 2:
 		return GetAlbumArtV2(handle);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -463,7 +463,7 @@ JSObject* Utils::GetPackageInfo(const std::string& packageId) const
 std::string Utils::GetPackagePath(const std::string& packageId) const
 {
 	const auto packagePathOpt = config::FindPackage(packageId);
-	qwr::QwrException::ExpectTrue(packagePathOpt.has_value(), "Unknown package: {}", packageId);
+	QwrException::ExpectTrue(packagePathOpt.has_value(), "Unknown package: {}", packageId);
 
 	return packagePathOpt->u8string();
 }
@@ -471,7 +471,7 @@ std::string Utils::GetPackagePath(const std::string& packageId) const
 uint32_t Utils::GetSysColour(uint32_t index) const
 {
 	const auto hBrush = ::GetSysColorBrush(index); ///< no need to call DeleteObject here
-	qwr::QwrException::ExpectTrue(hBrush, "Invalid color index: {}", index);
+	QwrException::ExpectTrue(hBrush, "Invalid color index: {}", index);
 
 	return smp::colour::ColorrefToArgb(::GetSysColor(index));
 }
@@ -523,7 +523,7 @@ JS::Value Utils::GlobWithOpt(size_t optArgCount, const std::wstring& pattern, ui
 	case 2:
 		return Glob(pattern);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -532,8 +532,8 @@ uint32_t Utils::HTTPRequestAsync(uint32_t type, const std::string& url, const st
 	static uint32_t task_id{};
 
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
-	qwr::QwrException::ExpectTrue(type <= 1, "Invalid type argument");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(type <= 1, "Invalid type argument");
 
 	const auto type_enum = static_cast<HTTPRequestAsync::Type>(type);
 	auto task = fb2k::service_new<::HTTPRequestAsync>(type_enum, wnd, ++task_id, url, user_agent_or_headers, body);
@@ -553,14 +553,14 @@ uint32_t Utils::HTTPRequestAsyncWithOpt(size_t optArgCount, uint32_t type, const
 	case 2:
 		return HTTPRequestAsync(type, url);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 std::string Utils::InputBox(uint32_t, const std::string& prompt, const std::string& caption, const std::string& def, bool error_on_cancel)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	if (modal_dialog_scope::can_create())
 	{
@@ -570,7 +570,7 @@ std::string Utils::InputBox(uint32_t, const std::string& prompt, const std::stri
 		int status = dlg.DoModal(wnd);
 		if (status == IDCANCEL && error_on_cancel)
 		{
-			throw qwr::QwrException("Dialog window was closed");
+			throw QwrException("Dialog window was closed");
 		}
 
 		if (status == IDOK)
@@ -593,7 +593,7 @@ std::string Utils::InputBoxWithOpt(size_t optArgCount, uint32_t hWnd, const std:
 	case 2:
 		return InputBox(hWnd, prompt, caption);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -616,11 +616,11 @@ std::wstring Utils::MapString(const std::wstring& str, uint32_t lcid, uint32_t f
 {
 	// WinAPI is weird: 0 - error (with LastError), > 0 - characters required
 	int iRet = LCIDToLocaleName(lcid, nullptr, 0, LOCALE_ALLOW_NEUTRAL_NAMES);
-	qwr::error::CheckWinApi(iRet, "LCIDToLocaleName(nullptr)");
+	qwr::CheckWinApi(iRet, "LCIDToLocaleName(nullptr)");
 
 	std::wstring localeName(iRet, '\0');
 	iRet = LCIDToLocaleName(lcid, localeName.data(), localeName.size(), LOCALE_ALLOW_NEUTRAL_NAMES);
-	qwr::error::CheckWinApi(iRet, "LCIDToLocaleName(data)");
+	qwr::CheckWinApi(iRet, "LCIDToLocaleName(data)");
 
 	std::optional<NLSVERSIONINFOEX> versionInfo;
 	try
@@ -629,7 +629,7 @@ std::wstring Utils::MapString(const std::wstring& str, uint32_t lcid, uint32_t f
 		{
 			NLSVERSIONINFOEX tmpVersionInfo{};
 			BOOL bRet = GetNLSVersionEx(COMPARE_STRING, localeName.c_str(), &tmpVersionInfo);
-			qwr::error::CheckWinApi(bRet, "GetNLSVersionEx");
+			qwr::CheckWinApi(bRet, "GetNLSVersionEx");
 
 			versionInfo = tmpVersionInfo;
 		}
@@ -641,11 +641,11 @@ std::wstring Utils::MapString(const std::wstring& str, uint32_t lcid, uint32_t f
 	auto* pVersionInfo = reinterpret_cast<NLSVERSIONINFO*>(versionInfo ? &(*versionInfo) : nullptr);
 
 	iRet = LCMapStringEx(localeName.c_str(), flags, str.c_str(), str.length() + 1, nullptr, 0, pVersionInfo, nullptr, 0);
-	qwr::error::CheckWinApi(iRet, "LCMapStringEx(nullptr)");
+	qwr::CheckWinApi(iRet, "LCMapStringEx(nullptr)");
 
 	std::wstring dst(iRet, '\0');
 	iRet = LCMapStringEx(localeName.c_str(), flags, str.c_str(), str.length() + 1, dst.data(), dst.size(), pVersionInfo, nullptr, 0);
-	qwr::error::CheckWinApi(iRet, "LCMapStringEx(data)");
+	qwr::CheckWinApi(iRet, "LCMapStringEx(data)");
 
 	dst.resize(wcslen(dst.c_str()));
 	return dst;
@@ -662,7 +662,7 @@ std::wstring Utils::ReadINI(const std::wstring& filename, const std::wstring& se
 	std::wstring dst(MAX_PATH, '\0');
 	int iRet = GetPrivateProfileString(section.c_str(), key.c_str(), defaultval.c_str(), dst.data(), dst.size(), filename.c_str());
 	// TODO v2: Uncomment error checking
-	// qwr::error::CheckWinApi((iRet || (NO_ERROR == GetLastError())), "GetPrivateProfileString(nullptr)");
+	// qwr::CheckWinApi((iRet || (NO_ERROR == GetLastError())), "GetPrivateProfileString(nullptr)");
 
 	if (!iRet && (NO_ERROR != GetLastError()))
 	{
@@ -685,7 +685,7 @@ std::wstring Utils::ReadINIWithOpt(size_t optArgCount, const std::wstring& filen
 	case 1:
 		return ReadINI(filename, section, key);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -705,7 +705,7 @@ std::wstring Utils::ReadTextFileWithOpt(size_t optArgCount, const std::wstring& 
 	case 1:
 		return ReadTextFile(filePath);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -717,7 +717,7 @@ void Utils::SetClipboardText(const std::string& text)
 JS::Value Utils::ShowHtmlDialog(uint32_t, const std::wstring& htmlCode, JS::HandleValue options)
 {
 	const auto wnd = GetPanelHwndForCurrentGlobal(m_ctx);
-	qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
+	QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
 	if (modal_dialog_scope::can_create())
 	{
@@ -733,7 +733,7 @@ JS::Value Utils::ShowHtmlDialog(uint32_t, const std::wstring& htmlCode, JS::Hand
 			}
 			else
 			{
-				throw qwr::QwrException("DoModal failed: {}", iRet);
+				throw QwrException("DoModal failed: {}", iRet);
 			}
 		}
 	}
@@ -751,7 +751,7 @@ JS::Value Utils::ShowHtmlDialogWithOpt(size_t optArgCount, uint32_t hWnd, const 
 	case 1:
 		return ShowHtmlDialog(hWnd, htmlCode);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -796,7 +796,7 @@ bool Utils::WriteTextFileWithOpt(size_t optArgCount, const std::wstring& filenam
 	case 1:
 		return WriteTextFile(filename, content);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 

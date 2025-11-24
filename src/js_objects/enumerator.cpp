@@ -84,7 +84,7 @@ JsEnumerator::CreateNative(JSContext* cx, IUnknown* pUnknown)
 		}
 		catch (const _com_error&)
 		{
-			throw qwr::QwrException("Object is not enumerable");
+			throw QwrException("Object is not enumerable");
 		}
 	}();
 
@@ -125,7 +125,7 @@ JS::Value JsEnumerator::Item()
 void JsEnumerator::MoveFirst()
 {
 	HRESULT hr = pEnum_->Reset();
-	qwr::error::CheckHR(hr, "Reset");
+	qwr::CheckHR(hr, "Reset");
 
 	LoadCurrentElement();
 }
@@ -145,7 +145,7 @@ void JsEnumerator::LoadCurrentElement()
 	}
 	else
 	{
-		qwr::error::CheckHR(hr, "Next");
+		qwr::CheckHR(hr, "Next");
 		isAtEnd_ = false;
 	}
 }

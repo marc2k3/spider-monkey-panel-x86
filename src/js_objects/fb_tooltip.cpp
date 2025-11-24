@@ -76,7 +76,7 @@ namespace mozjs
 		, m_buffer(TEXT(SMP_NAME))
 	{
 		m_ctrl.Create(m_parent_wnd);
-		qwr::error::CheckWinApi(m_ctrl, "tooltip::Create");
+		qwr::CheckWinApi(m_ctrl, "tooltip::Create");
 
 		// Original position
 		m_ctrl.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
@@ -86,13 +86,13 @@ namespace mozjs
 		m_info = std::make_unique<CToolInfo>(TTF_IDISHWND | TTF_SUBCLASS, m_parent_wnd, (UINT_PTR)m_parent_wnd, nullptr, const_cast<wchar_t*>(m_buffer.c_str()));
 
 		auto bRet = m_ctrl.AddTool(m_info.get());
-		qwr::error::CheckWinApi(bRet, "tooltip::AddTool");
+		qwr::CheckWinApi(bRet, "tooltip::AddTool");
 		m_ctrl.Activate(FALSE);
 	}
 
 	std::unique_ptr<JsFbTooltip> JsFbTooltip::CreateNative(JSContext* cx, HWND hParentWnd)
 	{
-		qwr::QwrException::ExpectTrue(hParentWnd, "Internal error: hParentWnd is null");
+		QwrException::ExpectTrue(hParentWnd, "Internal error: hParentWnd is null");
 		return std::unique_ptr<JsFbTooltip>(new JsFbTooltip(cx, hParentWnd));
 	}
 
@@ -138,13 +138,13 @@ namespace mozjs
 
 	uint32_t JsFbTooltip::GetDelayTime(uint32_t type)
 	{
-		qwr::QwrException::ExpectTrue(type >= TTDT_AUTOMATIC && type <= TTDT_INITIAL, "Invalid delay type: {}", type);
+		QwrException::ExpectTrue(type >= TTDT_AUTOMATIC && type <= TTDT_INITIAL, "Invalid delay type: {}", type);
 		return m_ctrl.GetDelayTime(type);
 	}
 
 	void JsFbTooltip::SetDelayTime(uint32_t type, int32_t time)
 	{
-		qwr::QwrException::ExpectTrue(type >= TTDT_AUTOMATIC && type <= TTDT_INITIAL, "Invalid delay type: {}", type);
+		QwrException::ExpectTrue(type >= TTDT_AUTOMATIC && type <= TTDT_INITIAL, "Invalid delay type: {}", type);
 		m_ctrl.SetDelayTime(type, time);
 	}
 
@@ -171,7 +171,7 @@ namespace mozjs
 			DEFAULT_PITCH | FF_DONTCARE,
 			name.c_str()));
 
-		qwr::error::CheckWinApi(!!m_font, "CreateFont");
+		qwr::CheckWinApi(!!m_font, "CreateFont");
 		Update();
 	}
 
@@ -186,7 +186,7 @@ namespace mozjs
 		case 2:
 			return SetFont(name);
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 

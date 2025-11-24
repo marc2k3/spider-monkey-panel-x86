@@ -54,9 +54,9 @@ namespace smp
 
 		try
 		{
-			qwr::error::CheckWinApi(bRet, "CreateTimerQueueTimer");
+			qwr::CheckWinApi(bRet, "CreateTimerQueueTimer");
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			utils::LogError(e.what());
 			return nullptr;

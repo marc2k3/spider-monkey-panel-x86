@@ -22,7 +22,7 @@ public:
 
 	/// @detail Assumes that JSContext is freshly created
 	///
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void Start(JSContext* cx);
 	void Stop();
 
@@ -35,7 +35,7 @@ public:
 	[[nodiscard]] bool OnInterrupt();
 
 private:
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void StartMonitorThread();
 	void StopMonitorThread();
 

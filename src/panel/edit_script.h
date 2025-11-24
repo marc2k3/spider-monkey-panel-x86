@@ -3,9 +3,9 @@
 
 namespace smp::panel
 {
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void EditScript(HWND hParent, config::ParsedPanelSettings& settings);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void EditPackageScript(HWND hParent, const std::filesystem::path& script, const config::ParsedPanelSettings& settings);
 }

@@ -94,7 +94,7 @@ DWORD GetColourFromHex(std::string_view hex)
 
 	const std::string_view hexView{ hex.substr(1) }; // skip '#'
 
-	const auto colour = qwr::string::GetNumber<uint32_t>(hexView, 16).value_or(0);
+	const auto colour = qwr::GetNumber<uint32_t>(hexView, 16).value_or(0);
 
 	return smp::colour::ArgbToColorref(colour);
 }
@@ -103,7 +103,7 @@ ScintillaStyle ParseStyle(std::string_view p_definition)
 {
 	ScintillaStyle p_style;
 
-	const auto attributes = qwr::string::Split(p_definition, ',');
+	const auto attributes = qwr::Split(p_definition, ',');
 	for (const auto& attribute: attributes)
 	{
 		if (attribute.empty())
@@ -111,7 +111,7 @@ ScintillaStyle ParseStyle(std::string_view p_definition)
 			continue;
 		}
 
-		const auto values = qwr::string::Split(attribute, ':');
+		const auto values = qwr::Split(attribute, ':');
 		if (values.empty() || values[0].empty())
 		{
 			continue;
@@ -166,7 +166,7 @@ ScintillaStyle ParseStyle(std::string_view p_definition)
 		{
 			if (values.size() >= 2)
 			{
-				auto intRet = qwr::string::GetNumber<unsigned>(values[1]);
+				auto intRet = qwr::GetNumber<unsigned>(values[1]);
 				if (intRet)
 				{
 					p_style.flags |= ESF_SIZE;
@@ -464,7 +464,7 @@ void CScriptEditorCtrl::ReadAPI()
 		{
 			const auto content = get_resource_text(id);
 
-			for (const auto& line: qwr::string::SplitByLines(content))
+			for (const auto& line: qwr::SplitByLines(content))
 			{
 				if (!line.empty() && IsCSym(line[0]))
 				{
@@ -554,7 +554,7 @@ void CScriptEditorCtrl::ReloadScintillaSettings()
 			return std::nullopt;
 		}
 
-		return qwr::string::GetNumber<int>(static_cast<std::string_view>(*propvalRet));
+		return qwr::GetNumber<int>(static_cast<std::string_view>(*propvalRet));
 	};
 
 	auto retVal = getIntFromProp("style.wrap.mode");

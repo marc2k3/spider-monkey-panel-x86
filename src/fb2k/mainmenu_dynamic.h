@@ -24,9 +24,9 @@ public:
 	void RegisterPanel(HWND hWnd, const std::string& panelName);
 	void UnregisterPanel(HWND hWnd);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void RegisterCommand(HWND hWnd, uint32_t id, const std::string& name, const std::optional<std::string>& description);
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void UnregisterCommand(HWND hWnd, uint32_t id);
 
 	const std::unordered_map<HWND, PanelData>& GetAllCommandData() const;

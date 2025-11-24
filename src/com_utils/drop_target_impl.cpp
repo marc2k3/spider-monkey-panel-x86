@@ -7,7 +7,7 @@ _COM_SMARTPTR_TYPEDEF(IDropTargetHelper, IID_IDropTargetHelper);
 
 namespace
 {
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	IDropTargetHelperPtr GetDropTargetHelper()
 	{
 		// delay helper initialization, since it's pretty expensive
@@ -15,7 +15,7 @@ namespace
 			{
 				IDropTargetHelperPtr dth;
 				HRESULT hr = dth.CreateInstance(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
-				qwr::error::CheckHR(hr, "CreateInstance");
+				qwr::CheckHR(hr, "CreateInstance");
 
 				assert(dth);
 				return dth;
@@ -60,7 +60,7 @@ namespace smp::com
 		{
 			GetDropTargetHelper()->DragEnter(hWnd_, pDataObj, &point, *pdwEffect);
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			smp::utils::LogWarning(fmt::format("DnD initialization failed:\n"
 												"  {}",
@@ -85,7 +85,7 @@ namespace smp::com
 		{
 			GetDropTargetHelper()->DragOver(&point, *pdwEffect);
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			smp::utils::LogWarning(fmt::format("DnD initialization failed:\n"
 												"  {}",
@@ -104,7 +104,7 @@ namespace smp::com
 		{
 			GetDropTargetHelper()->DragLeave();
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			smp::utils::LogWarning(fmt::format("DnD initialization failed:\n"
 												"  {}",
@@ -133,7 +133,7 @@ namespace smp::com
 		{
 			GetDropTargetHelper()->Drop(pDataObj, &point, *pdwEffect);
 		}
-		catch (const qwr::QwrException& e)
+		catch (const QwrException& e)
 		{
 			smp::utils::LogWarning(fmt::format("DnD initialization failed:\n"
 												"  {}",

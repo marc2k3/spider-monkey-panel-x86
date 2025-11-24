@@ -9,7 +9,7 @@ namespace smp::com
 		{
 		case DISP_E_BADVARTYPE:
 		{
-			throw qwr::QwrException("ActiveXObject: Bad variable type `{}`", argerr);
+			throw QwrException("ActiveXObject: Bad variable type `{}`", argerr);
 		}
 		case DISP_E_EXCEPTION:
 		{
@@ -30,7 +30,7 @@ namespace smp::com
 			{
 				const auto errorDesc8 = qwr::ToU8(std::wstring_view{ exception.bstrDescription ? exception.bstrDescription : L"<none>" });
 				const auto errorSource8 = qwr::ToU8(std::wstring_view{ exception.bstrSource ? exception.bstrSource : L"<none>" });
-				throw qwr::QwrException("ActiveXObject:\n"
+				throw QwrException("ActiveXObject:\n"
 					"  code: {:#x}\n"
 					"  description: {}\n"
 					"  source: {}",
@@ -40,29 +40,29 @@ namespace smp::com
 			}
 			else
 			{
-				qwr::error::CheckHR(hr, "ActiveXObject call");
-				throw qwr::QwrException("ActiveXObject: <no info> (malformed DISP_E_EXCEPTION)", argerr);
+				qwr::CheckHR(hr, "ActiveXObject call");
+				throw QwrException("ActiveXObject: <no info> (malformed DISP_E_EXCEPTION)", argerr);
 			}
 		}
 		case DISP_E_OVERFLOW:
 		{
-			throw qwr::QwrException("ActiveXObject: Can not convert variable `{}`", argerr);
+			throw QwrException("ActiveXObject: Can not convert variable `{}`", argerr);
 		}
 		case DISP_E_PARAMNOTFOUND:
 		{
-			throw qwr::QwrException("ActiveXObject: Parameter `{}` not found", argerr);
+			throw QwrException("ActiveXObject: Parameter `{}` not found", argerr);
 		}
 		case DISP_E_TYPEMISMATCH:
 		{
-			throw qwr::QwrException("ActiveXObject: Parameter `{}` type mismatch", argerr);
+			throw QwrException("ActiveXObject: Parameter `{}` type mismatch", argerr);
 		}
 		case DISP_E_PARAMNOTOPTIONAL:
 		{
-			throw qwr::QwrException("ActiveXObject: Parameter `{}` is required", argerr);
+			throw QwrException("ActiveXObject: Parameter `{}` is required", argerr);
 		}
 		default:
 		{
-			qwr::error::CheckHR(hresult, "ActiveXObject");
+			qwr::CheckHR(hresult, "ActiveXObject");
 		}
 		}
 	}

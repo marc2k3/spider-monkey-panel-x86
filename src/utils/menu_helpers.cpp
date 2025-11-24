@@ -136,7 +136,7 @@ namespace smp::utils
 				ptr->get_display(idx, tmp, status);
 			});
 
-		qwr::QwrException::ExpectTrue(bRet, "Unknown menu command: {}", name);
+		QwrException::ExpectTrue(bRet, "Unknown menu command: {}", name);
 		return status;
 	}
 }

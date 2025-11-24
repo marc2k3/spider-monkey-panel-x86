@@ -78,8 +78,8 @@ size_t JsMainMenuManager::GetInternalSize()
 
 void JsMainMenuManager::BuildMenu(JsMenuObject* menu, int32_t base_id, int32_t count)
 {
-	qwr::QwrException::ExpectTrue(menuManager_.is_valid(), "Main menu manager is not initialized");
-	qwr::QwrException::ExpectTrue(menu, "menu argument is null");
+	QwrException::ExpectTrue(menuManager_.is_valid(), "Main menu manager is not initialized");
+	QwrException::ExpectTrue(menu, "menu argument is null");
 
 	// HACK: workaround for foo_menu_addons
 	try
@@ -93,7 +93,7 @@ void JsMainMenuManager::BuildMenu(JsMenuObject* menu, int32_t base_id, int32_t c
 
 bool JsMainMenuManager::ExecuteByID(uint32_t id)
 {
-	qwr::QwrException::ExpectTrue(menuManager_.is_valid(), "Main menu manager is not initialized");
+	QwrException::ExpectTrue(menuManager_.is_valid(), "Main menu manager is not initialized");
 
 	return menuManager_->execute_command(id);
 }
@@ -128,7 +128,7 @@ void JsMainMenuManager::Init(const std::string& root_name)
 	auto result = ranges::find_if(validRoots, [&preparedRootName](auto& root) {
 		return preparedRootName == root.name;
 	});
-	qwr::QwrException::ExpectTrue(result != std::cend(validRoots), "Invalid menu root name: {}", root_name);
+	QwrException::ExpectTrue(result != std::cend(validRoots), "Invalid menu root name: {}", root_name);
 
 	menuManager_ = standard_api_create_t<mainmenu_manager>();
 	menuManager_->instantiate(*(result->guid));

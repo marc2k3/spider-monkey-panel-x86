@@ -60,7 +60,7 @@ bool PrependTextToJsStringException(JSContext* cx, JS::HandleValue excn, const s
 	{
 		return false;
 	}
-	catch (const qwr::QwrException&)
+	catch (const QwrException&)
 	{
 		return false;
 	}
@@ -91,7 +91,7 @@ bool PrependTextToJsStringException(JSContext* cx, JS::HandleValue excn, const s
 	{
 		return false;
 	}
-	catch (const qwr::QwrException&)
+	catch (const QwrException&)
 	{
 		return false;
 	}
@@ -331,7 +331,7 @@ void ExceptionToJsError(JSContext* cx)
 	{
 		assert(JS_IsExceptionPending(cx));
 	}
-	catch (const qwr::QwrException& e)
+	catch (const QwrException& e)
 	{
 		JS_ClearPendingException(cx);
 		JS_ReportErrorUTF8(cx, e.what());
@@ -377,7 +377,7 @@ std::string ExceptionToText(JSContext* cx)
 	{
 		return JsErrorToText(cx);
 	}
-	catch (const qwr::QwrException& e)
+	catch (const QwrException& e)
 	{
 		JS_ClearPendingException(cx);
 		return e.what();
@@ -417,7 +417,7 @@ void SuppressException(JSContext* cx)
 	catch (const JsException&)
 	{
 	}
-	catch (const qwr::QwrException&)
+	catch (const QwrException&)
 	{
 	}
 	catch (const _com_error&)

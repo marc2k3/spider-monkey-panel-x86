@@ -53,7 +53,7 @@ JSObject* GetPrototype(JSContext* cx, JsPrototypeId protoId)
 	assert(slotIdx < JSCLASS_RESERVED_SLOTS(JS_GetClass(globalObject)));
 
 	JS::Value protoVal = JS::GetReservedSlot(globalObject, slotIdx);
-	qwr::QwrException::ExpectTrue(
+	QwrException::ExpectTrue(
 		protoVal.isObject(),
 		"Internal error: Slot {}({}) does not contain a prototype", static_cast<uint32_t>(protoId), slotIdx
 	);

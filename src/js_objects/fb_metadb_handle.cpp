@@ -94,7 +94,7 @@ JsFbMetadbHandle::JsFbMetadbHandle(JSContext* cx, const metadb_handle_ptr& handl
 std::unique_ptr<mozjs::JsFbMetadbHandle>
 JsFbMetadbHandle::CreateNative(JSContext* cx, const metadb_handle_ptr& handle)
 {
-	qwr::QwrException::ExpectTrue(handle.is_valid(), "Internal error: metadb_handle_ptr is null");
+	QwrException::ExpectTrue(handle.is_valid(), "Internal error: metadb_handle_ptr is null");
 
 	return std::unique_ptr<JsFbMetadbHandle>(new JsFbMetadbHandle(cx, handle));
 }
@@ -119,7 +119,7 @@ void JsFbMetadbHandle::ClearStats()
 
 bool JsFbMetadbHandle::Compare(JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	return (handle->GetHandle() == metadbHandle_);
 }

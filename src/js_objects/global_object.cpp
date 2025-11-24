@@ -34,13 +34,13 @@ using namespace smp;
 
 namespace
 {
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	[[noreturn]] void ThrowInvalidPathError(const fs::path& invalidPath)
 	{
-		throw qwr::QwrException("Path does not point to a valid file: {}", invalidPath.u8string());
+		throw QwrException("Path does not point to a valid file: {}", invalidPath.u8string());
 	}
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	auto FindSuitableFileForInclude(const fs::path& path, const std::span<const fs::path>& searchPaths)
 	{
 		try
@@ -111,7 +111,7 @@ namespace
 		}
 		catch (const fs::filesystem_error& e)
 		{
-			throw qwr::QwrException("Failed to open file `{}`:\n  {}", path.u8string(), qwr::FS_Error_ToU8(e));
+			throw QwrException("Failed to open file `{}`:\n  {}", path.u8string(), qwr::FS_Error_ToU8(e));
 		}
 	}
 
@@ -323,7 +323,7 @@ namespace mozjs
 		case 1:
 			return IncludeScript(path);
 		default:
-			throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+			throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 		}
 	}
 
@@ -353,7 +353,7 @@ namespace mozjs
 
 		if (!options.isNullOrUndefined())
 		{
-			qwr::QwrException::ExpectTrue(options.isObject(), "options argument is not an object");
+			QwrException::ExpectTrue(options.isObject(), "options argument is not an object");
 			JS::RootedObject jsOptions(pJsCtx_, &options.toObject());
 
 			parsedOptions.alwaysEvaluate = GetOptionalProperty<bool>(pJsCtx_, jsOptions, "always_evaluate").value_or(false);

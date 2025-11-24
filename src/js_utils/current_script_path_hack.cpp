@@ -20,7 +20,7 @@ namespace mozjs::hack
 			JS::ErrorReportBuilder reportBuilder(cx);
 			if (!reportBuilder.init(cx, excn, JS::ErrorReportBuilder::SniffingBehavior::WithSideEffects))
 			{
-				throw qwr::QwrException("ErrorReportBuilder::init failed");
+				throw QwrException("ErrorReportBuilder::init failed");
 			}
 
 			JSErrorReport* pReport = reportBuilder.report();
@@ -43,7 +43,7 @@ namespace mozjs::hack
 		}
 		catch (const std::filesystem::filesystem_error& e)
 		{
-			throw qwr::QwrException(e);
+			throw QwrException(e);
 		}
 	}
 

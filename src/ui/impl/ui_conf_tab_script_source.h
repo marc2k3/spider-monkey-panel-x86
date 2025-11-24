@@ -113,7 +113,7 @@ private:
 	std::string path_;
 	std::string packageName_;
 
-	std::array<std::unique_ptr<qwr::ui::IUiDdx>, 4> ddx_;
+	std::array<std::unique_ptr<qwr::IUiDdx>, 4> ddx_;
 
 	static std::vector<SampleComboBoxElem> sampleData_;
 	CComboBox samplesComboBox_;

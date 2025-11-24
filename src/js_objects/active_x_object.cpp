@@ -267,10 +267,10 @@ bool ActiveX_Run_Impl(JSContext* cx, unsigned argc, JS::Value* vp)
 	JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
 
 	auto pNative = GetInnerInstancePrivate<JsActiveXObject>(cx, args.thisv());
-	qwr::QwrException::ExpectTrue(pNative, "`this` is not an object of valid type");
+	QwrException::ExpectTrue(pNative, "`this` is not an object of valid type");
 
 	JS::RootedString jsString(cx, JS_GetFunctionId(JS_ValueToFunction(cx, args.calleev())));
-	qwr::QwrException::ExpectTrue(jsString, "Failed to get function name");
+	QwrException::ExpectTrue(jsString, "Failed to get function name");
 
 	pNative->Invoke(convert::to_native::ToValue<std::wstring>(cx, jsString), args);
 	return true;
@@ -281,7 +281,7 @@ bool ActiveX_Get_Impl(JSContext* cx, unsigned argc, JS::Value* vp)
 	JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
 
 	auto pNative = GetInnerInstancePrivate<JsActiveXObject>(cx, args.thisv());
-	qwr::QwrException::ExpectTrue(pNative, "`this` is not an object of valid type");
+	QwrException::ExpectTrue(pNative, "`this` is not an object of valid type");
 
 	pNative->Get(args);
 	return true;
@@ -292,7 +292,7 @@ bool ActiveX_Set_Impl(JSContext* cx, unsigned argc, JS::Value* vp)
 	JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
 
 	auto pNative = GetInnerInstancePrivate<JsActiveXObject>(cx, args.thisv());
-	qwr::QwrException::ExpectTrue(pNative, "`this` is not an object of valid type");
+	QwrException::ExpectTrue(pNative, "`this` is not an object of valid type");
 
 	pNative->Set(args);
 	return true;
@@ -442,7 +442,7 @@ std::unique_ptr<JsActiveXObject> JsActiveXObject::CreateNative(JSContext* cx, co
 		? CLSIDFromString(name.c_str(), &clsid)
 		: CLSIDFromProgID(name.c_str(), &clsid);
 
-	qwr::QwrException::ExpectTrue(SUCCEEDED(hresult), L"Invalid CLSID: {}", name);
+	QwrException::ExpectTrue(SUCCEEDED(hresult), L"Invalid CLSID: {}", name);
 
 	std::unique_ptr<JsActiveXObject> nativeObject;
 	IUnknown* unk = nullptr;
@@ -450,13 +450,13 @@ std::unique_ptr<JsActiveXObject> JsActiveXObject::CreateNative(JSContext* cx, co
 	if (SUCCEEDED(hresult) && unk)
 	{
 		nativeObject = std::make_unique<JsActiveXObject>(cx, unk);
-		qwr::QwrException::ExpectTrue(nativeObject->pStorage_->pUnknown, L"Failed to create ActiveXObject object via IUnknown: {}", name);
+		QwrException::ExpectTrue(nativeObject->pStorage_->pUnknown, L"Failed to create ActiveXObject object via IUnknown: {}", name);
 	}
 
 	if (!nativeObject)
 	{
 		nativeObject = std::make_unique<JsActiveXObject>(cx, clsid);
-		qwr::QwrException::ExpectTrue(nativeObject->pStorage_->pUnknown, L"Failed to create ActiveXObject object via CLSID: {}", name);
+		QwrException::ExpectTrue(nativeObject->pStorage_->pUnknown, L"Failed to create ActiveXObject object via CLSID: {}", name);
 	}
 
 	return nativeObject;
@@ -482,14 +482,14 @@ JSObject* JsActiveXObject::Constructor(JSContext* cx, const std::wstring& name)
 JSObject* JsActiveXObject::CreateFromArray(JSContext* cx, JS::HandleValue arr, uint32_t elementVariantType)
 {
 	JS::RootedObject jsObjectIn(cx, arr.toObjectOrNull());
-	qwr::QwrException::ExpectTrue(jsObjectIn, "Value is not a JS object");
+	QwrException::ExpectTrue(jsObjectIn, "Value is not a JS object");
 
 	bool is;
 	if (!JS::IsArrayObject(cx, jsObjectIn, &is))
 	{
 		throw smp::JsException();
 	}
-	qwr::QwrException::ExpectTrue(is, "Object is not an array");
+	QwrException::ExpectTrue(is, "Object is not an array");
 
 	_variant_t var;
 	convert::com::JsArrayToVariantArray(cx, jsObjectIn, elementVariantType, var);
@@ -526,7 +526,7 @@ std::optional<DISPID> JsActiveXObject::GetDispId(const std::wstring& name, bool 
 	{
 		if (reportError)
 		{
-			throw qwr::QwrException("Internal error: pStorage_->pDispatch is null");
+			throw QwrException("Internal error: pStorage_->pDispatch is null");
 		}
 		return std::nullopt;
 	}
@@ -552,7 +552,7 @@ std::optional<DISPID> JsActiveXObject::GetDispId(const std::wstring& name, bool 
 		{
 			if (reportError)
 			{
-				throw qwr::QwrException("Failed to get DISPID for `{}`", qwr::ToU8(name));
+				throw QwrException("Failed to get DISPID for `{}`", qwr::ToU8(name));
 			}
 			return std::nullopt;
 		}
@@ -645,10 +645,10 @@ std::vector<std::wstring> JsActiveXObject::GetAllMembers()
 
 void JsActiveXObject::GetItem(int32_t index, JS::MutableHandleValue vp)
 {
-	qwr::QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
+	QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
 
 	const auto dispRet = GetDispId(L"item");
-	qwr::QwrException::ExpectTrue(dispRet.has_value(), L"Object is not subscriptable");
+	QwrException::ExpectTrue(dispRet.has_value(), L"Object is not subscriptable");
 
 	std::array args{ _variant_t{ index } };
 	GetImpl(*dispRet, args, vp);
@@ -656,7 +656,7 @@ void JsActiveXObject::GetItem(int32_t index, JS::MutableHandleValue vp)
 
 bool JsActiveXObject::TryGetProperty(const std::wstring& propName, JS::MutableHandleValue vp)
 {
-	qwr::QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
+	QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
 
 	auto dispRet = GetDispId(propName, false);
 	if (!dispRet)
@@ -678,13 +678,13 @@ void JsActiveXObject::GetProperty(const std::wstring& propName, JS::MutableHandl
 
 void JsActiveXObject::Get(JS::CallArgs& callArgs)
 {
-	qwr::QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
-	qwr::QwrException::ExpectTrue(callArgs.length(), "Property name is missing");
+	QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
+	QwrException::ExpectTrue(callArgs.length(), "Property name is missing");
 
 	const auto propName = convert::to_native::ToValue<std::wstring>(pJsCtx_, callArgs[0]);
 
 	const auto dispRet = GetDispId(propName);
-	qwr::QwrException::ExpectTrue(dispRet.has_value(), L"Invalid property name: {}", propName);
+	QwrException::ExpectTrue(dispRet.has_value(), L"Invalid property name: {}", propName);
 
 	const uint32_t argc = callArgs.length() - 1;
 	std::vector<_variant_t> args(argc);
@@ -705,10 +705,10 @@ void JsActiveXObject::Get(JS::CallArgs& callArgs)
 
 void JsActiveXObject::Set(const std::wstring& propName, JS::HandleValue v)
 {
-	qwr::QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
+	QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
 
 	const auto dispRet = GetDispId(propName);
-	qwr::QwrException::ExpectTrue(dispRet.has_value(), L"Invalid property name: {}", propName);
+	QwrException::ExpectTrue(dispRet.has_value(), L"Invalid property name: {}", propName);
 
 	_variant_t arg;
 	JsToVariantSafe(pJsCtx_, v, arg);
@@ -746,13 +746,13 @@ void JsActiveXObject::Set(const std::wstring& propName, JS::HandleValue v)
 
 void JsActiveXObject::Set(const JS::CallArgs& callArgs)
 {
-	qwr::QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
-	qwr::QwrException::ExpectTrue(callArgs.length(), "Property name is missing");
+	QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
+	QwrException::ExpectTrue(callArgs.length(), "Property name is missing");
 
 	const auto propName = convert::to_native::ToValue<std::wstring>(pJsCtx_, callArgs[0]);
 
 	const auto dispRet = GetDispId(propName);
-	qwr::QwrException::ExpectTrue(dispRet.has_value(), L"Invalid property name: {}", propName);
+	QwrException::ExpectTrue(dispRet.has_value(), L"Invalid property name: {}", propName);
 
 	const uint32_t argc = callArgs.length() - 1;
 	std::vector<_variant_t> args(argc);
@@ -803,10 +803,10 @@ void JsActiveXObject::Set(const JS::CallArgs& callArgs)
 
 void JsActiveXObject::Invoke(const std::wstring& funcName, const JS::CallArgs& callArgs)
 {
-	qwr::QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
+	QwrException::ExpectTrue(pStorage_->pDispatch, "Internal error: pStorage_->pDispatch is null");
 
 	const auto dispRet = GetDispId(funcName);
-	qwr::QwrException::ExpectTrue(dispRet.has_value(), L"Invalid function name: {}", funcName);
+	QwrException::ExpectTrue(dispRet.has_value(), L"Invalid function name: {}", funcName);
 
 	const uint32_t argc = callArgs.length();
 	std::vector<_variant_t> args(argc);
@@ -858,7 +858,7 @@ void JsActiveXObject::SetupMembers(JS::HandleObject jsObject)
 		return;
 	}
 
-	qwr::QwrException::ExpectTrue(pStorage_->pUnknown || pStorage_->pDispatch || hasVariant_, "Internal error: pStorage_->pUnknown and pStorage_->pDispatch are null and pStorage_->variant was not set");
+	QwrException::ExpectTrue(pStorage_->pUnknown || pStorage_->pDispatch || hasVariant_, "Internal error: pStorage_->pUnknown and pStorage_->pDispatch are null and pStorage_->variant was not set");
 	if (hasVariant_)
 	{ // opaque data
 		areMembersSetup_ = true;
@@ -868,17 +868,17 @@ void JsActiveXObject::SetupMembers(JS::HandleObject jsObject)
 	if (!pStorage_->pDispatch)
 	{
 		HRESULT hr = pStorage_->pUnknown->QueryInterface(IID_IDispatch, reinterpret_cast<void**>(&pStorage_->pDispatch));
-		qwr::error::CheckHR(hr, "QueryInterface");
+		qwr::CheckHR(hr, "QueryInterface");
 	}
 
 	if (!pStorage_->pTypeInfo)
 	{
 		unsigned ctinfo;
 		HRESULT hr = pStorage_->pDispatch->GetTypeInfoCount(&ctinfo);
-		qwr::error::CheckHR(hr, "GetTypeInfoCount");
+		qwr::CheckHR(hr, "GetTypeInfoCount");
 
 		hr = pStorage_->pDispatch->GetTypeInfo(0, 0, &pStorage_->pTypeInfo);
-		qwr::error::CheckHR(hr, "GetTypeInfo");
+		qwr::CheckHR(hr, "GetTypeInfo");
 	}
 
 	ParseTypeInfoRecursive(pJsCtx_, pStorage_->pTypeInfo, members_);
@@ -893,7 +893,7 @@ void JsActiveXObject::ParseTypeInfoRecursive(JSContext* cx, ITypeInfo* pTypeInfo
 
 	TYPEATTR* pAttr = nullptr;
 	HRESULT hr = pTypeInfo->GetTypeAttr(&pAttr);
-	qwr::error::CheckHR(hr, "GetTypeAttr");
+	qwr::CheckHR(hr, "GetTypeAttr");
 
 	auto autoTypeAttr = wil::scope_exit([pTypeInfo, pAttr] {
 		pTypeInfo->ReleaseTypeAttr(pAttr);
@@ -905,7 +905,7 @@ void JsActiveXObject::ParseTypeInfoRecursive(JSContext* cx, ITypeInfo* pTypeInfo
 		{
 			HREFTYPE hRef = 0;
 			hr = pTypeInfo->GetRefTypeOfImplType(i, &hRef);
-			qwr::error::CheckHR(hr, "GetTypeAttr");
+			qwr::CheckHR(hr, "GetTypeAttr");
 
 			ITypeInfo* pTypeInfoCur = nullptr;
 			hr = pTypeInfo->GetRefTypeInfo(hRef, &pTypeInfoCur);

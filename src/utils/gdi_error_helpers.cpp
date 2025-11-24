@@ -1,7 +1,7 @@
 #include <stdafx.h>
 #include "gdi_error_helpers.h"
 
-namespace qwr::error
+namespace qwr
 {
 	std::string GdiErrorCodeToText(Gdiplus::Status errorCode)
 	{
@@ -58,7 +58,7 @@ namespace qwr::error
 	{
 		if (gdiStatus > 0)
 		{
-			throw qwr::QwrException("GdiPlus error: {} failed with error ({:#x}): {}", functionName, static_cast<int>(gdiStatus), GdiErrorCodeToText(gdiStatus));
+			throw QwrException("GdiPlus error: {} failed with error ({:#x}): {}", functionName, static_cast<int>(gdiStatus), GdiErrorCodeToText(gdiStatus));
 		}
 	}
 }

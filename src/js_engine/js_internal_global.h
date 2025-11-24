@@ -9,13 +9,13 @@ class JsGlobalObject;
 class JsInternalGlobal
 {
 public:
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	/// @throw smp::JsException
 	static [[nodiscard]] std::unique_ptr<JsInternalGlobal> Create(JSContext* cx);
 
 	~JsInternalGlobal();
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	/// @throw smp::JsException
 	[[nodiscard]] JSScript* GetCachedScript(const std::filesystem::path& absolutePath);
 

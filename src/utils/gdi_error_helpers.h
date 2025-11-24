@@ -1,14 +1,14 @@
 #pragma once
 #include <utils/gdi_helpers.h>
 
-namespace qwr::error
+namespace qwr
 {
 	[[nodiscard]] std::string GdiErrorCodeToText(Gdiplus::Status errorCode);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void CheckGdi(Gdiplus::Status gdiStatus, std::string_view functionName);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	template <typename T, typename T_Parent = T>
 	void CheckGdiPlusObject(const std::unique_ptr<T>& obj, const T_Parent* pParentObj = nullptr)
 	{
@@ -28,11 +28,11 @@ namespace qwr::error
 
 		if (status)
 		{
-			throw qwr::QwrException("Failed to create GdiPlus object ({:#x}): {}", static_cast<int>(*status), GdiErrorCodeToText(*status));
+			throw QwrException("Failed to create GdiPlus object ({:#x}): {}", static_cast<int>(*status), GdiErrorCodeToText(*status));
 		}
 		else
 		{
-			throw qwr::QwrException("Failed to create GdiPlus object");
+			throw QwrException("Failed to create GdiPlus object");
 		}
 	}
 }

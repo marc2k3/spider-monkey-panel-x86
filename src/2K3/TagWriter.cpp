@@ -11,13 +11,13 @@ void TagWriter::from_json_array(JSON& arr) noexcept
 
 	for (auto&& [info, obj, handle] : ranges::views::zip(infos, arr, m_handles))
 	{
-		qwr::QwrException::ExpectTrue(obj.is_object() && !obj.empty(), "Invalid JSON info: array element not a JSON object");
+		QwrException::ExpectTrue(obj.is_object() && !obj.empty(), "Invalid JSON info: array element not a JSON object");
 
 		info = handle->get_info_ref()->info();
 
 		for (const auto& [name, values] : obj.items())
 		{
-			qwr::QwrException::ExpectTrue(!name.empty(), "Invalid JSON info: name cannot be empty");
+			QwrException::ExpectTrue(!name.empty(), "Invalid JSON info: name cannot be empty");
 
 			info.meta_remove_field(name.c_str());
 
@@ -39,7 +39,7 @@ void TagWriter::from_json_object(JSON& obj) noexcept
 
 	for (const auto& [name, value] : obj.items())
 	{
-		qwr::QwrException::ExpectTrue(!name.empty(), "Invalid JSON info: name cannot be empty");
+		QwrException::ExpectTrue(!name.empty(), "Invalid JSON info: name cannot be empty");
 
 		const auto tag = FileInfoFilter::Tag{
 			.name = name,

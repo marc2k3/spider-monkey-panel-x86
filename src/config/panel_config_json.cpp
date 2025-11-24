@@ -56,7 +56,7 @@ JSON SerializePropertiesToObject(const config::PanelProperties& properties)
 	}
 	catch (const JSON::exception& e)
 	{
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 }
 
@@ -68,25 +68,25 @@ config::PanelProperties DeserializePropertiesFromObject(const JSON& jsonMain)
 
 		if (!jsonMain.is_object())
 		{
-			throw qwr::QwrException("Corrupted serialized properties: not a JSON object");
+			throw QwrException("Corrupted serialized properties: not a JSON object");
 		}
 
 		if (jsonMain.at("version").get<std::string>() != kPropJsonConfigVersion || jsonMain.at("id").get<std::string>() != kPropJsonConfigId)
 		{
-			throw qwr::QwrException("Corrupted serialized properties: version/id mismatch");
+			throw QwrException("Corrupted serialized properties: version/id mismatch");
 		}
 
 		auto& jsonValues = jsonMain.at("values");
 		if (!jsonValues.is_object())
 		{
-			throw qwr::QwrException("Corrupted serialized properties: values");
+			throw QwrException("Corrupted serialized properties: values");
 		}
 
 		for (auto& [key, value]: jsonValues.items())
 		{
 			if (key.empty())
 			{
-				throw qwr::QwrException("Corrupted serialized properties: empty key");
+				throw QwrException("Corrupted serialized properties: empty key");
 			}
 
 			mozjs::SerializedJsValue serializedValue;
@@ -119,7 +119,7 @@ config::PanelProperties DeserializePropertiesFromObject(const JSON& jsonMain)
 	}
 	catch (const JSON::exception& e)
 	{
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 }
 
@@ -139,7 +139,7 @@ PanelSettings LoadSettings(stream_reader* reader, abort_callback& abort)
 
 		if (jsonMain.at("version").get<std::string>() != kSettingsJsonConfigVersion || jsonMain.at("id").get<std::string>() != kSettingsJsonConfigId)
 		{
-			throw qwr::QwrException("Corrupted serialized settings: version/id mismatch");
+			throw QwrException("Corrupted serialized settings: version/id mismatch");
 		}
 
 		if (jsonMain.find("panelId") != jsonMain.end())
@@ -182,7 +182,7 @@ PanelSettings LoadSettings(stream_reader* reader, abort_callback& abort)
 					return fsPath;
 				}
 				default:
-					throw qwr::QwrException("Corrupted serialized settings: unknown file location type");
+					throw QwrException("Corrupted serialized settings: unknown file location type");
 				}
 			}();
 
@@ -206,7 +206,7 @@ PanelSettings LoadSettings(stream_reader* reader, abort_callback& abort)
 		}
 		default:
 		{
-			throw qwr::QwrException("Corrupted serialized settings: unknown script type");
+			throw QwrException("Corrupted serialized settings: unknown script type");
 		}
 		}
 
@@ -218,15 +218,15 @@ PanelSettings LoadSettings(stream_reader* reader, abort_callback& abort)
 	}
 	catch (const JSON::exception& e)
 	{
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		throw qwr::QwrException(e);
+		throw QwrException(e);
 	}
 	catch (const pfc::exception& e)
 	{
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 }
 
@@ -277,7 +277,7 @@ void SaveSettings(stream_writer* writer, abort_callback& abort, const PanelSetti
 					}
 					catch (const fs::filesystem_error& e)
 					{
-						throw qwr::QwrException(e);
+						throw QwrException(e);
 					}
 				}();
 
@@ -314,15 +314,15 @@ void SaveSettings(stream_writer* writer, abort_callback& abort, const PanelSetti
 	}
 	catch (const JSON::exception& e)
 	{
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 	catch (const fs::filesystem_error& e)
 	{
-		throw qwr::QwrException(e);
+		throw QwrException(e);
 	}
 	catch (const pfc::exception& e)
 	{
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 }
 
@@ -334,7 +334,7 @@ PanelProperties LoadProperties(stream_reader* reader, abort_callback& abort)
 	}
 	catch (const pfc::exception& e)
 	{
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 }
 
@@ -346,7 +346,7 @@ void SaveProperties(stream_writer* writer, abort_callback& abort, const PanelPro
 	}
 	catch (const pfc::exception& e)
 	{
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 }
 
@@ -358,7 +358,7 @@ PanelProperties DeserializeProperties(const std::string& str)
 	}
 	catch (const JSON::exception& e)
 	{
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 }
 
@@ -370,7 +370,7 @@ std::string SerializeProperties(const PanelProperties& properties)
 	}
 	catch (const JSON::exception& e)
 	{
-		throw qwr::QwrException(e.what());
+		throw QwrException(e.what());
 	}
 }
 

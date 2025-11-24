@@ -19,13 +19,13 @@ struct PanelProperties
 	PropertyMap values;
 
 public:
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	[[nodiscard]] static PanelProperties FromJson(const std::string& jsonString);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	[[nodiscard]] std::string ToJson() const;
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void Save(stream_writer* writer, abort_callback& abort) const;
 };
 
@@ -71,10 +71,10 @@ public:
 
 	void ResetToDefault();
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	[[nodiscard]] static PanelSettings Load(stream_reader* reader, size_t size, abort_callback& abort);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void Save(stream_writer* writer, abort_callback& abort) const;
 };
 

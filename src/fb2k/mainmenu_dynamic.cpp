@@ -285,7 +285,7 @@ void DynamicMainMenuManager::RegisterCommand(HWND hWnd, uint32_t id, const std::
 	assert(panels_.contains(hWnd));
 
 	auto& panelData = panels_.at(hWnd);
-	qwr::QwrException::ExpectTrue(!panelData.commands.contains(id), "Command with id `{}` was already registered", id);
+	QwrException::ExpectTrue(!panelData.commands.contains(id), "Command with id `{}` was already registered", id);
 
 	panelData.commands.try_emplace(id, CommandData{ name, description });
 }
@@ -295,7 +295,7 @@ void DynamicMainMenuManager::UnregisterCommand(HWND hWnd, uint32_t id)
 	assert(panels_.contains(hWnd));
 
 	auto& panelData = panels_.at(hWnd);
-	qwr::QwrException::ExpectTrue(panelData.commands.contains(id), "Unknown command id `{}`", id);
+	QwrException::ExpectTrue(panelData.commands.contains(id), "Unknown command id `{}`", id);
 
 	panelData.commands.erase(id);
 }

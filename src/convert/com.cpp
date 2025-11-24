@@ -142,17 +142,17 @@ namespace
 	bool ComArrayToJsArray(JSContext* cx, const VARIANT& src, JS::MutableHandleValue& dest)
 	{
 		// We only support one dimensional arrays for now
-		qwr::QwrException::ExpectTrue(SafeArrayGetDim(src.parray) == 1, "Multi-dimensional array are not supported failed");
+		QwrException::ExpectTrue(SafeArrayGetDim(src.parray) == 1, "Multi-dimensional array are not supported failed");
 
 		// Get the upper bound;
 		long ubound; // NOLINT (google-runtime-int)
 		HRESULT hr = SafeArrayGetUBound(src.parray, 1, &ubound);
-		qwr::error::CheckHR(hr, "SafeArrayGetUBound");
+		qwr::CheckHR(hr, "SafeArrayGetUBound");
 
 		// Get the lower bound
 		long lbound; // NOLINT (google-runtime-int)
 		hr = SafeArrayGetLBound(src.parray, 1, &lbound);
-		qwr::error::CheckHR(hr, "SafeArrayGetLBound");
+		qwr::CheckHR(hr, "SafeArrayGetLBound");
 
 		// Create the JS Array
 		JS::RootedObject jsArray(cx, JS::NewArrayObject(cx, ubound - lbound + 1));
@@ -167,7 +167,7 @@ namespace
 		else // This was maybe a VT_SAFEARRAY
 		{
 			hr = SafeArrayGetVartype(src.parray, &vartype);
-			qwr::error::CheckHR(hr, "SafeArrayGetVartype");
+			qwr::CheckHR(hr, "SafeArrayGetVartype");
 		}
 
 		JS::RootedValue jsVal(cx);
@@ -184,7 +184,7 @@ namespace
 				var.vt = vartype;
 				hr = SafeArrayGetElement(src.parray, &i, &var.byref);
 			}
-			qwr::error::CheckHR(hr, "SafeArrayGetElement");
+			qwr::CheckHR(hr, "SafeArrayGetElement");
 
 			VariantToJs(cx, var, &jsVal);
 
@@ -239,7 +239,7 @@ namespace
 			PutCastedElementInSafeArrayData<uint32_t>(arr, idx, var.ulVal);
 			break;
 		default:
-			throw qwr::QwrException("ActiveX: unsupported array type: {:#x}", var.vt);
+			throw QwrException("ActiveX: unsupported array type: {:#x}", var.vt);
 		}
 	}
 }
@@ -362,7 +362,7 @@ namespace mozjs::convert::com
 			}
 			else
 			{
-				qwr::QwrException::ExpectTrue(type <= VT_CLSID || type == (VT_ARRAY | VT_UI1), "ActiveX: unsupported object type: {:#x}", type);
+				QwrException::ExpectTrue(type <= VT_CLSID || type == (VT_ARRAY | VT_UI1), "ActiveX: unsupported object type: {:#x}", type);
 
 				JS::RootedObject jsObject(cx, JsActiveXObject::CreateJsFromNative(cx, std::make_unique<JsActiveXObject>(cx, var)));
 				assert(jsObject);
@@ -390,7 +390,7 @@ namespace mozjs::convert::com
 				{
 					//1.7.2.3
 					HRESULT hr = VariantCopyInd(&arg, &x->pStorage_->variant);
-					qwr::error::CheckHR(hr, "VariantCopyInd");
+					qwr::CheckHR(hr, "VariantCopyInd");
 					//VariantCopy(&arg,&x->variant_);
 					//1.7.2.2 could address invalid memory if x is freed before arg
 					// arg.vt = VT_VARIANT | VT_BYREF;
@@ -435,7 +435,7 @@ namespace mozjs::convert::com
 				}
 				else
 				{
-					throw qwr::QwrException("ActiveX: unsupported JS object type");
+					throw QwrException("ActiveX: unsupported JS object type");
 				}
 			}
 		}
@@ -474,7 +474,7 @@ namespace mozjs::convert::com
 		}
 		else
 		{
-			throw qwr::QwrException("ActiveX: unsupported JS value type");
+			throw QwrException("ActiveX: unsupported JS value type");
 		}
 	}
 
@@ -488,7 +488,7 @@ namespace mozjs::convert::com
 
 		// Create the safe array of variants and populate it
 		SAFEARRAY* safeArray = SafeArrayCreateVector(elementVariantType, 0, len);
-		qwr::QwrException::ExpectTrue(safeArray, "SafeArrayCreateVector failed");
+		QwrException::ExpectTrue(safeArray, "SafeArrayCreateVector failed");
 
 		auto autoSa = wil::scope_exit([safeArray]() {
 			SafeArrayDestroy(safeArray);
@@ -500,7 +500,7 @@ namespace mozjs::convert::com
 			{
 				VARIANT* varArray = nullptr;
 				HRESULT hr = SafeArrayAccessData(safeArray, reinterpret_cast<void**>(&varArray));
-				qwr::error::CheckHR(hr, "SafeArrayAccessData");
+				qwr::CheckHR(hr, "SafeArrayAccessData");
 
 				auto autoSaData = wil::scope_exit([safeArray]() {
 					SafeArrayUnaccessData(safeArray);
@@ -521,7 +521,7 @@ namespace mozjs::convert::com
 			{
 				void* dataArray = nullptr;
 				HRESULT hr = SafeArrayAccessData(safeArray, reinterpret_cast<void**>(&dataArray));
-				qwr::error::CheckHR(hr, "SafeArrayAccessData");
+				qwr::CheckHR(hr, "SafeArrayAccessData");
 
 				auto autoSaData = wil::scope_exit([safeArray]() {
 					SafeArrayUnaccessData(safeArray);

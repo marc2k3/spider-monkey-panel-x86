@@ -217,7 +217,7 @@ bool JsEngine::Initialize() noexcept
 	try
 	{
 		autoJsCtx.reset(JS_NewContext(JsGc::GetMaxHeap()));
-		qwr::QwrException::ExpectTrue(autoJsCtx.get(), "JS_NewContext failed");
+		QwrException::ExpectTrue(autoJsCtx.get(), "JS_NewContext failed");
 
 		JSContext* cx = autoJsCtx.get();
 
@@ -255,7 +255,7 @@ bool JsEngine::Initialize() noexcept
 		ReportException(mozjs::error::JsErrorToText(autoJsCtx.get()));
 		return false;
 	}
-	catch (const qwr::QwrException& e)
+	catch (const QwrException& e)
 	{
 		ReportException(e.what());
 		return false;

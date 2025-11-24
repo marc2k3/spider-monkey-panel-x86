@@ -56,7 +56,7 @@ private:
 
 	int edgeStyleId_ = 0;
 
-	std::array<std::unique_ptr<qwr::ui::IUiDdx>, 2> ddx_;
+	std::array<std::unique_ptr<qwr::IUiDdx>, 2> ddx_;
 };
 
 } // namespace smp::ui

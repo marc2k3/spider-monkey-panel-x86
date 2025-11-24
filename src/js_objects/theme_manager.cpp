@@ -90,7 +90,7 @@ std::unique_ptr<JsThemeManager>
 JsThemeManager::CreateNative(JSContext* cx, HWND hwnd, const std::wstring& classId)
 {
 	HTHEME hTheme = OpenThemeData(hwnd, classId.c_str());
-	qwr::QwrException::ExpectTrue(hTheme, "Internal error: Failed to get theme data for the provided class list");
+	QwrException::ExpectTrue(hTheme, "Internal error: Failed to get theme data for the provided class list");
 
 	return std::unique_ptr<JsThemeManager>(new JsThemeManager(cx, hTheme));
 }
@@ -104,7 +104,7 @@ void JsThemeManager::DrawThemeBackground(JsGdiGraphics* gr,
 	int32_t x, int32_t y, uint32_t w, uint32_t h,
 	int32_t clip_x, int32_t clip_y, uint32_t clip_w, uint32_t clip_h)
 {
-	qwr::QwrException::ExpectTrue(gr, "gr argument is null");
+	QwrException::ExpectTrue(gr, "gr argument is null");
 
 	Gdiplus::Graphics* graphics = gr->GetGraphicsObject();
 	assert(graphics);
@@ -117,7 +117,7 @@ void JsThemeManager::DrawThemeBackground(JsGdiGraphics* gr,
 	LPCRECT pclip_rc = (!clip_x && !clip_y && !clip_w && !clip_h) ? nullptr : &clip_rc;
 
 	HRESULT hr = ::DrawThemeBackground(hTheme_, dc, partId_, stateId_, &rc, pclip_rc);
-	qwr::error::CheckHR(hr, "DrawThemeBackground");
+	qwr::CheckHR(hr, "DrawThemeBackground");
 }
 
 void JsThemeManager::DrawThemeBackgroundWithOpt(size_t optArgCount, JsGdiGraphics* gr,
@@ -137,7 +137,7 @@ void JsThemeManager::DrawThemeBackgroundWithOpt(size_t optArgCount, JsGdiGraphic
 	case 4:
 		return DrawThemeBackground(gr, x, y, w, h);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
@@ -161,7 +161,7 @@ void JsThemeManager::SetPartAndStateIDWithOpt(size_t optArgCount, int32_t partid
 	case 1:
 		return SetPartAndStateID(partid);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 

@@ -85,7 +85,7 @@ std::unique_ptr<JsMenuObject>
 JsMenuObject::CreateNative(JSContext* cx, HWND hParentWnd)
 {
 	HMENU hMenu = ::CreatePopupMenu();
-	qwr::error::CheckWinApi(!!hMenu, "CreatePopupMenu");
+	qwr::CheckWinApi(!!hMenu, "CreatePopupMenu");
 
 	return std::unique_ptr<JsMenuObject>(new JsMenuObject(cx, hParentWnd, hMenu));
 }
@@ -104,25 +104,25 @@ void JsMenuObject::AppendMenuItem(uint32_t flags, uint32_t item_id, const std::w
 {
 	if (flags & MF_POPUP)
 	{
-		throw qwr::QwrException("Invalid flags: MF_POPUP when adding menu item");
+		throw QwrException("Invalid flags: MF_POPUP when adding menu item");
 	}
 
 	BOOL bRet = ::AppendMenu(hMenu_, flags, item_id, text.c_str());
-	qwr::error::CheckWinApi(bRet, "AppendMenu");
+	qwr::CheckWinApi(bRet, "AppendMenu");
 }
 
 void JsMenuObject::AppendMenuSeparator()
 {
 	BOOL bRet = ::AppendMenu(hMenu_, MF_SEPARATOR, 0, nullptr);
-	qwr::error::CheckWinApi(bRet, "AppendMenu");
+	qwr::CheckWinApi(bRet, "AppendMenu");
 }
 
 void JsMenuObject::AppendTo(JsMenuObject* parent, uint32_t flags, const std::wstring& text)
 {
-	qwr::QwrException::ExpectTrue(parent, "parent argument is null");
+	QwrException::ExpectTrue(parent, "parent argument is null");
 
 	BOOL bRet = ::AppendMenu(parent->HMenu(), flags | MF_STRING | MF_POPUP, (UINT_PTR)hMenu_, text.c_str());
-	qwr::error::CheckWinApi(bRet, "AppendMenu");
+	qwr::CheckWinApi(bRet, "AppendMenu");
 
 	isDetached_ = true;
 }
@@ -132,16 +132,16 @@ void JsMenuObject::CheckMenuItem(uint32_t item_id, bool check)
 	DWORD dRet = ::CheckMenuItem(hMenu_, item_id, check ? MF_CHECKED : MF_UNCHECKED);
 	if (static_cast<DWORD>(-1) == dRet)
 	{
-		throw qwr::QwrException("Menu item with specified id does not exist");
+		throw QwrException("Menu item with specified id does not exist");
 	}
 }
 
 void JsMenuObject::CheckMenuRadioItem(uint32_t first, uint32_t last, uint32_t selected)
 {
-	qwr::QwrException::ExpectTrue(selected >= first && selected <= last, "Index is out of bounds");
+	QwrException::ExpectTrue(selected >= first && selected <= last, "Index is out of bounds");
 
 	BOOL bRet = ::CheckMenuRadioItem(hMenu_, first, last, selected, MF_BYCOMMAND);
-	qwr::error::CheckWinApi(bRet, "CheckMenuRadioItem");
+	qwr::CheckWinApi(bRet, "CheckMenuRadioItem");
 }
 
 uint32_t JsMenuObject::TrackPopupMenu(int32_t x, int32_t y, uint32_t flags)
@@ -153,7 +153,7 @@ uint32_t JsMenuObject::TrackPopupMenu(int32_t x, int32_t y, uint32_t flags)
 	flags &= ~TPM_RECURSE;
 
 	BOOL bRet = ClientToScreen(hParentWnd_, &pt);
-	qwr::error::CheckWinApi(bRet, "ClientToScreen");
+	qwr::CheckWinApi(bRet, "ClientToScreen");
 
 	if (modal::IsModalBlocked())
 	{
@@ -175,7 +175,7 @@ uint32_t JsMenuObject::TrackPopupMenuWithOpt(size_t optArgCount, int32_t x, int3
 	case 1:
 		return TrackPopupMenu(x, y);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 

@@ -258,13 +258,13 @@ JSObject* JsFbMetadbHandleList::Constructor(JSContext* cx, JS::HandleValue jsVal
 	{
 		metadb_handle_list handleList;
 		convert::to_native::ProcessArray<JsFbMetadbHandle*>(cx, jsValue, [&handleList](auto pNativeHandle) {
-			qwr::QwrException::ExpectTrue(pNativeHandle, "Array contains invalid value");
+			QwrException::ExpectTrue(pNativeHandle, "Array contains invalid value");
 			handleList.add_item(pNativeHandle->GetHandle());
 		});
 		return JsFbMetadbHandleList::CreateJs(cx, handleList);
 	}
 
-	throw qwr::QwrException("Unsupported argument type");
+	throw QwrException("Unsupported argument type");
 }
 
 JSObject* JsFbMetadbHandleList::ConstructorWithOpt(JSContext* cx, size_t optArgCount, JS::HandleValue jsValue)
@@ -276,39 +276,39 @@ JSObject* JsFbMetadbHandleList::ConstructorWithOpt(JSContext* cx, size_t optArgC
 	case 1:
 		return Constructor(cx);
 	default:
-		throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+		throw QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
 	}
 }
 
 void JsFbMetadbHandleList::Add(JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	metadb_handle_ptr fbHandle(handle->GetHandle());
-	qwr::QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
+	QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
 
 	metadbHandleList_.add_item(fbHandle);
 }
 
 void JsFbMetadbHandleList::AddRange(JsFbMetadbHandleList* handles)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	metadbHandleList_.add_items(handles->GetHandleList());
 }
 
 void JsFbMetadbHandleList::AttachImage(const std::wstring& image_path, uint32_t art_id)
 {
-	qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
+	QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
 	Attach::from_path(metadbHandleList_, art_id, image_path);
 }
 
 int32_t JsFbMetadbHandleList::BSearch(JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	metadb_handle_ptr fbHandle(handle->GetHandle());
-	qwr::QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
+	QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
 
 	return static_cast<int32_t>(metadbHandleList_.bsearch_by_pointer(fbHandle));
 }
@@ -349,10 +349,10 @@ JS::Value JsFbMetadbHandleList::Convert()
 
 int32_t JsFbMetadbHandleList::Find(JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	metadb_handle_ptr fbHandle(handle->GetHandle());
-	qwr::QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
+	QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
 
 	return static_cast<int32_t>(metadbHandleList_.find_item(fbHandle));
 }
@@ -376,24 +376,24 @@ JS::Value JsFbMetadbHandleList::GetLibraryRelativePaths()
 
 void JsFbMetadbHandleList::Insert(uint32_t index, JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	metadb_handle_ptr fbHandle(handle->GetHandle());
-	qwr::QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
+	QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
 
 	metadbHandleList_.insert_item(fbHandle, index);
 }
 
 void JsFbMetadbHandleList::InsertRange(uint32_t index, JsFbMetadbHandleList* handles)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	metadbHandleList_.insert_items(handles->GetHandleList(), index);
 }
 
 void JsFbMetadbHandleList::MakeDifference(JsFbMetadbHandleList* handles)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	metadb_handle_list r1, r2;
 	metadb_handle_list_helper::sorted_by_pointer_extract_difference(metadbHandleList_, handles->GetHandleList(), r1, r2);
@@ -402,7 +402,7 @@ void JsFbMetadbHandleList::MakeDifference(JsFbMetadbHandleList* handles)
 
 void JsFbMetadbHandleList::MakeIntersection(JsFbMetadbHandleList* handles)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	auto& other = handles->GetHandleList();
 	metadb_handle_list result;
@@ -429,7 +429,7 @@ void JsFbMetadbHandleList::MakeIntersection(JsFbMetadbHandleList* handles)
 
 void JsFbMetadbHandleList::MakeUnion(JsFbMetadbHandleList* handles)
 {
-	qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+	QwrException::ExpectTrue(handles, "handles argument is null");
 
 	metadbHandleList_.add_items(handles->GetHandleList());
 	metadbHandleList_.sort_by_pointer_remove_duplicates();
@@ -467,7 +467,7 @@ void JsFbMetadbHandleList::OptimiseFileLayout(bool minimise)
 
 void JsFbMetadbHandleList::OrderByFormat(JsFbTitleFormat* script, int8_t direction)
 {
-	qwr::QwrException::ExpectTrue(script, "script argument is null");
+	QwrException::ExpectTrue(script, "script argument is null");
 
 	metadbHandleList_.sort_by_format(script->GetTitleFormat(), nullptr, direction);
 }
@@ -517,10 +517,10 @@ void JsFbMetadbHandleList::RefreshStats()
 
 void JsFbMetadbHandleList::Remove(JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	metadb_handle_ptr fbHandle(handle->GetHandle());
-	qwr::QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
+	QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
 
 	metadbHandleList_.remove_item(fbHandle);
 }
@@ -532,7 +532,7 @@ void JsFbMetadbHandleList::RemoveAll()
 
 void JsFbMetadbHandleList::RemoveAttachedImage(uint32_t art_id)
 {
-	qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
+	QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
 	Attach::remove_id(metadbHandleList_, art_id);
 }
 
@@ -543,7 +543,7 @@ void JsFbMetadbHandleList::RemoveAttachedImages()
 
 void JsFbMetadbHandleList::RemoveById(uint32_t index)
 {
-	qwr::QwrException::ExpectTrue(index < metadbHandleList_.get_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(index < metadbHandleList_.get_count(), "Index is out of bounds");
 	(void)metadbHandleList_.remove_by_idx(index);
 }
 
@@ -580,17 +580,17 @@ void JsFbMetadbHandleList::UpdateFileInfoFromJSON(const std::string& str)
 
 	if (j.is_array())
 	{
-		qwr::QwrException::ExpectTrue(j.size() == count, "Invalid JSON info: mismatched with handle count");
+		QwrException::ExpectTrue(j.size() == count, "Invalid JSON info: mismatched with handle count");
 		writer.from_json_array(j);
 	}
 	else if (j.is_object())
 	{
-		qwr::QwrException::ExpectTrue(j.size() > 0, "Invalid JSON info: empty object");
+		QwrException::ExpectTrue(j.size() > 0, "Invalid JSON info: empty object");
 		writer.from_json_object(j);
 	}
 	else
 	{
-		throw qwr::QwrException("Invalid JSON info: unsupported value type");
+		throw QwrException("Invalid JSON info: unsupported value type");
 	}
 }
 
@@ -606,18 +606,18 @@ uint32_t JsFbMetadbHandleList::get_Count()
 
 JSObject* JsFbMetadbHandleList::get_Item(uint32_t index)
 {
-	qwr::QwrException::ExpectTrue(index < metadbHandleList_.get_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(index < metadbHandleList_.get_count(), "Index is out of bounds");
 
 	return JsFbMetadbHandle::CreateJs(pJsCtx_, metadbHandleList_[index]);
 }
 
 void JsFbMetadbHandleList::put_Item(uint32_t index, JsFbMetadbHandle* handle)
 {
-	qwr::QwrException::ExpectTrue(index < metadbHandleList_.get_count(), "Index is out of bounds");
-	qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+	QwrException::ExpectTrue(index < metadbHandleList_.get_count(), "Index is out of bounds");
+	QwrException::ExpectTrue(handle, "handle argument is null");
 
 	metadb_handle_ptr fbHandle(handle->GetHandle());
-	qwr::QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
+	QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
 
 	metadbHandleList_.replace_item(index, fbHandle);
 }

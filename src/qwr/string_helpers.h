@@ -1,6 +1,6 @@
 #pragma once
 
-namespace qwr::string
+namespace qwr
 {
 	static std::vector<std::string_view> SplitByLines(std::string_view str)
 	{

@@ -7,28 +7,28 @@ namespace smp::config
 
 	[[nodiscard]] const std::filesystem::path& GetRelativePathToMainFile();
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	[[nodiscard]] std::optional<std::filesystem::path> FindPackage(const std::string& packageId);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	[[nodiscard]] ParsedPanelSettings GetNewPackageSettings(const std::string& name);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	[[nodiscard]] ParsedPanelSettings GetPackageSettingsFromPath(const std::filesystem::path& packagePath);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void FillPackageSettingsFromPath(const std::filesystem::path& packagePath, ParsedPanelSettings& settings);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	void MaybeSavePackageData(const ParsedPanelSettings& settings);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	[[nodiscard]] std::filesystem::path GetPackageScriptsDir(const ParsedPanelSettings& settings);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	[[nodiscard]] std::filesystem::path GetPackageAssetsDir(const ParsedPanelSettings& settings);
 
-	/// @throw qwr::QwrException
+	/// @throw QwrException
 	[[nodiscard]] std::filesystem::path GetPackageStorageDir(const ParsedPanelSettings& settings);
 
 

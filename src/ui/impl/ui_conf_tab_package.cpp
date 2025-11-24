@@ -38,13 +38,13 @@ CConfigTabPackage::CConfigTabPackage(CDialogConf& parent, config::ParsedPanelSet
 	, shouldGrabFocus_(settings.shouldGrabFocus)
 	, enableDragDrop_(settings.enableDragDrop)
 	, ddx_({
-		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptName_, IDC_EDIT_PACKAGE_NAME),
-		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptVersion_, IDC_EDIT_PACKAGE_VERSION),
-		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptAuthor_, IDC_EDIT_PACKAGE_AUTHOR),
-		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_TextEdit>(scriptDescription_, IDC_EDIT_PACKAGE_DESCRIPTION),
-		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_CheckBox>(shouldGrabFocus_, IDC_CHECK_SHOULD_GRAB_FOCUS),
-		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_CheckBox>(enableDragDrop_, IDC_CHECK_ENABLE_DRAG_N_DROP),
-		qwr::ui::CreateUiDdx<qwr::ui::UiDdx_ListBox>(focusedFileIdx_, IDC_LIST_PACKAGE_FILES)
+		qwr::CreateUiDdx<qwr::UiDdx_TextEdit>(scriptName_, IDC_EDIT_PACKAGE_NAME),
+		qwr::CreateUiDdx<qwr::UiDdx_TextEdit>(scriptVersion_, IDC_EDIT_PACKAGE_VERSION),
+		qwr::CreateUiDdx<qwr::UiDdx_TextEdit>(scriptAuthor_, IDC_EDIT_PACKAGE_AUTHOR),
+		qwr::CreateUiDdx<qwr::UiDdx_TextEdit>(scriptDescription_, IDC_EDIT_PACKAGE_DESCRIPTION),
+		qwr::CreateUiDdx<qwr::UiDdx_CheckBox>(shouldGrabFocus_, IDC_CHECK_SHOULD_GRAB_FOCUS),
+		qwr::CreateUiDdx<qwr::UiDdx_CheckBox>(enableDragDrop_, IDC_CHECK_ENABLE_DRAG_N_DROP),
+		qwr::CreateUiDdx<qwr::UiDdx_ListBox>(focusedFileIdx_, IDC_LIST_PACKAGE_FILES)
 	})
 {
 	InitializeLocalData();
@@ -285,14 +285,14 @@ void CConfigTabPackage::OnOpenContainingFolder(UINT uNotifyCode, int nID, CWindo
 
 		if ((int)hInstance < 32)
 		{ // As per WinAPI
-			qwr::error::CheckWin32((int)hInstance, "ShellExecute");
+			qwr::CheckWin32((int)hInstance, "ShellExecute");
 		}
 	}
 	catch (const fs::filesystem_error& e)
 	{
 		qwr::ReportFSErrorWithPopup(e);
 	}
-	catch (const qwr::QwrException& e)
+	catch (const QwrException& e)
 	{
 		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 	}
@@ -320,7 +320,7 @@ void CConfigTabPackage::OnEditScript(UINT uNotifyCode, int nID, CWindow wndCtl)
 		}
 
 		const auto filePath = fs::path(files_[focusedFileIdx_]);
-		qwr::QwrException::ExpectTrue(fs::exists(filePath), "Script is missing: {}", filePath.u8string());
+		QwrException::ExpectTrue(fs::exists(filePath), "Script is missing: {}", filePath.u8string());
 
 		smp::EditTextFile(*this, filePath, true, true);
 	}
@@ -328,7 +328,7 @@ void CConfigTabPackage::OnEditScript(UINT uNotifyCode, int nID, CWindow wndCtl)
 	{
 		qwr::ReportFSErrorWithPopup(e);
 	}
-	catch (const qwr::QwrException& e)
+	catch (const QwrException& e)
 	{
 		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 	}
@@ -346,7 +346,7 @@ void CConfigTabPackage::OnEditScriptWith(UINT uNotifyCode, int nID, CWindow wndC
 				const auto wpath = qwr::ToWide(native);
 
 				std::error_code ec;
-				qwr::QwrException::ExpectTrue(fs::is_regular_file(wpath, ec), "Invalid path");
+				QwrException::ExpectTrue(fs::is_regular_file(wpath, ec), "Invalid path");
 				fb2k::configStore::get()->setConfigString("smp.editor.path", native);
 			};
 
@@ -458,9 +458,9 @@ void CConfigTabPackage::InitializeFilesListBox()
 		try
 		{
 			HRESULT hr = pFilesListBoxDrop_->RegisterDragDrop();
-			qwr::error::CheckHR(hr, "RegisterDragDrop");
+			qwr::CheckHR(hr, "RegisterDragDrop");
 		}
-		catch (qwr::QwrException& e)
+		catch (QwrException& e)
 		{
 			qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 		}
@@ -582,7 +582,7 @@ void CConfigTabPackage::AddFile(const std::filesystem::path& path)
 	{
 		qwr::ReportFSErrorWithPopup(e);
 	}
-	catch (const qwr::QwrException& e)
+	catch (const QwrException& e)
 	{
 		qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
 	}
