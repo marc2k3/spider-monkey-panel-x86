@@ -19,21 +19,20 @@ namespace mozjs
 	public:
 		~JsFbPlayingItemLocation() override = default;
 
-		static std::unique_ptr<JsFbPlayingItemLocation> CreateNative(JSContext* cx, bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex);
-		static size_t GetInternalSize(bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex);
+		static std::unique_ptr<JsFbPlayingItemLocation> CreateNative(JSContext* cx, bool is_valid, uint32_t playlistIndex, uint32_t playlistItemIndex);
+		static size_t GetInternalSize(bool is_valid, uint32_t playlistIndex, uint32_t playlistItemIndex);
 
 	public:
 		bool get_IsValid();
-		uint32_t get_PlaylistIndex();
-		uint32_t get_PlaylistItemIndex();
+		int32_t get_PlaylistIndex();
+		int32_t get_PlaylistItemIndex();
 
 	private:
-		JsFbPlayingItemLocation(JSContext* cx, bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex);
+		JsFbPlayingItemLocation(JSContext* cx, bool is_valid, uint32_t playlistIndex, uint32_t playlistItemIndex);
 
-	private:
-		[[maybe_unused]] JSContext* pJsCtx_ = nullptr;
-		bool isValid_;
-		uint32_t playlistIndex_;
-		uint32_t playlistItemIndex_;
+		JSContext* m_ctx{};
+		bool m_is_valid{};
+		int32_t m_playlistIndex = -1;
+		int32_t m_playlistItemIndex = -1;
 	};
 }
