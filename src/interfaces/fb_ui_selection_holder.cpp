@@ -1,10 +1,9 @@
 #include <stdafx.h>
-
 #include "fb_ui_selection_holder.h"
 
 #include <fb2k/selection_holder_helper.h>
+#include <interfaces/fb_metadb_handle_list.h>
 #include <js_engine/js_to_native_invoker.h>
-#include <js_objects/fb_metadb_handle_list.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 

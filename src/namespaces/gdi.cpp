@@ -3,9 +3,9 @@
 
 #include <2K3/FileHelper.hpp>
 #include <2K3/LoadImageAsync.hpp>
+#include <interfaces/gdi_bitmap.h>
+#include <interfaces/gdi_font.h>
 #include <js_engine/js_to_native_invoker.h>
-#include <js_objects/gdi_bitmap.h>
-#include <js_objects/gdi_font.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_hwnd_helpers.h>
 #include <js_utils/js_image_helpers.h>

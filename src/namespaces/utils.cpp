@@ -9,9 +9,9 @@
 #include <2K3/HTTPRequestAsync.hpp>
 #include <2K3/TextFile.hpp>
 #include <config/package_utils.h>
+#include <interfaces/fb_metadb_handle.h>
+#include <interfaces/gdi_bitmap.h>
 #include <js_engine/js_to_native_invoker.h>
-#include <js_objects/fb_metadb_handle.h>
-#include <js_objects/gdi_bitmap.h>
 #include <js_utils/js_art_helpers.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_hwnd_helpers.h>

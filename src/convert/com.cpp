@@ -7,7 +7,7 @@
 #include <convert/js_to_native.h>
 #include <js_objects/active_x_object.h>
 #include <js_objects/global_object.h>
-#include <js_objects/internal/global_heap_manager.h>
+#include <js_objects/global_heap_manager.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <panel/user_message.h>

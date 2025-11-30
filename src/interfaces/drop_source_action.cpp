@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "drop_source_action.h"
 
 #include <js_engine/js_to_native_invoker.h>

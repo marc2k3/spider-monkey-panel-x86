@@ -1,10 +1,10 @@
 #include <stdafx.h>
 #include "native_to_js.h"
 
-#include <js_objects/fb_metadb_handle.h>
-#include <js_objects/fb_metadb_handle_list.h>
-#include <js_objects/fb_playback_queue_item.h>
-#include <js_objects/gdi_bitmap.h>
+#include <interfaces/fb_metadb_handle.h>
+#include <interfaces/fb_metadb_handle_list.h>
+#include <interfaces/fb_playback_queue_item.h>
+#include <interfaces/gdi_bitmap.h>
 #include <js_objects/global_object.h>
 
 namespace mozjs::convert::to_js

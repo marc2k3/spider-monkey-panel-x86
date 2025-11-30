@@ -2,9 +2,9 @@
 #include "gdi_bitmap.h"
 
 #include <2K3/StackBlur.hpp>
+#include <interfaces/gdi_graphics.h>
+#include <interfaces/gdi_raw_bitmap.h>
 #include <js_engine/js_to_native_invoker.h>
-#include <js_objects/gdi_graphics.h>
-#include <js_objects/gdi_raw_bitmap.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <utils/gdi_error_helpers.h>

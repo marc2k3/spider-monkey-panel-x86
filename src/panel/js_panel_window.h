@@ -2,7 +2,7 @@
 #include <config/parsed_panel_config.h>
 #include <events/event.h>
 #include <events/event_js_executor.h>
-#include <js_objects/fb_tooltip.h>
+#include <interfaces/fb_tooltip.h>
 #include <panel/drag_action_params.h>
 #include <panel/user_message.h>
 #include <ui/ui_conf.h>

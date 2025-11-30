@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "fb_audio_chunk.h"
 
 #include <js_engine/js_to_native_invoker.h>

@@ -5,9 +5,9 @@
 #include <convert/native_to_js.h>
 #include <events/event_dispatcher.h>
 #include <events/event_js_task.h>
-#include <js_objects/gdi_bitmap.h>
+#include <interfaces/gdi_bitmap.h>
 #include <js_objects/global_object.h>
-#include <js_objects/internal/global_heap_manager.h>
+#include <js_objects/global_heap_manager.h>
 #include <js_utils/js_async_task.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>

@@ -4,21 +4,6 @@
     <ClCompile Include="js_engine\js_engine.cpp">
       <Filter>js_engine</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\gdi_graphics.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\global_object.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\gdi_font.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\gdi_bitmap.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\gdi_raw_bitmap.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
     <ClCompile Include="js_utils\js_error_helper.cpp">
       <Filter>js_utils</Filter>
     </ClCompile>
@@ -31,62 +16,8 @@
     <ClCompile Include="js_engine\js_container.cpp">
       <Filter>js_engine</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\fb_metadb_handle.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_metadb_handle_list.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_file_info.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\context_menu_manager.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\drop_source_action.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_playback_queue_item.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_playing_item_location.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\menu_object.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_profiler.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\main_menu_manager.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\measure_string_info.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_ui_selection_holder.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_tooltip.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_title_format.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\theme_manager.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
     <ClCompile Include="js_utils\serialized_value.cpp">
       <Filter>js_utils</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\internal\fb_properties.cpp">
-      <Filter>js_objects\internal</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\internal\global_heap_manager.cpp">
-      <Filter>js_objects\internal</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\active_x_object.cpp">
-      <Filter>js_objects</Filter>
     </ClCompile>
     <ClCompile Include="convert\com.cpp">
       <Filter>convert</Filter>
@@ -96,9 +27,6 @@
     </ClCompile>
     <ClCompile Include="convert\js_to_native.cpp">
       <Filter>convert</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\enumerator.cpp">
-      <Filter>js_objects</Filter>
     </ClCompile>
     <ClCompile Include="utils\kmeans.cpp">
       <Filter>utils</Filter>
@@ -111,9 +39,6 @@
     </ClCompile>
     <ClCompile Include="ui\ui_html.cpp">
       <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_playlist_recycler.cpp">
-      <Filter>js_objects</Filter>
     </ClCompile>
     <ClCompile Include="utils\gdi_error_helpers.cpp">
       <Filter>utils</Filter>
@@ -244,12 +169,6 @@
       <Filter>ui\impl</Filter>
     </ClCompile>
     <ClCompile Include="component_paths.cpp" />
-    <ClCompile Include="js_objects\active_x_object_iterator.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_metadb_handle_list_iterator.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
     <ClCompile Include="utils\guid_helpers.cpp">
       <Filter>utils</Filter>
     </ClCompile>
@@ -318,9 +237,6 @@
     </ClCompile>
     <ClCompile Include="utils\logging.cpp">
       <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_audio_chunk.cpp">
-      <Filter>js_objects</Filter>
     </ClCompile>
     <ClCompile Include="namespaces\console.cpp">
       <Filter>namespaces</Filter>
@@ -455,25 +371,94 @@
     <ClCompile Include="com_utils\track_drop_target.cpp">
       <Filter>com_utils</Filter>
     </ClCompile>
+    <ClCompile Include="interfaces\context_menu_manager.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\drop_source_action.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_audio_chunk.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_file_info.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_metadb_handle.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_metadb_handle_list.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_metadb_handle_list_iterator.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_playback_queue_item.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_playing_item_location.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_playlist_recycler.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_profiler.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_title_format.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_tooltip.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\fb_ui_selection_holder.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\gdi_bitmap.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\gdi_font.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\gdi_graphics.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\gdi_raw_bitmap.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\main_menu_manager.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\measure_string_info.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\menu_object.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\theme_manager.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="js_objects\active_x_object.cpp">
+      <Filter>js_objects</Filter>
+    </ClCompile>
+    <ClCompile Include="js_objects\active_x_object_iterator.cpp">
+      <Filter>js_objects</Filter>
+    </ClCompile>
+    <ClCompile Include="js_objects\enumerator.cpp">
+      <Filter>js_objects</Filter>
+    </ClCompile>
+    <ClCompile Include="js_objects\fb_properties.cpp">
+      <Filter>js_objects</Filter>
+    </ClCompile>
+    <ClCompile Include="js_objects\global_heap_manager.cpp">
+      <Filter>js_objects</Filter>
+    </ClCompile>
+    <ClCompile Include="js_objects\global_object.cpp">
+      <Filter>js_objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="js_engine\js_engine.h">
       <Filter>js_engine</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\gdi_graphics.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\global_object.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\gdi_font.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\gdi_bitmap.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\gdi_raw_bitmap.h">
-      <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="js_utils\js_error_helper.h">
       <Filter>js_utils</Filter>
@@ -490,74 +475,14 @@
     <ClInclude Include="js_engine\js_container.h">
       <Filter>js_engine</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\fb_metadb_handle.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_metadb_handle_list.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_file_info.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\menu_object.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\theme_manager.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\context_menu_manager.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\drop_source_action.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_playback_queue_item.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_playing_item_location.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_profiler.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_title_format.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_tooltip.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_ui_selection_holder.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\main_menu_manager.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\measure_string_info.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
     <ClInclude Include="js_utils\scope_helper.h">
       <Filter>js_utils</Filter>
     </ClInclude>
     <ClInclude Include="js_utils\serialized_value.h">
       <Filter>js_utils</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\object_base.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\internal\fb_properties.h">
-      <Filter>js_objects\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\internal\global_heap_manager.h">
-      <Filter>js_objects\internal</Filter>
-    </ClInclude>
     <ClInclude Include="js_utils\js_prototype_helpers.h">
       <Filter>js_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\internal\prototype_ids.h">
-      <Filter>js_objects\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\active_x_object.h">
-      <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="convert\com.h">
       <Filter>convert</Filter>
@@ -567,9 +492,6 @@
     </ClInclude>
     <ClInclude Include="convert\js_to_native.h">
       <Filter>convert</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\enumerator.h">
-      <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="utils\kmeans.h">
       <Filter>utils</Filter>
@@ -585,9 +507,6 @@
     </ClInclude>
     <ClInclude Include="js_utils\js_property_helper.h">
       <Filter>js_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_playlist_recycler.h">
-      <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="utils\gdi_error_helpers.h">
       <Filter>utils</Filter>
@@ -737,14 +656,8 @@
       <Filter>ui\impl</Filter>
     </ClInclude>
     <ClInclude Include="component_paths.h" />
-    <ClInclude Include="js_objects\active_x_object_iterator.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
     <ClInclude Include="js_utils\js_heap_helper.h">
       <Filter>js_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_metadb_handle_list_iterator.h">
-      <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="utils\guid_helpers.h">
       <Filter>utils</Filter>
@@ -826,9 +739,6 @@
     </ClInclude>
     <ClInclude Include="utils\logging.h">
       <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_audio_chunk.h">
-      <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="namespaces\console.h">
       <Filter>namespaces</Filter>
@@ -969,6 +879,96 @@
       <Filter>com_utils</Filter>
     </ClInclude>
     <ClInclude Include="mozjs.hpp" />
+    <ClInclude Include="interfaces\context_menu_manager.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\drop_source_action.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_audio_chunk.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_file_info.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_metadb_handle.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_metadb_handle_list.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_metadb_handle_list_iterator.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_playback_queue_item.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_playing_item_location.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_playlist_recycler.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_profiler.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_title_format.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_tooltip.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\fb_ui_selection_holder.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\gdi_bitmap.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\gdi_font.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\gdi_graphics.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\gdi_raw_bitmap.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\main_menu_manager.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\measure_string_info.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\menu_object.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\theme_manager.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="js_objects\active_x_object.h">
+      <Filter>js_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="js_objects\active_x_object_iterator.h">
+      <Filter>js_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="js_objects\enumerator.h">
+      <Filter>js_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="js_objects\fb_properties.h">
+      <Filter>js_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="js_objects\global_heap_manager.h">
+      <Filter>js_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="js_objects\global_object.h">
+      <Filter>js_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="js_objects\object_base.h">
+      <Filter>js_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="js_objects\prototype_ids.h">
+      <Filter>js_objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="js_engine">
@@ -979,9 +979,6 @@
     </Filter>
     <Filter Include="js_utils">
       <UniqueIdentifier>{ec53acea-e62f-4dab-a310-6e7ad5b88ff9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="js_objects\internal">
-      <UniqueIdentifier>{7f83e895-8195-4301-aa89-41a268af1ea6}</UniqueIdentifier>
     </Filter>
     <Filter Include="convert">
       <UniqueIdentifier>{9b140af0-03ed-4c1a-aaae-127af5622eb8}</UniqueIdentifier>
@@ -1030,6 +1027,9 @@
     </Filter>
     <Filter Include="qwr">
       <UniqueIdentifier>{a651e2b4-e32e-4584-8353-b90619809011}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces">
+      <UniqueIdentifier>{c4000729-60ea-4d25-9bb1-b9b5de5c612e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
