@@ -19,7 +19,6 @@
 #include <interfaces/fb_ui_selection_holder.h>
 #include <interfaces/gdi_bitmap.h>
 #include <interfaces/main_menu_manager.h>
-#include <js_engine/js_to_native_invoker.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_hwnd_helpers.h>
 #include <js_utils/js_object_helper.h>

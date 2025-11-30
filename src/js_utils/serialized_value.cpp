@@ -6,62 +6,60 @@
 
 namespace mozjs
 {
+	SerializedJsValue SerializeJsValue(JSContext* cx, JS::HandleValue jsValue)
+	{
+		SerializedJsValue serializedValue;
 
-SerializedJsValue SerializeJsValue(JSContext* cx, JS::HandleValue jsValue)
-{
-	SerializedJsValue serializedValue;
-
-	if (jsValue.isBoolean())
-	{
-		serializedValue = jsValue.toBoolean();
-	}
-	else if (jsValue.isInt32())
-	{
-		serializedValue = jsValue.toInt32();
-	}
-	else if (jsValue.isDouble())
-	{
-		serializedValue = jsValue.toDouble();
-	}
-	else if (jsValue.isString())
-	{
-		JS::RootedValue rVal(cx, jsValue);
-		serializedValue = convert::to_native::ToValue<std::string>(cx, rVal);
-	}
-	else
-	{
-		throw QwrException("Unsupported value type");
-	}
-
-	return serializedValue;
-}
-
-void DeserializeJsValue(JSContext* cx, const SerializedJsValue& serializedValue, JS::MutableHandleValue jsValue)
-{
-	std::visit([cx, &jsValue](auto&& arg) {
-		using T = std::decay_t<decltype(arg)>;
-		if constexpr (std::is_same_v<T, bool>)
+		if (jsValue.isBoolean())
 		{
-			jsValue.setBoolean(arg);
+			serializedValue = jsValue.toBoolean();
 		}
-		else if constexpr (std::is_same_v<T, int32_t>)
+		else if (jsValue.isInt32())
 		{
-			jsValue.setInt32(arg);
+			serializedValue = jsValue.toInt32();
 		}
-		else if constexpr (std::is_same_v<T, double>)
+		else if (jsValue.isDouble())
 		{
-			jsValue.setDouble(arg);
+			serializedValue = jsValue.toDouble();
 		}
-		else if constexpr (std::is_same_v<T, std::string>)
+		else if (jsValue.isString())
 		{
-			convert::to_js::ToValue(cx, arg, jsValue);
+			JS::RootedValue rVal(cx, jsValue);
+			serializedValue = convert::to_native::ToValue<std::string>(cx, rVal);
 		}
 		else
 		{
-			static_assert(qwr::always_false_v<T>, "non-exhaustive visitor!");
+			throw QwrException("Unsupported value type");
 		}
-	},
-				serializedValue);
-}
 
-} // namespace mozjs
+		return serializedValue;
+	}
+
+	void DeserializeJsValue(JSContext* cx, const SerializedJsValue& serializedValue, JS::MutableHandleValue jsValue)
+	{
+		std::visit([cx, &jsValue](auto&& arg)
+			{
+				using T = std::decay_t<decltype(arg)>;
+				if constexpr (std::is_same_v<T, bool>)
+				{
+					jsValue.setBoolean(arg);
+				}
+				else if constexpr (std::is_same_v<T, int32_t>)
+				{
+					jsValue.setInt32(arg);
+				}
+				else if constexpr (std::is_same_v<T, double>)
+				{
+					jsValue.setDouble(arg);
+				}
+				else if constexpr (std::is_same_v<T, std::string>)
+				{
+					convert::to_js::ToValue(cx, arg, jsValue);
+				}
+				else
+				{
+					static_assert(qwr::always_false_v<T>, "non-exhaustive visitor!");
+				}
+			}, serializedValue);
+	}
+}

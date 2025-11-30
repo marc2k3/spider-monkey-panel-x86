@@ -8,7 +8,6 @@
 #include <interfaces/fb_metadb_handle.h>
 #include <interfaces/fb_metadb_handle_list_iterator.h>
 #include <interfaces/fb_title_format.h>
-#include <js_engine/js_to_native_invoker.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 

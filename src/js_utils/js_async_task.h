@@ -1,13 +1,9 @@
 #pragma once
 
-#include <js_objects/global_heap_manager.h>
-#include <js_objects/global_object.h>
-
 namespace mozjs
 {
 
-class JsAsyncTask
-	: public IHeapUser
+class JsAsyncTask : public IHeapUser
 {
 public:
 	JsAsyncTask() = default;
@@ -18,15 +14,13 @@ public:
 };
 
 template <typename... Args>
-class JsAsyncTaskImpl
-	: public JsAsyncTask
+class JsAsyncTaskImpl : public JsAsyncTask
 {
 	static_assert((std::is_same_v<Args, JS::HandleValue> && ...));
 
 public:
 	/// throws JsException
-	JsAsyncTaskImpl(JSContext* cx, Args... args)
-		: pJsCtx_(cx)
+	JsAsyncTaskImpl(JSContext* cx, Args... args) : pJsCtx_(cx)
 	{
 		assert(cx);
 

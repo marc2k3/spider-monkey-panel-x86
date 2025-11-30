@@ -5,12 +5,9 @@
 #include <events/event_basic.h>
 #include <events/event_dispatcher.h>
 #include <events/event_notify_others.h>
-#include <js_engine/js_engine.h>
-#include <js_engine/js_to_native_invoker.h>
 #include <interfaces/gdi_font.h>
 #include <interfaces/menu_object.h>
 #include <interfaces/theme_manager.h>
-#include <js_objects/fb_properties.h>
 #include <js_utils/js_async_task.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>

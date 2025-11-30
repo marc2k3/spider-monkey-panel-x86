@@ -2,7 +2,5 @@
 
 namespace mozjs
 {
-
-[[nodiscard]] HWND GetPanelHwndForCurrentGlobal(JSContext* cx);
-
+	[[nodiscard]] HWND GetPanelHwndForCurrentGlobal(JSContext* cx);
 }

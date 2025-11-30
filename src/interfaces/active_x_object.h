@@ -1,6 +1,5 @@
 #pragma once
 #include <com_utils/com_destruction_handler.h>
-#include <js_objects/object_base.h>
 
 namespace mozjs
 {

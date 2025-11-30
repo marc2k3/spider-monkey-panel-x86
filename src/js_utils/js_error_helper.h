@@ -1,48 +1,45 @@
 #pragma once
-
 #include <fb2k/advanced_config.h>
 
 namespace mozjs::error
 {
+	[[nodiscard]] std::string JsErrorToText(JSContext* cx);
+	void ExceptionToJsError(JSContext* cx);
+	[[nodiscard]] std::string ExceptionToText(JSContext* cx);
+	void SuppressException(JSContext* cx);
+	void PrependTextToJsError(JSContext* cx, const std::string& text);
 
-[[nodiscard]] std::string JsErrorToText(JSContext* cx);
-void ExceptionToJsError(JSContext* cx);
-[[nodiscard]] std::string ExceptionToText(JSContext* cx);
-void SuppressException(JSContext* cx);
-void PrependTextToJsError(JSContext* cx, const std::string& text);
-
-template <typename F, typename... Args>
-[[nodiscard]] bool Execute_JsSafe(JSContext* cx, std::string_view functionName, F&& func, Args&&... args)
-{
-	try
+	template <typename F, typename... Args>
+	[[nodiscard]] bool Execute_JsSafe(JSContext* cx, std::string_view functionName, F&& func, Args&&... args)
 	{
-		func(cx, std::forward<Args>(args)...);
-	}
-	catch (...)
-	{
-		mozjs::error::ExceptionToJsError(cx);
+		try
+		{
+			func(cx, std::forward<Args>(args)...);
+		}
+		catch (...)
+		{
+			mozjs::error::ExceptionToJsError(cx);
+		}
+
+		if (JS_IsExceptionPending(cx))
+		{
+			mozjs::error::PrependTextToJsError(cx, fmt::format("{} failed", functionName));
+			return false;
+		}
+
+		return true;
 	}
 
-	if (JS_IsExceptionPending(cx))
+	class AutoJsReport
 	{
-		mozjs::error::PrependTextToJsError(cx, fmt::format("{} failed", functionName));
-		return false;
-	}
+	public:
+		explicit [[nodiscard]] AutoJsReport(JSContext* cx);
+		~AutoJsReport() noexcept;
 
-	return true;
+		void Disable();
+
+	private:
+		JSContext* cx{};
+		bool isDisabled_ = false;
+	};
 }
-
-class AutoJsReport
-{
-public:
-	explicit [[nodiscard]] AutoJsReport(JSContext* cx);
-	~AutoJsReport() noexcept;
-
-	void Disable();
-
-private:
-	JSContext* cx;
-	bool isDisabled_ = false;
-};
-
-} // namespace mozjs::error

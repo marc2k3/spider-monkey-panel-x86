@@ -6,8 +6,6 @@
 #include <events/event_dispatcher.h>
 #include <events/event_js_task.h>
 #include <interfaces/gdi_bitmap.h>
-#include <js_objects/global_object.h>
-#include <js_objects/global_heap_manager.h>
 #include <js_utils/js_async_task.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
@@ -19,7 +17,6 @@ using namespace mozjs;
 
 namespace
 {
-
 class JsImageTask : public JsAsyncTaskImpl<JS::HandleValue>
 {
 public:
@@ -132,17 +129,16 @@ bool JsImageTask::InvokeJsImpl(JSContext* cx, JS::HandleObject, JS::HandleValue 
 namespace mozjs::image
 {
 
-JSObject* GetImagePromise(JSContext* cx, HWND hWnd, const std::wstring& imagePath)
-{
-	JS::RootedObject jsObject(cx, JS::NewPromiseObject(cx, nullptr));
-	JsException::ExpectTrue(jsObject);
+	JSObject* GetImagePromise(JSContext* cx, HWND hWnd, const std::wstring& imagePath)
+	{
+		JS::RootedObject jsObject(cx, JS::NewPromiseObject(cx, nullptr));
+		JsException::ExpectTrue(jsObject);
 
-	QwrThreadPool::GetInstance().AddTask([task = std::make_shared<ImageFetchTask>(cx, jsObject, hWnd, imagePath)]
-		{
-			std::invoke(*task);
-		});
+		QwrThreadPool::GetInstance().AddTask([task = std::make_shared<ImageFetchTask>(cx, jsObject, hWnd, imagePath)]
+			{
+				std::invoke(*task);
+			});
 
-	return jsObject;
+		return jsObject;
+	}
 }
-
-} // namespace mozjs::image

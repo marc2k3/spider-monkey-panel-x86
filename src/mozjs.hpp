@@ -16,3 +16,8 @@ __pragma(warning(disable : 4251))
 #include <js/SourceText.h>
 #include <js/Wrapper.h>
 __pragma(warning(pop))
+
+#include <js_engine/global_object.h>
+#include <js_engine/js_container.h>
+#include <js_engine/js_engine.h>
+#include <js_engine/js_to_native_invoker.h>

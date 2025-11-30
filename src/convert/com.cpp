@@ -5,9 +5,7 @@
 #include <com_utils/com_tools.h>
 #include <com_utils/dispatch_ptr.h>
 #include <convert/js_to_native.h>
-#include <js_objects/active_x_object.h>
-#include <js_objects/global_object.h>
-#include <js_objects/global_heap_manager.h>
+#include <interfaces/active_x_object.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <panel/user_message.h>

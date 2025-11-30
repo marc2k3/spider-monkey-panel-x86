@@ -65,9 +65,6 @@
 #include <atltypes.h>
 #include <atlwin.h>
 
-// Mozilla SpiderMonkey
-#include "mozjs.hpp"
-
 // fmt
 #define FMT_HEADER_ONLY
 #include <fmt/format.h>
@@ -120,3 +117,6 @@ using JSON = nlohmann::json;
 #include <component_guids.h>
 #include <component_paths.h>
 #include <utils/js_exception.h>
+
+// Mozilla SpiderMonkey
+#include "mozjs.hpp"

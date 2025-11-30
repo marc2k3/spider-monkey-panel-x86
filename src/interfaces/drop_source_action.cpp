@@ -1,7 +1,6 @@
 #include <stdafx.h>
 #include "drop_source_action.h"
 
-#include <js_engine/js_to_native_invoker.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 

@@ -1,5 +1,6 @@
 #pragma once
-#include <js_engine/js_realm_inner.h>
+#include "js_realm_inner.h"
+
 #include <js_utils/js_prototype_helpers.h>
 
 namespace mozjs
@@ -153,18 +154,12 @@ namespace mozjs
 			if constexpr (T::HasProto)
 			{
 				jsProto = GetProto(cx);
-				assert(jsProto);
 			}
 
 			JS::RootedObject jsObject(cx, CreateJsObject_Base(cx, jsProto));
-			assert(jsObject);
-
 			const size_t nativeObjectSize = sizeof(T) + T::GetInternalSize(args...); ///< don't forward: don't want to lose those smart ptrs
 			std::unique_ptr<T> nativeObject = T::CreateNative(cx, std::forward<ArgTypes>(args)...);
-			assert(nativeObject);
-
 			nativeObject->nativeObjectSize_ = nativeObjectSize;
-
 			return CreateJsObject_Final(cx, jsProto, jsObject, std::move(nativeObject));
 		}
 
@@ -174,12 +169,9 @@ namespace mozjs
 			if constexpr (T::HasProto)
 			{
 				jsProto = GetProto(cx);
-				assert(jsProto);
 			}
 
 			JS::RootedObject jsObject(cx, CreateJsObject_Base(cx, jsProto));
-			assert(jsObject);
-
 			nativeObject->nativeObjectSize_ = sizeof(T);
 
 			return CreateJsObject_Final(cx, jsProto, jsObject, std::move(nativeObject));
@@ -214,7 +206,7 @@ namespace mozjs
 			{
 				jsProto = GetOrCreatePrototype<T>(cx, T::PrototypeId);
 			}
-			assert(jsProto);
+
 			return jsProto;
 		}
 
@@ -223,7 +215,6 @@ namespace mozjs
 			JS::RootedObject jsObject(cx);
 			if constexpr (T::HasProto)
 			{
-				assert(jsProto);
 				jsObject.set(JS_NewObjectWithGivenProto(cx, &T::JsClass, jsProto));
 				if (!jsObject)
 				{
@@ -254,7 +245,6 @@ namespace mozjs
 			std::unique_ptr<T> premadeNative)
 		{
 			auto pJsRealm = static_cast<JsRealmInner*>(JS::GetRealmPrivate(js::GetContextRealm(cx)));
-			assert(pJsRealm);
 			pJsRealm->OnHeapAllocate(premadeNative->nativeObjectSize_);
 
 			JS::SetPrivate(jsBaseObject, premadeNative.release());

@@ -3,7 +3,6 @@
 
 #include <2K3/CustomSort.hpp>
 #include <2K3/PlaylistLock.hpp>
-#include <js_engine/js_to_native_invoker.h>
 #include <interfaces/fb_metadb_handle.h>
 #include <interfaces/fb_metadb_handle_list.h>
 #include <interfaces/fb_playback_queue_item.h>

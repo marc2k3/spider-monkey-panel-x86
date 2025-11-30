@@ -1,5 +1,4 @@
 #pragma once
-#include <js_objects/object_base.h>
 
 namespace mozjs
 {

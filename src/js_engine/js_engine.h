@@ -1,90 +1,81 @@
 #pragma once
-#include <js_engine/js_gc.h>
-#include <js_engine/js_monitor.h>
-
-namespace smp
-{
-
-class HeartbeatWindow;
-}
+#include "heartbeat_window.h"
+#include "js_gc.h"
+#include "js_internal_global.h"
+#include "js_monitor.h"
 
 namespace mozjs
 {
+	class JsEngine final
+	{
+	public:
+		~JsEngine();
+		JsEngine(const JsEngine&) = delete;
+		JsEngine& operator=(const JsEngine&) = delete;
 
-class JsContainer;
-class JsInternalGlobal;
+		static [[nodiscard]] JsEngine& GetInstance() noexcept;
+		void PrepareForExit() noexcept;
 
-class JsEngine final
-{
-public:
-	~JsEngine();
-	JsEngine(const JsEngine&) = delete;
-	JsEngine& operator=(const JsEngine&) = delete;
+	public: // methods accessed by JsContainer
+		[[nodiscard]] bool RegisterContainer(JsContainer& jsContainer) noexcept;
+		void UnregisterContainer(JsContainer& jsContainer) noexcept;
 
-	static [[nodiscard]] JsEngine& GetInstance() noexcept;
-	void PrepareForExit() noexcept;
+		void MaybeRunJobs() noexcept;
 
-public: // methods accessed by JsContainer
-	[[nodiscard]] bool RegisterContainer(JsContainer& jsContainer) noexcept;
-	void UnregisterContainer(JsContainer& jsContainer) noexcept;
+		void OnJsActionStart(JsContainer& jsContainer) noexcept;
+		void OnJsActionEnd(JsContainer& jsContainer) noexcept;
 
-	void MaybeRunJobs() noexcept;
+	public: // methods accessed by js objects
+		[[nodiscard]] JsGc& GetGcEngine() noexcept;
+		[[nodiscard]] const JsGc& GetGcEngine() const noexcept;
+		[[nodiscard]] JsInternalGlobal& GetInternalGlobal() noexcept;
 
-	void OnJsActionStart(JsContainer& jsContainer) noexcept;
-	void OnJsActionEnd(JsContainer& jsContainer) noexcept;
+	public: // methods accessed by other internals
+		void OnHeartbeat() noexcept;
+		[[nodiscard]] bool OnInterrupt() noexcept;
 
-public: // methods accessed by js objects
-	[[nodiscard]] JsGc& GetGcEngine() noexcept;
-	[[nodiscard]] const JsGc& GetGcEngine() const noexcept;
-	[[nodiscard]] JsInternalGlobal& GetInternalGlobal() noexcept;
+	private:
+		JsEngine();
 
-public: // methods accessed by other internals
-	void OnHeartbeat() noexcept;
-	[[nodiscard]] bool OnInterrupt() noexcept;
+	private:
+		bool Initialize() noexcept;
+		void Finalize() noexcept;
 
-private:
-	JsEngine();
+		/// @throw QwrException
+		void StartHeartbeatThread() noexcept;
+		void StopHeartbeatThread() noexcept;
 
-private:
-	bool Initialize() noexcept;
-	void Finalize() noexcept;
+		static bool InterruptHandler(JSContext* cx) noexcept;
 
-	/// @throw QwrException
-	void StartHeartbeatThread() noexcept;
-	void StopHeartbeatThread() noexcept;
+		static void RejectedPromiseHandler(
+			JSContext* cx,
+			bool mutedErrors,
+			JS::HandleObject promise,
+			JS::PromiseRejectionHandlingState state,
+			void* data) noexcept;
 
-	static bool InterruptHandler(JSContext* cx) noexcept;
+		void ReportOomError() noexcept;
 
-	static void RejectedPromiseHandler(
-		JSContext* cx,
-		bool mutedErrors,
-		JS::HandleObject promise,
-		JS::PromiseRejectionHandlingState state,
-		void* data) noexcept;
+	private:
+		JSContext* pJsCtx_ = nullptr;
 
-	void ReportOomError() noexcept;
+		bool isInitialized_ = false;
+		bool shouldShutdown_ = false;
 
-private:
-	JSContext* pJsCtx_ = nullptr;
+		std::map<void*, std::reference_wrapper<JsContainer>> registeredContainers_;
 
-	bool isInitialized_ = false;
-	bool shouldShutdown_ = false;
+		bool isBeating_ = false;
+		std::unique_ptr<smp::HeartbeatWindow> heartbeatWindow_;
+		std::thread heartbeatThread_;
+		std::atomic_bool shouldStopHeartbeatThread_ = false;
 
-	std::map<void*, std::reference_wrapper<JsContainer>> registeredContainers_;
+		JsGc jsGc_;
+		JsMonitor jsMonitor_;
 
-	bool isBeating_ = false;
-	std::unique_ptr<smp::HeartbeatWindow> heartbeatWindow_;
-	std::thread heartbeatThread_;
-	std::atomic_bool shouldStopHeartbeatThread_ = false;
+		JS::PersistentRooted<JS::GCVector<JSObject*, 0, js::SystemAllocPolicy>> rejectedPromises_;
+		bool areJobsInProgress_ = false;
+		uint32_t jobsStartTime_ = 0;
 
-	JsGc jsGc_;
-	JsMonitor jsMonitor_;
-
-	JS::PersistentRooted<JS::GCVector<JSObject*, 0, js::SystemAllocPolicy>> rejectedPromises_;
-	bool areJobsInProgress_ = false;
-	uint32_t jobsStartTime_ = 0;
-
-	std::unique_ptr<JsInternalGlobal> internalGlobal_;
-};
-
-} // namespace mozjs
+		std::unique_ptr<JsInternalGlobal> internalGlobal_;
+	};
+}

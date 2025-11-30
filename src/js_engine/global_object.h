@@ -1,10 +1,11 @@
 #pragma once
+#include "global_heap_manager.h"
+#include "object_base.h"
 
 namespace mozjs
 {
 	class JsContainer;
 	class Window;
-	class GlobalHeapManager;
 
 	class JsGlobalObject
 	{
@@ -78,10 +79,9 @@ namespace mozjs
 		static void Trace(JSTracer* trc, JSObject* obj);
 
 	private:
-		JSContext* pJsCtx_ = nullptr;
+		JSContext* pJsCtx_{};
 		JsContainer& parentContainer_;
-
-		Window* pWindow_ = nullptr;
+		Window* pWindow_{};
 
 		std::unordered_set<std::wstring> includedFiles_;
 		std::unique_ptr<GlobalHeapManager> heapManager_;

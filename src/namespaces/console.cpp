@@ -1,7 +1,6 @@
 #include <stdafx.h>
 #include "console.h"
 
-#include <js_engine/js_to_native_invoker.h>
 #include <js_utils/js_object_helper.h>
 
 using namespace smp;

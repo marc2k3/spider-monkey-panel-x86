@@ -2,7 +2,6 @@
 #include <2K3/PlaylistLock.hpp>
 #include <config/delayed_package_utils.h>
 #include <events/event_dispatcher.h>
-#include <js_engine/js_engine.h>
 #include <qwr/thread_pool.h>
 
 #include <Scintilla.h>

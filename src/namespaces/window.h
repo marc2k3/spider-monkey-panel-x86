@@ -1,11 +1,9 @@
 #pragma once
-#include <js_objects/object_base.h>
+#include <panel/fb_properties.h>
 #include <panel/js_panel_window.h>
 
 namespace mozjs
 {
-	class FbProperties;
-
 	class Window : public JsObjectBase<Window>
 	{
 	public:

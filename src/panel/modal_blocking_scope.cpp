@@ -1,13 +1,10 @@
 #include <stdafx.h>
 #include "modal_blocking_scope.h"
 
-#include <js_engine/js_engine.h>
-
 namespace
 {
 	std::atomic<int32_t> g_whitelistedModalCounter = 0;
 	std::atomic<int32_t> g_modalBlockingCounter = 0;
-
 }
 
 namespace smp::modal

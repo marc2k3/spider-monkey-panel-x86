@@ -175,9 +175,6 @@
     <ClCompile Include="config\delayed_package_utils.cpp">
       <Filter>config</Filter>
     </ClCompile>
-    <ClCompile Include="js_utils\current_script_path_hack.cpp">
-      <Filter>js_utils</Filter>
-    </ClCompile>
     <ClCompile Include="js_utils\cached_utf8_paths_hack.cpp">
       <Filter>js_utils</Filter>
     </ClCompile>
@@ -437,23 +434,23 @@
     <ClCompile Include="interfaces\theme_manager.cpp">
       <Filter>interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\active_x_object.cpp">
-      <Filter>js_objects</Filter>
+    <ClCompile Include="interfaces\active_x_object.cpp">
+      <Filter>interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\active_x_object_iterator.cpp">
-      <Filter>js_objects</Filter>
+    <ClCompile Include="interfaces\enumerator.cpp">
+      <Filter>interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\enumerator.cpp">
-      <Filter>js_objects</Filter>
+    <ClCompile Include="interfaces\active_x_object_iterator.cpp">
+      <Filter>interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\fb_properties.cpp">
-      <Filter>js_objects</Filter>
+    <ClCompile Include="panel\fb_properties.cpp">
+      <Filter>panel</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\global_heap_manager.cpp">
-      <Filter>js_objects</Filter>
+    <ClCompile Include="js_engine\global_heap_manager.cpp">
+      <Filter>js_engine</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\global_object.cpp">
-      <Filter>js_objects</Filter>
+    <ClCompile Include="js_engine\global_object.cpp">
+      <Filter>js_engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -664,9 +661,6 @@
     </ClInclude>
     <ClInclude Include="config\delayed_package_utils.h">
       <Filter>config</Filter>
-    </ClInclude>
-    <ClInclude Include="js_utils\current_script_path_hack.h">
-      <Filter>js_utils</Filter>
     </ClInclude>
     <ClInclude Include="js_utils\cached_utf8_paths_hack.h">
       <Filter>js_utils</Filter>
@@ -945,37 +939,34 @@
     <ClInclude Include="interfaces\theme_manager.h">
       <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\active_x_object.h">
-      <Filter>js_objects</Filter>
+    <ClInclude Include="interfaces\active_x_object.h">
+      <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\active_x_object_iterator.h">
-      <Filter>js_objects</Filter>
+    <ClInclude Include="interfaces\enumerator.h">
+      <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\enumerator.h">
-      <Filter>js_objects</Filter>
+    <ClInclude Include="interfaces\active_x_object_iterator.h">
+      <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\fb_properties.h">
-      <Filter>js_objects</Filter>
+    <ClInclude Include="panel\fb_properties.h">
+      <Filter>panel</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\global_heap_manager.h">
-      <Filter>js_objects</Filter>
+    <ClInclude Include="js_engine\global_heap_manager.h">
+      <Filter>js_engine</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\global_object.h">
-      <Filter>js_objects</Filter>
+    <ClInclude Include="js_engine\global_object.h">
+      <Filter>js_engine</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\object_base.h">
-      <Filter>js_objects</Filter>
+    <ClInclude Include="js_engine\object_base.h">
+      <Filter>js_engine</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\prototype_ids.h">
-      <Filter>js_objects</Filter>
+    <ClInclude Include="js_engine\prototype_ids.h">
+      <Filter>js_engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="js_engine">
       <UniqueIdentifier>{82fda107-c970-4ad4-9ad2-b6aae7fddd6d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="js_objects">
-      <UniqueIdentifier>{9297b4c3-f67b-4bf4-ac59-11c858ffe1ed}</UniqueIdentifier>
     </Filter>
     <Filter Include="js_utils">
       <UniqueIdentifier>{ec53acea-e62f-4dab-a310-6e7ad5b88ff9}</UniqueIdentifier>

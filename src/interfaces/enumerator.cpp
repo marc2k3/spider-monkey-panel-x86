@@ -3,8 +3,7 @@
 
 #include <com_utils/dispatch_ptr.h>
 #include <convert/com.h>
-#include <js_engine/js_to_native_invoker.h>
-#include <js_objects/active_x_object.h>
+#include <interfaces/active_x_object.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 

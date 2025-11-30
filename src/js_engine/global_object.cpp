@@ -2,20 +2,14 @@
 #include "global_object.h"
 
 #include <config/package_utils.h>
+#include <interfaces/active_x_object.h>
+#include <interfaces/enumerator.h>
 #include <interfaces/fb_metadb_handle_list.h>
 #include <interfaces/fb_profiler.h>
 #include <interfaces/fb_title_format.h>
 #include <interfaces/gdi_bitmap.h>
 #include <interfaces/gdi_font.h>
-#include <js_engine/js_container.h>
-#include <js_engine/js_engine.h>
-#include <js_engine/js_internal_global.h>
-#include <js_engine/js_realm_inner.h>
-#include <js_engine/js_to_native_invoker.h>
-#include <js_objects/active_x_object.h>
-#include <js_objects/enumerator.h>
-#include <js_objects/global_heap_manager.h>
-#include <js_utils/current_script_path_hack.h>
+#include <js_utils/cached_utf8_paths_hack.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <js_utils/js_property_helper.h>
