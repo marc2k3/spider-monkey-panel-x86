@@ -2,7 +2,7 @@ Original repository: https://github.com/TheQwertiest/foo_spider_monkey_panel
 
 Original author: https://github.com/TheQwertiest
 
-Docs: https://theqwertiest.github.io/foo_spider_monkey_panel/
+Docs: https://theqwertiest.github.io/foo_spider_monkey_panel/assets/generated_files/docs/html/index.html
 
 # Requirements
 Because new methods from the `foobar2000` `SDK` are being used, this component
