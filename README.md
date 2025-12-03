@@ -4,6 +4,10 @@ Original author: https://github.com/TheQwertiest
 
 Docs: https://theqwertiest.github.io/foo_spider_monkey_panel/assets/generated_files/docs/html/index.html
 
+License: https://github.com/marc2k3/foo_spider_monkey_panel/blob/main/LICENSE.md
+
+Third party licenses: https://github.com/marc2k3/foo_spider_monkey_panel/tree/main/component/licenses
+
 # Requirements
 Because new methods from the `foobar2000` `SDK` are being used, this component
 requires at least `foobar2000` `2.0`.
