@@ -20,7 +20,7 @@ jobs:
       run: msbuild workspace\foo_spider_monkey_panel.slnx /p:PlatformToolset=v143
 
     - name: Upload
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: foo_spider_monkey_panel-${{ github.ref_name }}
         path: component
