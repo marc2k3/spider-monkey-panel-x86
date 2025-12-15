@@ -360,13 +360,14 @@ JS::Value JsFbMetadbHandleList::GetLibraryRelativePaths()
 {
 	const auto count = metadbHandleList_.get_count();
 	auto api = library_manager::get();
+
 	pfc::array_t<pfc::string8> values;
 	values.set_size(count);
 
-	concurrency::parallel_for(size_t{}, count, [&](size_t index)
-		{
-			api->get_relative_path(metadbHandleList_[index], values[index]);
-		});
+	for (auto&& [handle, value] : ranges::views::zip(metadbHandleList_, values))
+	{
+		api->get_relative_path(handle, value);
+	}
 
 	JS::RootedValue jsValue(pJsCtx_);
 	convert::to_js::ToArrayValue(pJsCtx_, values, &jsValue);
@@ -484,16 +485,17 @@ void JsFbMetadbHandleList::OrderByRelativePath()
 	pfc::array_t<CustomSort::Item> items;
 	items.set_size(count);
 
-	concurrency::parallel_for(size_t{}, count, [&](size_t index)
-		{
-			pfc::string8 temp;
-			temp.prealloc(512);
+	pfc::string8 temp;
+	temp.prealloc(512);
 
-			api->get_relative_path(metadbHandleList_[index], temp);
-			temp << metadbHandleList_[index]->get_subsong_index();
-			items[index].index = index;
-			items[index].text = pfc::wideFromUTF8(temp);
-		});
+	for (auto&& [index, handle] : ranges::views::enumerate(metadbHandleList_))
+	{
+		temp.reset();
+		api->get_relative_path(handle, temp);
+		temp << "|" << handle->get_subsong_index();
+		items[index].index = index;
+		items[index].text = pfc::wideFromUTF8(temp);
+	}
 
 	auto order = CustomSort::sort(items);
 	metadbHandleList_.reorder(order.get_ptr());

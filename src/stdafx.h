@@ -30,8 +30,6 @@
 #include <variant>
 #include <vector>
 
-#include <ppl.h>
-
 #include <WinSock2.h>
 #include <Windows.h>
 #include <windowsx.h>
