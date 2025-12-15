@@ -16,6 +16,9 @@ Many included samples require the installation of [FontAwesome](https://github.c
 
 # Changelog
 
+## 1.6.2.25.12.15
+- Fix crashing when using certain library iteration methods in WINE.
+
 ## 1.6.2.25.11.15
 - Tooltips are now dark mode aware.
 - Update `utils.InputBox` to support dark mode.
